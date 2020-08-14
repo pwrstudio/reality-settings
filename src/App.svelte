@@ -18,8 +18,8 @@
   import Single from "./Single.svelte";
 
   // const client = new Colyseus.Client("ws://18.194.21.39:6666");
-  // const client = new Colyseus.Client("wss://scarmonger.xyz");
-  const client = new Colyseus.Client("ws://18.194.21.39:3000");
+  const client = new Colyseus.Client("wss://rs.scarmonger.xyz");
+  // const client = new Colyseus.Client("wss://18.194.21.39:3000");
 
   let localPlayers = {};
   let mainRoom = {};
