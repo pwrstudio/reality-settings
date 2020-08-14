@@ -1,37 +1,77 @@
 <script>
-  import Arena from 'are.na'
-  import has from 'lodash/has'
-  import { urlFor, loadData, renderBlockText } from './sanity.js'
+  // # # # # # # # # # # # # #
+  //
+  //  TSoaP Client
+  //
+  // # # # # # # # # # # # # #
 
-  // VARIABLES
-  let query = '*[_type == "project"]'
+  // IMPORTS
+  import { onMount } from "svelte";
 
-  // VARIABLES
-  let posts = loadData(query)
+  import { Router, Route } from "svelte-routing";
+  import * as Colyseus from "colyseus.js";
+  import { fade, fly } from "svelte/transition";
 
-  const arena = new Arena()
+  // ROUTES
+  import Arena from "./Arena.svelte";
+  import Landing from "./Landing.svelte";
+  import Single from "./Single.svelte";
 
-  let channelContent = false
-  //   let channelConnections = []
+  // const client = new Colyseus.Client("ws://18.194.21.39:6666");
+  // const client = new Colyseus.Client("wss://scarmonger.xyz");
+  const client = new Colyseus.Client("ws://18.194.21.39:3000");
 
-  arena
-    .channel('reality-settings-references')
-    .get()
-    .then((chan) => {
-      //   chan.contents.map((item) => {
-      //     console.dir(item)
-      //   })
-      channelContent = chan.contents
-    })
-    .catch((err) => console.log(err))
+  let localPlayers = {};
+  let mainRoom = {};
 
-  //   arena
-  //     .channel('data-architecture')
-  //     .connections()
-  //     .then((conn) => {
-  //       channelConnections = conn
-  //     })
-  //     .catch((err) => console.log(err))
+  const sendClick = e => {
+    console.dir(e);
+    mainRoom.send("click", { x: e.clientX, y: e.clientY });
+  };
+
+  onMount(async () => {
+    mainRoom = await client.joinOrCreate("main", {});
+
+    mainRoom.state.players.onRemove = (player, sessionId) => {
+      try {
+        delete localPlayers[sessionId];
+        localPlayers = localPlayers;
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    // ADD
+    mainRoom.state.players.onAdd = (player, sessionId) => {
+      localPlayers[sessionId] = sessionId;
+    };
+
+    // STATE CHANGE
+    mainRoom.state.players.onChange = function(player, sessionId) {
+      console.dir(player);
+    };
+
+    mainRoom.onMessage("click", message => {
+      console.dir(message.x);
+      console.dir(message.y);
+      var newDiv = document.createElement("div");
+      newDiv.style.height = "30px";
+      newDiv.style.borderRadius = "30px";
+      newDiv.style.opacity = 0.75;
+      newDiv.style.width = "30px";
+      newDiv.style.backgroundColor = "#ff0000";
+      newDiv.style.position = "fixed";
+      newDiv.style.top = message.y + "px";
+      newDiv.style.left = message.x + "px";
+      document.body.appendChild(newDiv);
+    });
+
+    // ERROR
+    mainRoom.onError((code, message) => {
+      console.error("!!! COLYSEUS ERROR:");
+      console.error(message);
+    });
+  });
 </script>
 
 <style>
@@ -73,31 +113,13 @@
   }
 </style>
 
+<svelte:window on:click={sendClick} />
+
 <main>
-  <h1>Reality Settings</h1>
-
-  <div class="container">
-    {#if channelContent}
-      {#each channelContent as block (block.id)}
-        <div class="block">
-          <div class="title">{block.title}</div>
-          <div class="description">{block.content}</div>
-          <div class="description">{block.description}</div>
-          {#if has(block, 'image.large.url')}
-            <div class="image">
-              <img src={block.image.large.url} />
-            </div>
-          {/if}
-        </div>
-      {/each}
-    {/if}
-  </div>
-
-  {#await posts then posts}
-    <div class="project">
-      {#each posts as p (p._id)}
-        {@html renderBlockText(p.mainContent.content)}
-      {/each}
-    </div>
-  {/await}
+  <Router>
+    <Route path="/" component={Landing} />
+    <Route path="/arena" component={Arena} />
+    <Route path="/text" component={Arena} />
+    <Route path="/:slug" component={Single} />
+  </Router>
 </main>
