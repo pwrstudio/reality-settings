@@ -6,28 +6,28 @@
   // # # # # # # # # # # # # #
 
   // IMPORTS
-  import { onMount } from "svelte";
+  import { onMount } from 'svelte'
 
-  import { Router, Route } from "svelte-routing";
-  import * as Colyseus from "colyseus.js";
-  import { fade, fly } from "svelte/transition";
+  import { Router, Route } from 'svelte-routing'
+  import * as Colyseus from 'colyseus.js'
+  import { fade, fly } from 'svelte/transition'
 
   // ROUTES
-  import Arena from "./Arena.svelte";
-  import Landing from "./Landing.svelte";
-  import Single from "./Single.svelte";
+  import Arena from './Arena.svelte'
+  import Landing from './Landing.svelte'
+  import Single from './Single.svelte'
 
   // const client = new Colyseus.Client("ws://18.194.21.39:6666");
-  const client = new Colyseus.Client("wss://rs.scarmonger.xyz");
+  const client = new Colyseus.Client('wss://rs.scarmonger.xyz')
   // const client = new Colyseus.Client("wss://18.194.21.39:3000");
 
-  let localPlayers = {};
-  let mainRoom = {};
+  let localPlayers = {}
+  let mainRoom = {}
 
-  const sendClick = e => {
+  const sendClick = (e) => {
     // console.dir(e);
     // mainRoom.send("click", { x: e.clientX, y: e.clientY });
-  };
+  }
 
   // onMount(async () => {
   //   mainRoom = await client.joinOrCreate("main", {});
@@ -75,12 +75,6 @@
 </script>
 
 <style lang="scss" global>
-  body,
-  html {
-    background: black;
-    color: white;
-  }
-
   h1 {
     padding: 20px;
   }
@@ -124,7 +118,8 @@
 <main>
   <Router>
     <Route path="/" component={Landing} />
-    <Route path="/arena" component={Arena} />
+    <Route path="/seed/:seed/heat/:heat" component={Landing} />
+    <!-- <Route path="/arena" component={Arena} /> -->
     <Route path="/text" component={Arena} />
     <Route path="/:slug" component={Single} />
   </Router>

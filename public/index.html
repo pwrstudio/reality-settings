@@ -7,6 +7,8 @@
 
 	<title>REALITY SETTINGS</title>
 
+	<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+
 	<link rel='icon' type='image/png' href='/favicon.png'>
 	<link rel='stylesheet' href='/build/bundle.css'>
 
@@ -16,10 +18,14 @@
 		body,
 		html {
 			font-family: Arial, Helvetica, sans-serif;
+			font-family: 'IBM Plex Mono', monospace;
 			background: black;
-			color: white;
 			font-size: 28px;
+			background: grey;
+			color: black;
+			color: #222222;
 		}
+
 
 		img,
 		iframe,
@@ -29,7 +35,21 @@
 		}
 
 		a {
-			color: white;
+			color: inherit;
+			text-decoration: none;
+		}
+
+		a:hover {
+			text-decoration: underline;
+		}
+
+		.generation {
+			position: fixed;
+			top: 10px;
+			right: 10px;
+			background: yellow;
+			padding: 10px;
+			font-size: 16px;
 		}
 	</style>
 </head>

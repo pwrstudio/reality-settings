@@ -6,16 +6,16 @@
   // # # # # # # # # # # # # #
 
   // IMPORTS
-  import { urlFor, loadData, renderBlockText } from "../../sanity.js";
-  import get from "lodash/get";
-  import has from "lodash/has";
+  import { urlFor, loadData, renderBlockText } from '../../sanity.js'
+  import get from 'lodash/get'
+  import has from 'lodash/has'
 
   // PROPS
-  export let block = {};
+  export let block = {}
 </script>
 
 <style lang="scss">
-  @import "../../variables.scss";
+  @import '../../variables.scss';
 
   .image {
     width: $text_width;
@@ -24,7 +24,7 @@
     margin-right: auto;
     font-size: $font_size_small;
     line-height: $line-height;
-    font-family: $sans-stack;
+    // font-family: $sans-stack;
     margin-bottom: $line-height;
     // margin-top: 2rem;
 
@@ -75,12 +75,7 @@
 <figure class="image">
 
   <!-- IMAGE -->
-  <img
-    src={urlFor(block.image)
-      .width(800)
-      .quality(90)
-      .auto('format')
-      .url()} />
+  <img src={urlFor(block.image).width(1400).quality(90).auto('format').url()} />
 
   <!-- CAPTION -->
   <div class="text">
@@ -89,8 +84,7 @@
         {@html renderBlockText(block.caption.content)}
       </figcaption>
     {/if}
-
-    <!-- ATTRIBUTION  -->
+    ATTRIBUTION
     {#if has(block, 'attribution')}
       <figcaption class="attribution">{block.attribution}</figcaption>
     {/if}
