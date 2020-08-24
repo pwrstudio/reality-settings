@@ -7,15 +7,22 @@
 
   // IMPORTS
   import { onMount } from 'svelte'
-
   import { Router, Route } from 'svelte-routing'
   import * as Colyseus from 'colyseus.js'
   import { fade, fly } from 'svelte/transition'
+
+  // STORES
+  import { running, globalSeed, globalHeat } from './stores.js'
 
   // ROUTES
   import Arena from './Arena.svelte'
   import Landing from './Landing.svelte'
   import Single from './Single.svelte'
+
+  // COMPONENTS
+  import Ball from './Components/Ball.svelte'
+
+  import { generation } from './stores.js'
 
   // const client = new Colyseus.Client("ws://18.194.21.39:6666");
   const client = new Colyseus.Client('wss://rs.scarmonger.xyz')
@@ -24,8 +31,12 @@
   let localPlayers = {}
   let mainRoom = {}
 
+  setInterval(() => {
+    generation.set($generation + 1)
+  }, 1000)
+
   const sendClick = (e) => {
-    // console.dir(e);
+    // console.dir(e);f
     // mainRoom.send("click", { x: e.clientX, y: e.clientY });
   }
 
@@ -118,9 +129,31 @@
 <main>
   <Router>
     <Route path="/" component={Landing} />
-    <Route path="/seed/:seed/heat/:heat" component={Landing} />
+    <Route path="/seed/:seed/heat/:heat" start={true} component={Landing} />
     <!-- <Route path="/arena" component={Arena} /> -->
     <Route path="/text" component={Arena} />
     <Route path="/:slug" component={Single} />
   </Router>
 </main>
+
+{#if $running}
+  <Ball index={0} />
+  <Ball index={1} />
+  <Ball index={2} />
+  <Ball index={3} />
+  <Ball index={4} />
+  <Ball index={5} />
+  <Ball index={6} />
+  <Ball index={7} />
+  <Ball index={8} />
+  <Ball index={9} />
+
+  <div class="generation">
+    Seed: {$globalSeed}
+    <br />
+    Generation: {$generation}
+    <br />
+    Heat: {$globalHeat}
+  </div>
+
+{/if}

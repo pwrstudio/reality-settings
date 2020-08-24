@@ -1,6 +1,6 @@
 <script>
   import { links } from 'svelte-routing'
-
+  import random from 'lodash/random'
   import has from 'lodash/has'
   import shuffle from 'lodash/shuffle'
   import flatMap from 'lodash/flatMap'
@@ -15,7 +15,8 @@
 
   let heat = 50
   let size = 50
-  let seed = 0
+  let friction = 30
+  let seed = random(0, 10000)
 </script>
 
 <style lang="scss">
@@ -30,13 +31,13 @@
     .parameter {
       margin-bottom: 40px;
       .label {
-        width: 120px;
+        width: 200px;
         background: red;
         display: inline-block;
       }
 
       input {
-        width: calc(90% - 240px);
+        width: calc(90% - 320px);
         display: inline-block;
       }
 
@@ -249,8 +250,13 @@
     <div class="preview">{heat}</div>
   </div>
   <div class="parameter">
-    <div class="label">Size</div>
+    <div class="label">Repulsion</div>
     <input min="0" max="100" type="range" bind:value={size} />
+    <div class="preview">{size}</div>
+  </div>
+  <div class="parameter">
+    <div class="label">Friction</div>
+    <input min="0" max="100" type="range" bind:value={friction} />
     <div class="preview">{size}</div>
   </div>
   <div class="parameter">

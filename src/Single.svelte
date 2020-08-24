@@ -11,7 +11,7 @@
   let post = loadData(query, { slug: slug })
 
   post.then((p) => {
-    console.dir(p)
+    // console.dir(p)
   })
 </script>
 

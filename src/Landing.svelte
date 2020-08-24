@@ -14,12 +14,13 @@
     singleToPlainText,
   } from './sanity.js'
 
-  // Stores
-  // import { postMap } from './stores.js'
+  // STORES
+  import { running, globalSeed, globalHeat, generation } from './stores.js'
 
   // PROPS
   export let seed = false
   export let heat = false
+  export let start = false
 
   // COMPONENTS
   import ImageBlock from './Components/Blocks/ImageBlock.svelte'
@@ -40,11 +41,13 @@
   let postsMap = {}
   let keywords = []
 
-  let generation = 0
-
-  setInterval(() => {
-    generation += 1
-  }, 1000)
+  // $: {
+    if(start) {
+      running.set(true)
+      globalSeed.set(seed)
+      globalHeat.set(heat)
+    }
+  // }
 
   posts.then((posts) => {
     // console.dir(posts);
@@ -88,7 +91,7 @@
 
     testBlocks = shuffle(blocks)
 
-    console.dir(keywords)
+    // console.dir(keywords)
   })
 </script>
 
@@ -120,29 +123,12 @@
 {:else}
   <div class="landing" use:links>
 
-    <!-- {#await posts then posts}
-    {#each posts as p (p._id)}
-      <div>
-        <a href={p.slug.current}>{p.title}</a>
-      </div>
-      <!-- {@html renderBlockText(p.mainContent.content)} -->
-    <!-- {/each}
-  {/await} -->
-
     {#if testBlocks}
       {#each testBlocks as block}
         <!-- {singleToPlainText(block.content).length} -->
         <Molecule {block} post={postsMap[block.id]} />
       {/each}
     {/if}
-
-    <div class="generation">
-      Seed: {seed}
-      <br />
-      Generation: {generation}
-      <br />
-      Heat: {heat}
-    </div>
 
     <!-- <div>
     <a href="arena">Arena</a>
@@ -153,12 +139,5 @@
   </div> -->
 
   </div>
-{/if}
 
-<Ball index={1} />
-<Ball index={2} />
-<Ball index={3} />
-<Ball index={4} />
-<Ball index={5} />
-<Ball index={6} />
-<Ball index={7} />
+{/if}

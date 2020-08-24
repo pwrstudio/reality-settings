@@ -1,7 +1,7 @@
 <script>
   import { links } from 'svelte-routing'
   import random from 'lodash/random'
-  import { fly } from 'svelte/transition'
+  import { fade } from 'svelte/transition'
 
   import { renderBlockText } from '../sanity.js'
 
@@ -15,7 +15,7 @@
   import AudioBlock from './Blocks/AudioBlock.svelte'
   import EmbedBlock from './Blocks/EmbedBlock.svelte'
 
-  console.log(block)
+  // console.log(block)
 </script>
 
 <style lang="scss">
@@ -36,7 +36,7 @@
 </style>
 
 <!-- style={'top:' + random(50, 4500) + 'px; left:' + random(50, 4500) + 'px;'} -->
-<div class="molecule" in:fly={{ y: 400 }}>
+<div class="molecule" in:fade>
   <a href={'/' + post.slug.current}>
     <div class="info">{post.title}</div>
     {#if block.content._type === 'block'}
