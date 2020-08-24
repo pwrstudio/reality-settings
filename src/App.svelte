@@ -25,56 +25,62 @@
   let mainRoom = {};
 
   const sendClick = e => {
-    console.dir(e);
-    mainRoom.send("click", { x: e.clientX, y: e.clientY });
+    // console.dir(e);
+    // mainRoom.send("click", { x: e.clientX, y: e.clientY });
   };
 
-  onMount(async () => {
-    mainRoom = await client.joinOrCreate("main", {});
+  // onMount(async () => {
+  //   mainRoom = await client.joinOrCreate("main", {});
 
-    mainRoom.state.players.onRemove = (player, sessionId) => {
-      try {
-        delete localPlayers[sessionId];
-        localPlayers = localPlayers;
-      } catch (err) {
-        console.log(err);
-      }
-    };
+  //   mainRoom.state.players.onRemove = (player, sessionId) => {
+  //     try {
+  //       delete localPlayers[sessionId];
+  //       localPlayers = localPlayers;
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
 
-    // ADD
-    mainRoom.state.players.onAdd = (player, sessionId) => {
-      localPlayers[sessionId] = sessionId;
-    };
+  //   // ADD
+  //   mainRoom.state.players.onAdd = (player, sessionId) => {
+  //     localPlayers[sessionId] = sessionId;
+  //   };
 
-    // STATE CHANGE
-    mainRoom.state.players.onChange = function(player, sessionId) {
-      console.dir(player);
-    };
+  //   // STATE CHANGE
+  //   mainRoom.state.players.onChange = function(player, sessionId) {
+  //     console.dir(player);
+  //   };
 
-    mainRoom.onMessage("click", message => {
-      console.dir(message.x);
-      console.dir(message.y);
-      var newDiv = document.createElement("div");
-      newDiv.style.height = "30px";
-      newDiv.style.borderRadius = "30px";
-      newDiv.style.opacity = 0.75;
-      newDiv.style.width = "30px";
-      newDiv.style.backgroundColor = "#ff0000";
-      newDiv.style.position = "fixed";
-      newDiv.style.top = message.y + "px";
-      newDiv.style.left = message.x + "px";
-      document.body.appendChild(newDiv);
-    });
+  //   mainRoom.onMessage("click", message => {
+  //     console.dir(message.x);
+  //     console.dir(message.y);
+  //     var newDiv = document.createElement("div");
+  //     newDiv.style.height = "30px";
+  //     newDiv.style.borderRadius = "30px";
+  //     newDiv.style.opacity = 0.75;
+  //     newDiv.style.width = "30px";
+  //     newDiv.style.backgroundColor = "#ff0000";
+  //     newDiv.style.position = "fixed";
+  //     newDiv.style.top = message.y + "px";
+  //     newDiv.style.left = message.x + "px";
+  //     document.body.appendChild(newDiv);
+  //   });
 
-    // ERROR
-    mainRoom.onError((code, message) => {
-      console.error("!!! COLYSEUS ERROR:");
-      console.error(message);
-    });
-  });
+  //   // ERROR
+  //   mainRoom.onError((code, message) => {
+  //     console.error("!!! COLYSEUS ERROR:");
+  //     console.error(message);
+  //   });
+  // });
 </script>
 
-<style>
+<style lang="scss" global>
+  body,
+  html {
+    background: black;
+    color: white;
+  }
+
   h1 {
     padding: 20px;
   }

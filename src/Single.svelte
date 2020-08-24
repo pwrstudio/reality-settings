@@ -18,9 +18,11 @@
   }
 
   .project {
-    width: 600px;
+    width: 900px;
     max-width: 100%;
     margin: 20px;
+    margin-right: auto;
+    margin-left: auto;
   }
 
   img {
@@ -29,10 +31,10 @@
 </style>
 
 <main>
-
-  {#await post then post}
-    <div class="project">
+  <div class="project">
+    {#await post then post}
       {@html renderBlockText(post.mainContent.content)}
-    </div>
-  {/await}
+    {/await}
+  </div>
+
 </main>

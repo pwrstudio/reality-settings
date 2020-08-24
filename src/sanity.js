@@ -5,13 +5,15 @@ import getVideoId from "get-video-id";
 import { text } from 'svelte/internal';
 import has from 'lodash/has'
 
+const PROJECT_ID = 'hixs580y'
+
 const tracer = x => {
     console.dir(x)
     return x
 }
 
 export const client = sanityClient({
-    projectId: 'hixs580y',
+    projectId: PROJECT_ID,
     dataset: 'production',
     token: '', // or leave blank to be anonymous user
     useCdn: false // `false` if you want to ensure fresh data
@@ -32,7 +34,7 @@ export const renderBlockText = text =>
     blocksToHtml({
         blocks: text,
         serializers: serializers,
-        projectId: 'hixs580y',
+        projectId: PROJECT_ID,
         dataset: 'production',
     })
 
@@ -49,6 +51,14 @@ export const toPlainText = (blocks = []) => {
     )
 }
 
+export const singleToPlainText = (block = {}) => {
+
+    if (block._type !== 'block' || !block.children) {
+        return ''
+    }
+    return block.children.map(child => child.text).join('')
+}
+
 const builder = imageUrlBuilder(client)
 
 export const urlFor = source => builder.image(source)
@@ -61,7 +71,7 @@ const serializers = {
                 { target: '_blank', rel: 'noreferrer', href: props.mark.href },
                 props.children
             ),
-        highlight: props =>
+        keyword: props =>
             h(
                 'mark',
                 { className: 'highlight' },
@@ -154,7 +164,7 @@ const serializers = {
             }
         },
         videoBlock: props => {
-            const videoUrl = 'https://cdn.sanity.io/files/1tpw92x3/production/' + props.node.videoFile.asset._ref
+            const videoUrl = 'https://cdn.sanity.io/files/' + PROJECT_ID + '/production/' + props.node.videoFile.asset._ref
                 .replace('file-', '')
                 .replace('-mp4', '.mp4')
             return h('figure', { className: 'video' }, [
@@ -163,7 +173,7 @@ const serializers = {
             ])
         },
         audioBlock: props => {
-            const audioUrl = 'https://cdn.sanity.io/files/1tpw92x3/production/' + props.node.audioFile.asset._ref
+            const audioUrl = 'https://cdn.sanity.io/files/' + PROJECT_ID + '/production/' + props.node.audioFile.asset._ref
                 .replace('file-', '')
                 .replace('-mp3', '.mp3')
             return h('figure', { className: 'audio' }, [

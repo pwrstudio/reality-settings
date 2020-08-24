@@ -1,0 +1,63 @@
+// $sans-stack: "Janson Text LT Std", times, serif;
+$sans-stack: Helvetica, Arial, sans-serif;
+$serif-stack: "Janson Text LT Std", times, serif;
+$logo-stack: "helex", $sans-stack;
+
+$black: rgba(0, 0, 0, 1);
+$white: rgba(254, 254, 254, 1);
+$grey: #e4e4e4;
+$darkgrey: #555555;
+// $thirdColor: rgb(197, 191, 191);
+
+$transition: cubic-bezier(0.23, 1, 0.32, 1);
+
+// NEW
+
+$half-grey: rgba(90, 90, 90, 1);
+$full-grey: rgba(120, 120, 120, 1);
+
+$font_size_normal: 17px;
+$font_size_caption: $font_size_normal;
+$font_size_small: 12px;
+$font_size_large: 17px;
+
+$line-height: 22px;
+$margin: 42px;
+$phone-margin: 21px;
+
+$font_size_large_phone: $font_size_normal;
+
+$menu_bar_height: $line-height * 3;
+
+$text_width: 600px;
+
+$breakpoints: (
+    "small": (
+        max-width: 900px,
+    ),
+    "medium": (
+        max-width: 1000px,
+    ),
+    "large": (
+        max-width: 1600px,
+    ),
+    "short": (
+        max-height: 700px,
+    ),
+);
+
+/// Responsive manager.
+/// @access public
+/// @param {String} $breakpoint - Breakpoint
+/// @requires $breakpoints
+@mixin screen-size($breakpoint) {
+    $raw-query: map-get($breakpoints, $breakpoint);
+    @if $raw-query {
+        $query: if(type-of($raw-query) == "string", unquote($raw-query), inspect($raw-query));
+        @media #{$query} {
+            @content;
+        }
+    } @else {
+        @error 'No value found for `#{$breakpoint}`. ' + 'Please make sure it is defined in `$breakpoints` map.';
+    }
+}
