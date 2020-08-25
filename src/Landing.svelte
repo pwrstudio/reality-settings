@@ -1,98 +1,144 @@
 <script>
-  import { links } from 'svelte-routing'
-  import { fade } from 'svelte/transition'
+  import { links } from "svelte-routing";
+  import { fade } from "svelte/transition";
 
-  import has from 'lodash/has'
-  import shuffle from 'lodash/shuffle'
-  import flatMap from 'lodash/flatMap'
+  import has from "lodash/has";
+  import shuffle from "lodash/shuffle";
+  import flatMap from "lodash/flatMap";
+  import Markov from "markov-strings";
 
   import {
     urlFor,
     loadData,
     renderBlockText,
     toPlainText,
-    singleToPlainText,
-  } from './sanity.js'
+    singleToPlainText
+  } from "./sanity.js";
 
   // STORES
-  import { running, globalSeed, globalHeat, generation } from './stores.js'
+  import { running, globalSeed, globalHeat, generation } from "./stores.js";
 
   // PROPS
-  export let seed = false
-  export let heat = false
-  export let start = false
+  export let seed = false;
+  export let heat = false;
+  export let start = false;
 
   // COMPONENTS
-  import ImageBlock from './Components/Blocks/ImageBlock.svelte'
-  import VideoBlock from './Components/Blocks/VideoBlock.svelte'
-  import AudioBlock from './Components/Blocks/AudioBlock.svelte'
-  import EmbedBlock from './Components/Blocks/EmbedBlock.svelte'
-  import Settings from './Components/Settings.svelte'
-  import Molecule from './Components/Molecule.svelte'
-  import Ball from './Components/Ball.svelte'
+  import ImageBlock from "./Components/Blocks/ImageBlock.svelte";
+  import VideoBlock from "./Components/Blocks/VideoBlock.svelte";
+  import AudioBlock from "./Components/Blocks/AudioBlock.svelte";
+  import EmbedBlock from "./Components/Blocks/EmbedBlock.svelte";
+  import Settings from "./Components/Settings.svelte";
+  import Molecule from "./Components/Molecule.svelte";
+  import Ball from "./Components/Ball.svelte";
 
   // CONSTANTS
-  const query = '*[_type == "project"]'
+  const query = '*[_type == "project"]';
 
   // VARIABLES
-  let posts = loadData(query)
-  let blocks = []
-  let testBlocks = []
-  let postsMap = {}
-  let keywords = []
+  let posts = loadData(query);
+  let blocks = [];
+  let testBlocks = [];
+  let postsMap = {};
+  let keywords = [];
+  let allTextOnly = "";
+  let markovMaterial = [];
 
   // $: {
-    if(start) {
-      running.set(true)
-      globalSeed.set(seed)
-      globalHeat.set(heat)
-    }
+  if (start) {
+    running.set(true);
+    globalSeed.set(seed);
+    globalHeat.set(heat);
+  }
   // }
 
-  posts.then((posts) => {
+  posts.then(posts => {
     // console.dir(posts);
-    posts.forEach((post) => {
+    posts.forEach(post => {
       // Add to map
-      postsMap[post._id] = post
+      postsMap[post._id] = post;
+
+      // if (toPlainText(post.mainContent.content).length > 10) {
+      allTextOnly =
+        allTextOnly +
+        toPlainText(post.mainContent.content)
+          .replace(/\r?\n|\r/g, " ")
+          .trim();
+      // }
+
+      // console.log(toPlainText(post.mainContent.content));
+      // console.log(allTextOnly);
 
       // Get all blocks
-      post.mainContent.content.forEach((block) => {
+      post.mainContent.content.forEach(block => {
         // console.log(singleToPlainText(block).length)
-        if (block._type !== 'block' || singleToPlainText(block).length > 0) {
+        if (block._type !== "block" || singleToPlainText(block).length > 0) {
           blocks.push({
             id: post._id,
-            content: block,
-          })
+            content: block
+          });
         }
-      })
+        // if (block._type == "block") {
+        //   console.dir(block);
+        // }
+      });
 
       // KEYWORDS
       let children = flatMap(
         post.mainContent.content
-          .filter((c) => c._type == 'block')
-          .map((b) => b.children)
-      )
+          .filter(c => c._type == "block")
+          .map(b => b.children)
+      );
 
       // console.dir(children);
 
-      children.forEach((c) => {
-        if (c.marks.length > 0 && c.marks.includes('keyword')) {
+      children.forEach(c => {
+        if (c.marks.length > 0 && c.marks.includes("keyword")) {
           // console.dir(c)
-          keywords.push(c.text)
+          keywords.push(c.text);
         }
-      })
+      });
 
       // let b = a.map(x => x);
 
       // console.dir(b);
 
       // keywords = [...keywords, ...a.filter(x => x._type === "keyword")];
-    })
+    });
 
-    testBlocks = shuffle(blocks)
+    console.log("textonly");
+    console.log(allTextOnly);
+
+    markovMaterial = allTextOnly
+      .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
+      .split("|");
+
+    console.dir(markovMaterial);
+
+    // Build the Markov generator
+    const markov = new Markov(markovMaterial, { stateSize: 2 });
+    markov.buildCorpus();
+
+    const options = {
+      maxTries: 500,
+      filter: result => {
+        // result.string.split(" ").length >= 5 &&
+        return result.score > 10; // At least 5 words // End sentences with a dot.
+      }
+    };
+
+    let result = [];
+    for (let i = 0; i < 100; i++) {
+      result.push(markov.generate(options));
+    }
+    console.dir(result);
+
+    testBlocks = shuffle([...blocks, ...result]);
+
+    console.dir(testBlocks);
 
     // console.dir(keywords)
-  })
+  });
 </script>
 
 <style lang="scss">
@@ -112,9 +158,19 @@
     max-width: 100%;
   }
 
-  .settings {
-    background: red;
-    color: yellow;
+  .markov {
+    width: 1400px;
+    max-width: 95%;
+    overflow: hidden;
+    padding: 10px;
+  }
+
+  .markov .info {
+    font-size: 12px;
+    padding: 5px;
+    color: #222222;
+    background: rgb(255, 255, 161);
+    display: inline-block;
   }
 </style>
 
@@ -126,7 +182,14 @@
     {#if testBlocks}
       {#each testBlocks as block}
         <!-- {singleToPlainText(block.content).length} -->
-        <Molecule {block} post={postsMap[block.id]} />
+        {#if block.string}
+          <div class="markov">
+            <div class="info">markov-gen. score: {block.score}</div>
+            <div>{block.string}</div>
+          </div>
+        {:else}
+          <Molecule {block} post={postsMap[block.id]} />
+        {/if}
       {/each}
     {/if}
 
@@ -139,5 +202,4 @@
   </div> -->
 
   </div>
-
 {/if}

@@ -1,22 +1,23 @@
 <script>
-  import { links } from 'svelte-routing'
-  import random from 'lodash/random'
-  import has from 'lodash/has'
-  import shuffle from 'lodash/shuffle'
-  import flatMap from 'lodash/flatMap'
+  import { links } from "svelte-routing";
+  import random from "lodash/random";
+  import has from "lodash/has";
+  import shuffle from "lodash/shuffle";
+  import flatMap from "lodash/flatMap";
 
   import {
     urlFor,
     loadData,
     renderBlockText,
     toPlainText,
-    singleToPlainText,
-  } from '../sanity.js'
+    singleToPlainText
+  } from "../sanity.js";
 
-  let heat = 50
-  let size = 50
-  let friction = 30
-  let seed = random(0, 10000)
+  let heat = 50;
+  let size = 50;
+  let friction = 30;
+  let salt = 5;
+  let seed = random(0, 10000);
 </script>
 
 <style lang="scss">
@@ -126,7 +127,7 @@
     width: $thumb-width;
   }
 
-  [type='range'] {
+  [type="range"] {
     -webkit-appearance: none;
     background: transparent;
     margin: $thumb-height / 2 0;
@@ -245,6 +246,11 @@
     <div class="preview">{seed}</div>
   </div>
   <div class="parameter">
+    <div class="label">Salt</div>
+    <input min="0" max="10" step="0.01" type="range" bind:value={salt} />
+    <div class="preview">{salt}</div>
+  </div>
+  <div class="parameter">
     <div class="label">Heat</div>
     <input min="0" max="100" type="range" bind:value={heat} />
     <div class="preview">{heat}</div>
@@ -257,7 +263,7 @@
   <div class="parameter">
     <div class="label">Friction</div>
     <input min="0" max="100" type="range" bind:value={friction} />
-    <div class="preview">{size}</div>
+    <div class="preview">{friction}</div>
   </div>
   <div class="parameter">
     <a class="run" href={'/seed/' + seed + '/heat/' + heat}>Run</a>

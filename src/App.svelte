@@ -6,39 +6,39 @@
   // # # # # # # # # # # # # #
 
   // IMPORTS
-  import { onMount } from 'svelte'
-  import { Router, Route } from 'svelte-routing'
-  import * as Colyseus from 'colyseus.js'
-  import { fade, fly } from 'svelte/transition'
+  import { onMount } from "svelte";
+  import { Router, Route } from "svelte-routing";
+  import * as Colyseus from "colyseus.js";
+  import { fade, fly } from "svelte/transition";
 
   // STORES
-  import { running, globalSeed, globalHeat } from './stores.js'
+  import { running, globalSeed, globalHeat } from "./stores.js";
 
   // ROUTES
-  import Arena from './Arena.svelte'
-  import Landing from './Landing.svelte'
-  import Single from './Single.svelte'
+  import Arena from "./Arena.svelte";
+  import Landing from "./Landing.svelte";
+  import Single from "./Single.svelte";
 
   // COMPONENTS
-  import Ball from './Components/Ball.svelte'
+  import Ball from "./Components/Ball.svelte";
 
-  import { generation } from './stores.js'
+  import { generation } from "./stores.js";
 
   // const client = new Colyseus.Client("ws://18.194.21.39:6666");
-  const client = new Colyseus.Client('wss://rs.scarmonger.xyz')
+  const client = new Colyseus.Client("wss://rs.scarmonger.xyz");
   // const client = new Colyseus.Client("wss://18.194.21.39:3000");
 
-  let localPlayers = {}
-  let mainRoom = {}
+  let localPlayers = {};
+  let mainRoom = {};
 
   setInterval(() => {
-    generation.set($generation + 1)
-  }, 1000)
+    generation.set($generation + 1);
+  }, 1000);
 
-  const sendClick = (e) => {
+  const sendClick = e => {
     // console.dir(e);f
     // mainRoom.send("click", { x: e.clientX, y: e.clientY });
-  }
+  };
 
   // onMount(async () => {
   //   mainRoom = await client.joinOrCreate("main", {});
@@ -155,5 +155,4 @@
     <br />
     Heat: {$globalHeat}
   </div>
-
 {/if}

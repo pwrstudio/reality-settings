@@ -1382,6 +1382,13 @@ map-obj@^1.0.0, map-obj@^1.0.1:
   resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-1.0.1.tgz#d933ceb9205d82bdcf4886f6742bdc2b4dea146d"
   integrity sha1-2TPOuSBdgr3PSIb2dCvcK03qFG0=
 
+markov-strings@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/markov-strings/-/markov-strings-2.1.1.tgz#ddc9845523097cbb231718cfa41e2f90fb864696"
+  integrity sha512-J7R+iFRcON6kgjkg+F+dz1F5i/z5Ky+QalTyjsg1+p2AtUoqktyGfw4O6r8n51CNB++3QdJrKXhNjVfcf5xCMg==
+  dependencies:
+    lodash "^4.17.15"
+
 memory-pager@^1.0.2:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/memory-pager/-/memory-pager-1.5.0.tgz#d8751655d22d384682741c972f2c3d6dfa3e66b5"
