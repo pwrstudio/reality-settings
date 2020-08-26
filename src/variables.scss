@@ -30,7 +30,7 @@ $font_size_large_phone: $font_size_normal;
 
 $menu_bar_height: $line-height * 3;
 
-$text_width: 600px;
+$text_width: 900px;
 
 $breakpoints: (
     "small": (
@@ -46,6 +46,13 @@ $breakpoints: (
         max-height: 700px,
     ),
 );
+
+@mixin hide-scroll {
+    &::-webkit-scrollbar {
+        display: none;
+    }
+    -ms-overflow-style: none;
+}
 
 /// Responsive manager.
 /// @access public

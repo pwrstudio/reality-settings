@@ -17,13 +17,18 @@
   let size = 50;
   let friction = 30;
   let salt = 5;
-  let seed = random(0, 10000);
+  let seed = random(0, 9999);
+
+  const padToFour = number =>
+    number <= 9999 ? `000${number}`.slice(-4) : number;
 </script>
 
 <style lang="scss">
+  @import "../variables.scss";
+
   .settings {
-    font-size: 32px;
-    padding: 20px;
+    font-size: 64px;
+    padding: 60px;
 
     .header {
       margin-bottom: 40px;
@@ -31,26 +36,28 @@
 
     .parameter {
       margin-bottom: 40px;
-      .label {
-        width: 200px;
-        background: red;
-        display: inline-block;
-      }
+      display: flex;
+      justify-content: space-between;
 
-      input {
-        width: calc(90% - 320px);
+      .label {
+        // background: red;
         display: inline-block;
       }
 
       .preview {
-        width: 120px;
-        background: red;
+        // background: red;
         display: inline-block;
       }
     }
 
+    input {
+      width: 100%;
+      display: block;
+      // margin-right: 20px;
+      // margin-left: 20px;
+    }
+
     .run {
-      font-size: 32px;
       cursor: pointer;
       outline: 0;
       border: 0;
@@ -59,9 +66,10 @@
       color: #222222;
       padding: 10px 40px;
       margin-top: 40px;
-      width: 300px;
+      width: 100%;
       display: block;
       text-align: center;
+      transition: background 0.5s $transtion2;
 
       &:hover {
         background: lightgray;
@@ -76,10 +84,10 @@
   // MIT License
 
   $track-color: #ffffff !default;
-  $thumb-color: #ff0000 !default;
+  $thumb-color: #000000 !default;
 
   $thumb-radius: 0px !default;
-  $thumb-height: 40px !default;
+  $thumb-height: 60px !default;
   $thumb-width: 20px !default;
   $thumb-shadow-size: 0px !default;
   $thumb-shadow-blur: 0px !default;
@@ -88,7 +96,7 @@
   $thumb-border-color: #eceff1 !default;
 
   $track-width: 100% !default;
-  $track-height: 10px !default;
+  $track-height: 16px !default;
   $track-shadow-size: 0px !default;
   $track-shadow-blur: 0px !default;
   $track-shadow-color: rgba(0, 0, 0, 0) !default;
@@ -239,13 +247,14 @@
 </style>
 
 <div class="settings" use:links>
-  <div class="header">REALITY SETTINGS</div>
+  <!-- <div class="header">REALITY SETTINGS</div> -->
   <div class="parameter">
-    <div class="label">Seed</div>
-    <input min="0" max="10000" type="range" bind:value={seed} />
-    <div class="preview">{seed}</div>
+    <div class="label">Seed:{padToFour(seed)}</div>
+    <!-- <div class="preview"></div> -->
   </div>
-  <div class="parameter">
+  <input min="0" max="9999" type="range" bind:value={seed} />
+
+  <!-- <div class="parameter">
     <div class="label">Salt</div>
     <input min="0" max="10" step="0.01" type="range" bind:value={salt} />
     <div class="preview">{salt}</div>
@@ -264,8 +273,8 @@
     <div class="label">Friction</div>
     <input min="0" max="100" type="range" bind:value={friction} />
     <div class="preview">{friction}</div>
-  </div>
+  </div> -->
   <div class="parameter">
-    <a class="run" href={'/seed/' + seed + '/heat/' + heat}>Run</a>
+    <a class="run" href={'/seed/' + seed}>Run</a>
   </div>
 </div>

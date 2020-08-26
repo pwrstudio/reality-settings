@@ -33,7 +33,7 @@
 
   setInterval(() => {
     generation.set($generation + 1);
-  }, 1000);
+  }, 5000);
 
   const sendClick = e => {
     // console.dir(e);f
@@ -129,7 +129,7 @@
 <main>
   <Router>
     <Route path="/" component={Landing} />
-    <Route path="/seed/:seed/heat/:heat" start={true} component={Landing} />
+    <Route path="/seed/:seed/" start={true} component={Landing} />
     <!-- <Route path="/arena" component={Arena} /> -->
     <Route path="/text" component={Arena} />
     <Route path="/:slug" component={Single} />
@@ -149,10 +149,10 @@
   <Ball index={9} />
 
   <div class="generation">
-    Seed: {$globalSeed}
+    Seed:{$globalSeed}
     <br />
-    Generation: {$generation}
+    Generation:{$generation}
     <br />
-    Heat: {$globalHeat}
+    Heat:{$globalHeat}
   </div>
 {/if}

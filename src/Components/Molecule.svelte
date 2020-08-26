@@ -1,19 +1,19 @@
 <script>
-  import { links } from 'svelte-routing'
-  import random from 'lodash/random'
-  import { fade } from 'svelte/transition'
+  import { links } from "svelte-routing";
+  import random from "lodash/random";
+  import { fade } from "svelte/transition";
 
-  import { renderBlockText } from '../sanity.js'
+  import { renderBlockText } from "../sanity.js";
 
   // PROPS
-  export let block = {}
-  export let post = {}
+  export let block = {};
+  export let post = {};
 
   // COMPONENTS
-  import ImageBlock from './Blocks/ImageBlock.svelte'
-  import VideoBlock from './Blocks/VideoBlock.svelte'
-  import AudioBlock from './Blocks/AudioBlock.svelte'
-  import EmbedBlock from './Blocks/EmbedBlock.svelte'
+  import ImageBlock from "./Blocks/ImageBlock.svelte";
+  import VideoBlock from "./Blocks/VideoBlock.svelte";
+  import AudioBlock from "./Blocks/AudioBlock.svelte";
+  import EmbedBlock from "./Blocks/EmbedBlock.svelte";
 
   // console.log(block)
 </script>

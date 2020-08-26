@@ -6,6 +6,7 @@
   import shuffle from "lodash/shuffle";
   import flatMap from "lodash/flatMap";
   import Markov from "markov-strings";
+  import { v4 as uuidv4 } from "uuid";
 
   import {
     urlFor,
@@ -39,10 +40,24 @@
   let posts = loadData(query);
   let blocks = [];
   let testBlocks = [];
+  let currentBlocks = [];
   let postsMap = {};
   let keywords = [];
   let allTextOnly = "";
   let markovMaterial = [];
+  let landingContainerEl = {};
+
+  $: {
+    if (currentBlocks) {
+      setTimeout(() => {
+        landingContainerEl.scrollTo({
+          top: landingContainerEl.scrollHeight,
+          left: 0,
+          behavior: "smooth"
+        });
+      }, 100);
+    }
+  }
 
   // $: {
   if (start) {
@@ -75,6 +90,7 @@
         if (block._type !== "block" || singleToPlainText(block).length > 0) {
           blocks.push({
             id: post._id,
+            uid: uuidv4(),
             content: block
           });
         }
@@ -106,14 +122,14 @@
       // keywords = [...keywords, ...a.filter(x => x._type === "keyword")];
     });
 
-    console.log("textonly");
-    console.log(allTextOnly);
+    // console.log("textonly");
+    // console.log(allTextOnly);
 
     markovMaterial = allTextOnly
       .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
       .split("|");
 
-    console.dir(markovMaterial);
+    // console.dir(markovMaterial);
 
     // Build the Markov generator
     const markov = new Markov(markovMaterial, { stateSize: 2 });
@@ -128,26 +144,45 @@
     };
 
     let result = [];
-    for (let i = 0; i < 100; i++) {
-      result.push(markov.generate(options));
+    for (let i = 0; i < 50; i++) {
+      let newMarkov = { ...markov.generate(options), uid: uuidv4() };
+      result.push(newMarkov);
     }
-    console.dir(result);
+
+    // console.dir(result);
 
     testBlocks = shuffle([...blocks, ...result]);
 
-    console.dir(testBlocks);
+    currentBlocks.push(testBlocks.pop());
+    currentBlocks = currentBlocks;
+
+    setInterval(() => {
+      currentBlocks.push(testBlocks.pop());
+      currentBlocks = currentBlocks;
+    }, 5000);
+
+    // console.dir(testBlocks);
 
     // console.dir(keywords)
   });
 </script>
 
 <style lang="scss">
+  @import "./variables.scss";
+
   .landing {
-    width: 900px;
-    max-width: 100%;
-    margin: 20px;
-    margin-right: auto;
-    margin-left: auto;
+    box-sizing: border-box;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    padding-right: 10%;
+    padding-left: 10%;
+    overflow-y: scroll;
+    padding-bottom: 25vh;
+
+    @include hide-scroll;
   }
 
   h1 {
@@ -177,21 +212,19 @@
 {#if !seed && !heat}
   <Settings />
 {:else}
-  <div class="landing" use:links>
+  <div class="landing" use:links bind:this={landingContainerEl}>
 
-    {#if testBlocks}
-      {#each testBlocks as block}
-        <!-- {singleToPlainText(block.content).length} -->
-        {#if block.string}
-          <div class="markov">
-            <div class="info">markov-gen. score: {block.score}</div>
-            <div>{block.string}</div>
-          </div>
-        {:else}
-          <Molecule {block} post={postsMap[block.id]} />
-        {/if}
-      {/each}
-    {/if}
+    {#each currentBlocks as block (block.uid)}
+      <!-- {singleToPlainText(block.content).length} -->
+      {#if block.string}
+        <div class="markov">
+          <div class="info">markov-gen. score: {block.score}</div>
+          <div>{block.string}</div>
+        </div>
+      {:else}
+        <Molecule {block} post={postsMap[block.id]} />
+      {/if}
+    {/each}
 
     <!-- <div>
     <a href="arena">Arena</a>
