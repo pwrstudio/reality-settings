@@ -47,16 +47,18 @@
   let markovMaterial = [];
   let landingContainerEl = {};
 
+  let allSentences = [];
+
   $: {
-    if (currentBlocks) {
-      setTimeout(() => {
-        landingContainerEl.scrollTo({
-          top: landingContainerEl.scrollHeight,
-          left: 0,
-          behavior: "smooth"
-        });
-      }, 100);
-    }
+    // if (currentBlocks) {
+    //   setTimeout(() => {
+    //     landingContainerEl.scrollTo({
+    //       top: landingContainerEl.scrollHeight,
+    //       left: 0,
+    //       behavior: "smooth"
+    //     });
+    //   }, 100);
+    // }
   }
 
   // $: {
@@ -73,16 +75,28 @@
       // Add to map
       postsMap[post._id] = post;
 
-      // if (toPlainText(post.mainContent.content).length > 10) {
-      allTextOnly =
-        allTextOnly +
-        toPlainText(post.mainContent.content)
-          .replace(/\r?\n|\r/g, " ")
-          .trim();
-      // }
+      if (toPlainText(post.mainContent.content).length > 10) {
+        allTextOnly =
+          allTextOnly +
+          toPlainText(post.mainContent.content)
+            .replace(/\r?\n|\r/g, " ")
+            .trim();
+      }
 
       // console.log(toPlainText(post.mainContent.content));
+      console.log(post.title);
       // console.log(allTextOnly);
+
+      let sentences = allTextOnly.match(/[^\.!\?]+[\.!\?]+/g);
+
+      if (sentences) {
+        sentences = sentences.map(s => {
+          return { text: s.trim(), title: post.title, slug: post.slug.current };
+        });
+        console.dir(sentences);
+
+        allSentences = [...allSentences, ...sentences];
+      }
 
       // Get all blocks
       post.mainContent.content.forEach(block => {
@@ -122,44 +136,47 @@
       // keywords = [...keywords, ...a.filter(x => x._type === "keyword")];
     });
 
+    console.dir(allSentences);
+
     // console.log("textonly");
     // console.log(allTextOnly);
 
-    markovMaterial = allTextOnly
-      .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
-      .split("|");
+    // markovMaterial = allTextOnly
+    //   .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
+    //   .split("|");
 
     // console.dir(markovMaterial);
 
     // Build the Markov generator
-    const markov = new Markov(markovMaterial, { stateSize: 2 });
-    markov.buildCorpus();
+    // const markov = new Markov(markovMaterial, { stateSize: 2 });
+    // markov.buildCorpus();
 
-    const options = {
-      maxTries: 500,
-      filter: result => {
-        // result.string.split(" ").length >= 5 &&
-        return result.score > 10; // At least 5 words // End sentences with a dot.
-      }
-    };
+    // const options = {
+    //   maxTries: 500,
+    //   filter: result => {
+    //     // result.string.split(" ").length >= 5 &&
+    //     return result.score > 10; // At least 5 words // End sentences with a dot.
+    //   }
+    // };
 
-    let result = [];
-    for (let i = 0; i < 50; i++) {
-      let newMarkov = { ...markov.generate(options), uid: uuidv4() };
-      result.push(newMarkov);
-    }
+    // let result = [];
+    // for (let i = 0; i < 50; i++) {
+    //   let newMarkov = { ...markov.generate(options), uid: uuidv4() };
+    //   result.push(newMarkov);
+    // }
 
     // console.dir(result);
 
-    testBlocks = shuffle([...blocks, ...result]);
+    testBlocks = shuffle(blocks);
+    // allSentences = shuffle(allSentences);
 
-    currentBlocks.push(testBlocks.pop());
-    currentBlocks = currentBlocks;
+    // currentBlocks.push(testBlocks.pop());
+    currentBlocks = testBlocks;
 
-    setInterval(() => {
-      currentBlocks.push(testBlocks.pop());
-      currentBlocks = currentBlocks;
-    }, 5000);
+    // setInterval(() => {
+    //   currentBlocks.push(testBlocks.pop());
+    //   currentBlocks = currentBlocks;
+    // }, 5000);
 
     // console.dir(testBlocks);
 
@@ -209,10 +226,16 @@
   }
 </style>
 
-{#if !seed && !heat}
+{#if !seed}
   <Settings />
 {:else}
   <div class="landing" use:links bind:this={landingContainerEl}>
+
+    {#await posts then posts}
+      {#each posts as project, index}
+        <Ball {index} {project} />
+      {/each}
+    {/await}
 
     {#each currentBlocks as block (block.uid)}
       <!-- {singleToPlainText(block.content).length} -->

@@ -6,6 +6,7 @@
 
   //   // PROPS
   export let index = {};
+  export let project = {};
 
   // VARIABLES
   let transX = document.documentElement.clientWidth / 2;
@@ -73,6 +74,6 @@
 <div
   class="ball"
   on:click={e => {
-    navigate('/seed/' + $globalSeed);
+    navigate('/project/' + project.slug.current);
   }}
   style={'transform: translateX(' + transX + 'px) translateY(' + transY + 'px) scale(' + scaleFactor + ');'} />

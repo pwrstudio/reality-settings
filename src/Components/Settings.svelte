@@ -4,6 +4,7 @@
   import has from "lodash/has";
   import shuffle from "lodash/shuffle";
   import flatMap from "lodash/flatMap";
+  import md5 from "blueimp-md5";
 
   import {
     urlFor,
@@ -13,31 +14,59 @@
     singleToPlainText
   } from "../sanity.js";
 
-  let heat = 50;
+  let heat = 0;
   let size = 50;
   let friction = 30;
   let salt = 5;
   let seed = random(0, 9999);
+  let fillColor = "#ff0000";
+
+  let parameterA = 50;
+  let parameterB = 50;
+  let parameterC = 50;
+
+  // $: {
+  //   seed = md5(
+  //     parameterA.toString() + parameterB.toString() + parameterC.toString()
+  //   );
+  // }
+
+  const mapRange = (x, in_min, in_max, out_min, out_max) =>
+    ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
+
+  console.log(parseInt("0xFFFFFF", 16));
+
+  $: {
+    // console.log(mapRange(heat, 0, 1000, 0, 16000000).toString(16));
+    fillColor = "#" + mapRange(heat, 0, 1000, 0, 16000000).toString(16);
+    console.log(fillColor);
+  }
 
   const padToFour = number =>
     number <= 9999 ? `000${number}`.slice(-4) : number;
+
+  const padToTwo = number => (number <= 99 ? `000${number}`.slice(-3) : number);
 </script>
 
 <style lang="scss">
   @import "../variables.scss";
 
   .settings {
-    font-size: 64px;
-    padding: 60px;
+    padding: 40px;
+    font-size: 32px;
 
     .header {
-      margin-bottom: 40px;
+      font-family: "five", "IBM Plex Mono", monospace;
+      font-size: 72px;
+      margin-bottom: 20px;
     }
 
     .parameter {
-      margin-bottom: 40px;
+      margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
+      // position: fixed;
+      // width: 50vw;
 
       .label {
         // background: red;
@@ -48,13 +77,37 @@
         // background: red;
         display: inline-block;
       }
+
+      // &.top {
+      //   top: 20px;
+      //   left: 20px;
+      //   background: yellow;
+      // }
+
+      // &.left {
+      //   top: 80px;
+      //   left: calc(50vw + 20px);
+      //   transform-origin: top left;
+      //   transform: rotateZ(90deg);
+      //   background: blue;
+      // }
+
+      // &.right {
+      //   background: green;
+      // }
+
+      // &.bottom {
+      //   top: calc(50vw + 60px);
+      //   left: 20px;
+      //   background: red;
+      // }
     }
 
     input {
       width: 100%;
       display: block;
-      // margin-right: 20px;
-      // margin-left: 20px;
+      margin-right: 20px;
+      margin-left: 20px;
     }
 
     .run {
@@ -83,12 +136,12 @@
   // Version 1.5.2
   // MIT License
 
-  $track-color: #ffffff !default;
-  $thumb-color: #000000 !default;
+  $track-color: #333333 !default;
+  $thumb-color: #ff0000 !default;
 
-  $thumb-radius: 0px !default;
-  $thumb-height: 60px !default;
-  $thumb-width: 20px !default;
+  $thumb-radius: 40px !default;
+  $thumb-height: 40px !default;
+  $thumb-width: 40px !default;
   $thumb-shadow-size: 0px !default;
   $thumb-shadow-blur: 0px !default;
   $thumb-shadow-color: rgba(0, 0, 0, 0) !default;
@@ -96,7 +149,7 @@
   $thumb-border-color: #eceff1 !default;
 
   $track-width: 100% !default;
-  $track-height: 16px !default;
+  $track-height: 6px !default;
   $track-shadow-size: 0px !default;
   $track-shadow-blur: 0px !default;
   $track-shadow-color: rgba(0, 0, 0, 0) !default;
@@ -244,15 +297,19 @@
       }
     }
   }
+
+  .read-only {
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .small {
+    // font-size: 12px;
+  }
 </style>
 
 <div class="settings" use:links>
-  <!-- <div class="header">REALITY SETTINGS</div> -->
-  <div class="parameter">
-    <div class="label">Seed:{padToFour(seed)}</div>
-    <!-- <div class="preview"></div> -->
-  </div>
-  <input min="0" max="9999" type="range" bind:value={seed} />
+  <div class="header">Reality Settings</div>
 
   <!-- <div class="parameter">
     <div class="label">Salt</div>
@@ -274,7 +331,45 @@
     <input min="0" max="100" type="range" bind:value={friction} />
     <div class="preview">{friction}</div>
   </div> -->
-  <div class="parameter">
-    <a class="run" href={'/seed/' + seed}>Run</a>
+
+  <div class="parameter top">
+    <div class="label">Affinity</div>
+    <input min="0" max="100" type="range" bind:value={parameterA} />
+    <div class="preview">{padToTwo(parameterA)}</div>
   </div>
+
+  <div class="parameter right">
+    <div class="label">Gravity</div>
+    <input min="0" max="100" type="range" bind:value={parameterB} />
+    <div class="preview">{padToTwo(parameterB)}</div>
+  </div>
+
+  <div class="parameter left">
+    <div class="label">Heat</div>
+    <input min="0" max="100" type="range" bind:value={parameterC} />
+    <div class="preview">{padToTwo(parameterC)}</div>
+  </div>
+
+  <div class="parameter bottom">
+    <div class="label small">Seed</div>
+    <input min="0" max="100" type="range" bind:value={seed} />
+    <div class="preview">{padToTwo(seed)}</div>
+    <!-- <div class="preview"></div> -->
+  </div>
+
+  <!-- <svg
+    id="color-fill"
+    xmlns="http://www.w3.org/2000/svg"
+    version="1.1"
+    width="100%"
+    height="300"
+    style="fill:{fillColor};"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <polygon class="hex" points="300,140 225,280 75,230 0,150 75,10 225,10" />
+  </svg> -->
+
+  <div class="parameter">
+    <a class="run" href={'/' + seed}>Run</a>
+  </div>
+
 </div>

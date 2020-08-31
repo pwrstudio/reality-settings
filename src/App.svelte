@@ -122,6 +122,18 @@
   img {
     max-width: 100%;
   }
+
+  .landing {
+    p {
+      display: inline;
+    }
+  }
+
+  .molecule {
+    p {
+      display: inline;
+    }
+  }
 </style>
 
 <svelte:window on:click={sendClick} />
@@ -129,25 +141,14 @@
 <main>
   <Router>
     <Route path="/" component={Landing} />
-    <Route path="/seed/:seed/" start={true} component={Landing} />
+    <Route path="/:seed/" start={true} component={Landing} />
     <!-- <Route path="/arena" component={Arena} /> -->
     <Route path="/text" component={Arena} />
-    <Route path="/:slug" component={Single} />
+    <Route path="/project/:slug" component={Single} />
   </Router>
 </main>
 
 {#if $running}
-  <Ball index={0} />
-  <Ball index={1} />
-  <Ball index={2} />
-  <Ball index={3} />
-  <Ball index={4} />
-  <Ball index={5} />
-  <Ball index={6} />
-  <Ball index={7} />
-  <Ball index={8} />
-  <Ball index={9} />
-
   <div class="generation">
     Seed:{$globalSeed}
     <br />

@@ -3,7 +3,7 @@
   import random from "lodash/random";
   import { fade } from "svelte/transition";
 
-  import { renderBlockText } from "../sanity.js";
+  import { renderLandingBlockText } from "../sanity.js";
 
   // PROPS
   export let block = {};
@@ -24,6 +24,7 @@
     max-width: 95%;
     overflow: hidden;
     padding: 10px;
+    font-size: 32px;
 
     .info {
       font-size: 12px;
@@ -36,7 +37,26 @@
 </style>
 
 <!-- style={'top:' + random(50, 4500) + 'px; left:' + random(50, 4500) + 'px;'} -->
-<div class="molecule" in:fade>
+<a href={'/' + post.slug.current} class="molecule" in:fade>
+  <!-- <div class="info">{post.title}</div> -->
+  {#if block.content._type === 'block'}
+    {@html renderLandingBlockText(block.content)}
+  {/if}
+  <!-- {#if block.content._type === 'imageBlock'}
+    <ImageBlock block={block.content} />
+  {/if}
+  {#if block.content._type === 'videoBlock'}
+    <VideoBlock block={block.content} />
+  {/if}
+  {#if block.content._type === 'audioBlock'}
+    <AudioBlock block={block.content} />
+  {/if}
+  {#if block.content._type === 'embedBlock'}
+    <EmbedBlock block={block.content} />
+  {/if} -->
+</a>
+
+<!-- <div class="molecule" in:fade>
   <a href={'/' + post.slug.current}>
     <div class="info">{post.title}</div>
     {#if block.content._type === 'block'}
@@ -55,4 +75,4 @@
       <EmbedBlock block={block.content} />
     {/if}
   </a>
-</div>
+</div> -->
