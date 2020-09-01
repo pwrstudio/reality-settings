@@ -56,7 +56,7 @@
     font-size: 32px;
 
     .header {
-      font-family: "five", "IBM Plex Mono", monospace;
+      font-family: "five", "Akkurat-Mono", monospace;
       font-size: 72px;
       margin-bottom: 20px;
     }

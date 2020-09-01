@@ -22,18 +22,12 @@
   // COMPONENTS
   import Ball from "./Components/Ball.svelte";
 
-  import { generation } from "./stores.js";
-
   // const client = new Colyseus.Client("ws://18.194.21.39:6666");
   const client = new Colyseus.Client("wss://rs.scarmonger.xyz");
   // const client = new Colyseus.Client("wss://18.194.21.39:3000");
 
   let localPlayers = {};
   let mainRoom = {};
-
-  setInterval(() => {
-    generation.set($generation + 1);
-  }, 5000);
 
   const sendClick = e => {
     // console.dir(e);f
@@ -147,13 +141,3 @@
     <Route path="/project/:slug" component={Single} />
   </Router>
 </main>
-
-{#if $running}
-  <div class="generation">
-    Seed:{$globalSeed}
-    <br />
-    Generation:{$generation}
-    <br />
-    Heat:{$globalHeat}
-  </div>
-{/if}

@@ -18,19 +18,20 @@
 <style>
   h1 {
     /* padding: 20px 0px; */
-    font-family: "five", "IBM Plex Mono", monospace;
-    font-size: 72px;
+    font-family: "five", "Akkurat-Mono", monospace;
+    font-size: 96px;
     font-weight: normal;
     line-height: 0.8em;
-    margin: 0;
+    margin-bottom: 40px;
   }
 
   .project {
-    width: 900px;
+    width: 800px;
     max-width: 100%;
     margin: 20px;
     margin-right: auto;
     margin-left: auto;
+    padding-top: 40px;
   }
 
   img {
@@ -38,7 +39,15 @@
   }
 
   .main-text {
-    font-family: "times new roman", times, serif;
+    font-size: 16px;
+
+    /* font-family: "times new roman", times, serif; */
+  }
+
+  .author {
+    font-size: 16px;
+
+    /* font-family: "times new roman", times, serif; */
   }
 </style>
 

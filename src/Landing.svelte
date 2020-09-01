@@ -1,7 +1,7 @@
 <script>
   import { links } from "svelte-routing";
   import { fade } from "svelte/transition";
-
+  import { Life } from "dat-life";
   import has from "lodash/has";
   import shuffle from "lodash/shuffle";
   import flatMap from "lodash/flatMap";
@@ -35,9 +35,11 @@
 
   // CONSTANTS
   const query = '*[_type == "project"]';
+  const authorQuery = '*[_type == "author"]';
 
   // VARIABLES
   let posts = loadData(query);
+  let authors = loadData(authorQuery);
   let blocks = [];
   let testBlocks = [];
   let currentBlocks = [];
@@ -47,27 +49,62 @@
   let markovMaterial = [];
   let landingContainerEl = {};
 
+  let cells = [];
+
+  let zoomed = false;
+
   let allSentences = [];
 
-  $: {
-    // if (currentBlocks) {
-    //   setTimeout(() => {
-    //     landingContainerEl.scrollTo({
-    //       top: landingContainerEl.scrollHeight,
-    //       left: 0,
-    //       behavior: "smooth"
-    //     });
-    //   }, 100);
-    // }
-  }
+  const life = new Life(39, 39);
+
+  // console.dir(life);
+
+  // for (let row = 0; row < 39; row++) {
+  //   cells.push([]);
+  //   for (let column = 0; column < 39; column++) {
+  //     cells[row].push({
+  //       y: row,
+  //       x: column,
+  //       active: false,
+  //       id: uuidv4()
+  //     });
+  //   }
+  // }
+
+  // console.dir(cells);
+
+  life.randomize();
+
+  let conGen = 0;
+  let worldOut = life.board;
+
+  setInterval(() => {
+    // conGen++;
+    // console.log(conGen);
+    generation.set($generation + 1);
+    life.next();
+    worldOut = life.board;
+  }, 100);
 
   // $: {
-  if (start) {
-    running.set(true);
-    globalSeed.set(seed);
-    globalHeat.set(heat);
-  }
+  // if (currentBlocks) {
+  //   setTimeout(() => {
+  //     landingContainerEl.scrollTo({
+  //       top: landingContainerEl.scrollHeight,
+  //       left: 0,
+  //       behavior: "smooth"
+  //     });
+  //   }, 100);
   // }
+  // }
+
+  $: {
+    if (start) {
+      running.set(true);
+      globalSeed.set(seed);
+      globalHeat.set(heat);
+    }
+  }
 
   posts.then(posts => {
     // console.dir(posts);
@@ -84,7 +121,7 @@
       }
 
       // console.log(toPlainText(post.mainContent.content));
-      console.log(post.title);
+      // console.log(post.title);
       // console.log(allTextOnly);
 
       let sentences = allTextOnly.match(/[^\.!\?]+[\.!\?]+/g);
@@ -93,7 +130,7 @@
         sentences = sentences.map(s => {
           return { text: s.trim(), title: post.title, slug: post.slug.current };
         });
-        console.dir(sentences);
+        // console.dir(sentences);
 
         allSentences = [...allSentences, ...sentences];
       }
@@ -120,7 +157,7 @@
           .map(b => b.children)
       );
 
-      // console.dir(children);
+      console.dir(children);
 
       children.forEach(c => {
         if (c.marks.length > 0 && c.marks.includes("keyword")) {
@@ -136,7 +173,10 @@
       // keywords = [...keywords, ...a.filter(x => x._type === "keyword")];
     });
 
-    console.dir(allSentences);
+    console.dir(keywords);
+    keywords = keywords;
+
+    // console.dir(allSentences);
 
     // console.log("textonly");
     // console.log(allTextOnly);
@@ -182,6 +222,82 @@
 
     // console.dir(keywords)
   });
+
+  // function updateGen() {
+  //   // for (row in cells) {
+  //   //   for (col in cells[row]) {
+  //   //     console.dir(cells[row][col]);
+  //   //     // // Update the current generation with
+  //   //     // // the results of createNextGen function
+  //   //     // currGen[row][col] = nextGen[row][col];
+  //   //     // // Set nextGen back to empty
+  //   //     // nextGen[row][col] = 0;
+  //   //   }
+  //   // }
+
+  //   for (let row = 0; row < 39; row++) {
+  //     for (let column = 0; column < 39; column++) {
+  //       // console.dir(cells[row][column]);
+  //     }
+  //   }
+  // }
+
+  // function getNeighborCount(row, col) {
+  //   let count = 0;
+  //   let nrow = Number(row);
+  //   let ncol = Number(col);
+
+  //   // Make sure we are not at the first row
+  //   if (nrow - 1 >= 0) {
+  //     // Check top neighbor
+  //     if (currGen[nrow - 1][ncol] == 1) count++;
+  //   }
+  //   // Make sure we are not in the first cell
+  //   // Upper left corner
+  //   if (nrow - 1 >= 0 && ncol - 1 >= 0) {
+  //     //Check upper left neighbor
+  //     if (currGen[nrow - 1][ncol - 1] == 1) count++;
+  //   }
+  //   // Make sure we are not on the first row last column
+  //   // Upper right corner
+  //   if (nrow - 1 >= 0 && ncol + 1 < cols) {
+  //     //Check upper right neighbor
+  //     if (currGen[nrow - 1][ncol + 1] == 1) count++;
+  //   }
+  //   // Make sure we are not on the first column
+  //   if (ncol - 1 >= 0) {
+  //     //Check left neighbor
+  //     if (currGen[nrow][ncol - 1] == 1) count++;
+  //   }
+  //   // Make sure we are not on the last column
+  //   if (ncol + 1 < cols) {
+  //     //Check right neighbor
+  //     if (currGen[nrow][ncol + 1] == 1) count++;
+  //   }
+  //   // Make sure we are not on the bottom left corner
+  //   if (nrow + 1 < rows && ncol - 1 >= 0) {
+  //     //Check bottom left neighbor
+  //     if (currGen[nrow + 1][ncol - 1] == 1) count++;
+  //   }
+  //   // Make sure we are not on the bottom right
+  //   if (nrow + 1 < rows && ncol + 1 < cols) {
+  //     //Check bottom right neighbor
+  //     if (currGen[nrow + 1][ncol + 1] == 1) count++;
+  //   }
+
+  //   // Make sure we are not on the last row
+  //   if (nrow + 1 < rows) {
+  //     //Check bottom neighbor
+  //     if (currGen[nrow + 1][ncol] == 1) count++;
+  //   }
+
+  //   return count;
+  // }
+
+  // updateGen();
+
+  const padGen = number =>
+    number <= 999999 ? `00000${number}`.slice(-6) : number;
 </script>
 
 <style lang="scss">
@@ -224,6 +340,161 @@
     background: rgb(255, 255, 161);
     display: inline-block;
   }
+
+  .pane {
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    width: 50%;
+
+    &.left {
+      // width: 66.66%;
+
+      left: 0;
+      background: lightgray;
+      background: grey;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    &.right {
+      // width: 33.33%;
+      left: 50%;
+      // left: 66.66%;
+      background: grey;
+      background: lightgray;
+      padding: 20px;
+      padding-top: 60px;
+      width: calc(50% - 40px);
+      overflow-y: scroll;
+      height: calc(100vh - 80px);
+    }
+  }
+
+  .world {
+    width: 585px;
+    height: 585px;
+    width: 46.8vw;
+    height: 46.8vw;
+    background: grey;
+    // transform: scale(1.45);
+    // transition: transform 0.5s ease-out;
+    // will-change: transform;
+
+    &.zoomed {
+      transform: scale(6) rotateZ(45deg);
+    }
+  }
+
+  .cell {
+    height: 1.2vw;
+    width: 1.2vw;
+    border-radius: 1.2vw;
+    // display: inline-block;
+    float: left;
+    background: #c4c4c4;
+    background: #a4a4a4;
+    font-size: 2px;
+    text-align: center;
+    line-height: 1.2vw;
+    color: #333333;
+    // background: green;
+    // background: #00ff00;
+
+    // &:nth-child(even) {
+    //   background: #848484;
+    //   background: #c4c4c4;
+    //   // background: #00ff00;
+    // }
+    transition: none;
+
+    .text {
+      display: none;
+    }
+
+    &.alive {
+      border-radius: 4px;
+
+      // transition: background 0.3s ease-out;
+      background: red;
+      // transform: rotateZ(90deg);
+    }
+  }
+
+  .zoomed {
+    .cell {
+      .text {
+        display: block;
+      }
+    }
+  }
+
+  .bottom-bar {
+    height: 80px;
+    line-height: 80px;
+    position: fixed;
+    bottom: 0;
+    width: 50%;
+    left: 0;
+    // background: #a4a4a4;
+    font-size: 16px;
+    // padding-left: 20px;
+    text-align: center;
+  }
+
+  .top-bar {
+    height: 40px;
+    line-height: 40px;
+    position: fixed;
+    top: 0;
+    width: 50%;
+    right: 0;
+    background: #a4a4a4;
+    font-size: 16px;
+    // padding-left: 20px;
+    text-align: center;
+  }
+
+  .post {
+    margin: 5px;
+    padding: 15px;
+    background: #a4a4a4;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 14px;
+    // max-width: 300px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .icon {
+    height: 40px;
+    width: 40px;
+    border-radius: 40px;
+    background: red;
+    margin-right: 10px;
+  }
+
+  .avatar {
+    height: 40px;
+    width: 40px;
+    border-radius: 40px;
+    background: #00ff00;
+    margin-right: 10px;
+  }
+
+  .key {
+    height: 40px;
+    width: 40px;
+    border-radius: 40px;
+    background: #ffff00;
+    margin-right: 10px;
+  }
+
+  .title {
+    max-width: 240px;
+  }
 </style>
 
 {#if !seed}
@@ -231,31 +502,75 @@
 {:else}
   <div class="landing" use:links bind:this={landingContainerEl}>
 
-    {#await posts then posts}
-      {#each posts as project, index}
-        <Ball {index} {project} />
+    <div class="pane left">
+      <div
+        class="world"
+        class:zoomed
+        on:click={() => {
+          zoomed = !zoomed;
+        }}>
+
+        <!-- {#each cells as row}
+          {#each row as c (c.id)}
+            <div
+              class="cell"
+              data-x={c.x}
+              data-y={c.y}
+              on:click={e => (c.active = !c.active)}
+              class:active={c.active}
+              id={c.id} />
+          {/each}
+        {/each} -->
+
+        {#each worldOut as cell, index}
+          <div
+            class="cell"
+            data-index={index}
+            data-x={index % 39}
+            on:click={() => {
+              console.log('CLICKED');
+              life.set(index % 39, Math.floor(index / 39), !cell);
+            }}
+            data-y={Math.floor(index / 39)}
+            class:alive={cell == 1}>
+            <span class="text">{index}</span>
+          </div>
+        {/each}
+      </div>
+    </div>
+
+    <div class="pane right">
+
+      {#each keywords as keyword}
+        <span class="post">
+          <div class="key" />
+          <div class="title">{keyword}</div>
+        </span>
       {/each}
-    {/await}
 
-    {#each currentBlocks as block (block.uid)}
-      <!-- {singleToPlainText(block.content).length} -->
-      {#if block.string}
-        <div class="markov">
-          <div class="info">markov-gen. score: {block.score}</div>
-          <div>{block.string}</div>
-        </div>
-      {:else}
-        <Molecule {block} post={postsMap[block.id]} />
-      {/if}
-    {/each}
+      {#await posts then posts}
+        {#each posts as post}
+          <a href={'/project/' + post.slug.current} class="post">
+            <div class="icon" />
+            <div class="title">{post.title}</div>
+          </a>
+        {/each}
+      {/await}
 
-    <!-- <div>
-    <a href="arena">Arena</a>
+      {#await authors then authors}
+        {#each authors as author}
+          <span class="post">
+            <div class="avatar" />
+            <div class="title">{author.name}</div>
+          </span>
+        {/each}
+      {/await}
+
+    </div>
+
   </div>
 
-  <div>
-    <a href="text">Text</a>
-  </div> -->
+  <div class="bottom-bar">Gen=>{padGen($generation)}</div>
 
-  </div>
+  <div class="top-bar">Reality Settings / Seed => {$globalSeed}</div>
 {/if}

@@ -7,7 +7,7 @@
 
 	<title>REALITY SETTINGS</title>
 
-	<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono" rel="stylesheet">
+	<!-- <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono" rel="stylesheet"> -->
 
 	<!-- <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet"> -->
 
@@ -24,13 +24,21 @@
 				url('/fonts/FiveYearsLaterDemo.woff') format('woff');
 			font-weight: normal;
 			font-style: normal;
-			font-display: swap;
 		}
+
+		@font-face {
+			font-family: 'Akkurat-Mono';
+			src: url('/fonts/Akkurat-Mono.woff2') format('woff2'),
+				url('/fonts/Akkurat-Mono.woff') format('woff');
+			font-weight: normal;
+			font-style: normal;
+		}
+
 
 		body,
 		html {
 			/* font-family: Helvetica, sans-serif; */
-			font-family: 'Akkurat-mono', 'IBM Plex Mono', monospace;
+			font-family: 'Akkurat-mono', monospace;
 			background: grey;
 			font-size: 24px;
 			/* background: #e4e4e4; */
