@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from "svelte";
   import { links } from "svelte-routing";
   import { fade } from "svelte/transition";
   import { Life } from "dat-life";
@@ -29,7 +30,6 @@
   import VideoBlock from "./Components/Blocks/VideoBlock.svelte";
   import AudioBlock from "./Components/Blocks/AudioBlock.svelte";
   import EmbedBlock from "./Components/Blocks/EmbedBlock.svelte";
-  import Settings from "./Components/Settings.svelte";
   import Molecule from "./Components/Molecule.svelte";
   import Ball from "./Components/Ball.svelte";
 
@@ -73,18 +73,17 @@
 
   // console.dir(cells);
 
+  let conGen = 0;
+  let worldOut = [];
   life.randomize();
 
-  let conGen = 0;
-  let worldOut = life.board;
-
-  setInterval(() => {
-    // conGen++;
-    // console.log(conGen);
-    generation.set($generation + 1);
-    life.next();
-    worldOut = life.board;
-  }, 100);
+  for (let i = 0; i < 1521; i++) {
+    setTimeout(() => {
+      console.log(i);
+      worldOut.push(life.board[i]);
+      worldOut = worldOut;
+    }, i * 0.5);
+  }
 
   // $: {
   // if (currentBlocks) {
@@ -98,13 +97,7 @@
   // }
   // }
 
-  $: {
-    if (start) {
-      running.set(true);
-      globalSeed.set(seed);
-      globalHeat.set(heat);
-    }
-  }
+  globalSeed.set(seed);
 
   posts.then(posts => {
     // console.dir(posts);
@@ -298,6 +291,18 @@
 
   const padGen = number =>
     number <= 999999 ? `00000${number}`.slice(-6) : number;
+
+  onMount(async () => {
+    setTimeout(() => {
+      setInterval(() => {
+        // conGen++;
+        // console.log(conGen);
+        generation.set($generation + 1);
+        life.next();
+        worldOut = life.board;
+      }, 200);
+    }, 5000);
+  });
 </script>
 
 <style lang="scss">
@@ -345,7 +350,6 @@
     height: 100vh;
     position: fixed;
     top: 0;
-    width: 50%;
 
     &.left {
       // width: 66.66%;
@@ -356,17 +360,18 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      width: 75%;
     }
 
     &.right {
       // width: 33.33%;
-      left: 50%;
+      left: 75%;
       // left: 66.66%;
       background: grey;
       background: lightgray;
       padding: 20px;
       padding-top: 60px;
-      width: calc(50% - 40px);
+      width: calc(26% - 40px);
       overflow-y: scroll;
       height: calc(100vh - 80px);
     }
@@ -391,13 +396,14 @@
     height: 1.2vw;
     width: 1.2vw;
     border-radius: 1.2vw;
+    line-height: 1.2vw;
+
     // display: inline-block;
     float: left;
     background: #c4c4c4;
     background: #a4a4a4;
     font-size: 2px;
     text-align: center;
-    line-height: 1.2vw;
     color: #333333;
     // background: green;
     // background: #00ff00;
@@ -435,10 +441,10 @@
     line-height: 80px;
     position: fixed;
     bottom: 0;
-    width: 50%;
+    width: 75%;
     left: 0;
     // background: #a4a4a4;
-    font-size: 16px;
+    font-size: 12px;
     // padding-left: 20px;
     text-align: center;
   }
@@ -448,46 +454,46 @@
     line-height: 40px;
     position: fixed;
     top: 0;
-    width: 50%;
+    width: 25%;
     right: 0;
     background: #a4a4a4;
-    font-size: 16px;
+    font-size: 12px;
     // padding-left: 20px;
     text-align: center;
   }
 
   .post {
     margin: 5px;
-    padding: 15px;
+    padding: 10px;
     background: #a4a4a4;
     border-radius: 20px;
     display: inline-block;
-    font-size: 14px;
+    font-size: 12px;
     // max-width: 300px;
     display: inline-flex;
     align-items: center;
   }
 
   .icon {
-    height: 40px;
-    width: 40px;
-    border-radius: 40px;
+    height: 20px;
+    width: 20px;
+    border-radius: 20px;
     background: red;
     margin-right: 10px;
   }
 
   .avatar {
-    height: 40px;
-    width: 40px;
-    border-radius: 40px;
+    height: 20px;
+    width: 20px;
+    border-radius: 20px;
     background: #00ff00;
     margin-right: 10px;
   }
 
   .key {
-    height: 40px;
-    width: 40px;
-    border-radius: 40px;
+    height: 20px;
+    width: 20px;
+    border-radius: 20px;
     background: #ffff00;
     margin-right: 10px;
   }
@@ -497,20 +503,17 @@
   }
 </style>
 
-{#if !seed}
-  <Settings />
-{:else}
-  <div class="landing" use:links bind:this={landingContainerEl}>
+<div class="landing" use:links bind:this={landingContainerEl}>
 
-    <div class="pane left">
-      <div
-        class="world"
-        class:zoomed
-        on:click={() => {
-          zoomed = !zoomed;
-        }}>
+  <div class="pane left">
+    <div
+      class="world"
+      class:zoomed
+      on:click={() => {
+        zoomed = !zoomed;
+      }}>
 
-        <!-- {#each cells as row}
+      <!-- {#each cells as row}
           {#each row as c (c.id)}
             <div
               class="cell"
@@ -522,55 +525,54 @@
           {/each}
         {/each} -->
 
-        {#each worldOut as cell, index}
-          <div
-            class="cell"
-            data-index={index}
-            data-x={index % 39}
-            on:click={() => {
-              console.log('CLICKED');
-              life.set(index % 39, Math.floor(index / 39), !cell);
-            }}
-            data-y={Math.floor(index / 39)}
-            class:alive={cell == 1}>
-            <span class="text">{index}</span>
-          </div>
-        {/each}
-      </div>
+      {#each worldOut as cell, index}
+        <div
+          class="cell"
+          data-index={index}
+          data-x={index % 39}
+          on:click={() => {
+            console.log('CLICKED');
+            life.set(index % 39, Math.floor(index / 39), !cell);
+          }}
+          data-y={Math.floor(index / 39)}
+          class:alive={cell == 1}>
+          <span class="text">{index}</span>
+        </div>
+      {/each}
     </div>
+  </div>
 
-    <div class="pane right">
+  <div class="pane right">
 
-      {#each keywords as keyword}
-        <span class="post">
-          <div class="key" />
-          <div class="title">{keyword}</div>
+    {#each keywords as keyword}
+      <span class="post" in:fade>
+        <div class="key" />
+        <div class="title">{keyword}</div>
+      </span>
+    {/each}
+
+    {#await posts then posts}
+      {#each posts as post}
+        <a href={'/project/' + post.slug.current} class="post" in:fade>
+          <div class="icon" />
+          <div class="title">{post.title}</div>
+        </a>
+      {/each}
+    {/await}
+
+    {#await authors then authors}
+      {#each authors as author}
+        <span class="post" in:fade>
+          <div class="avatar" />
+          <div class="title">{author.name}</div>
         </span>
       {/each}
-
-      {#await posts then posts}
-        {#each posts as post}
-          <a href={'/project/' + post.slug.current} class="post">
-            <div class="icon" />
-            <div class="title">{post.title}</div>
-          </a>
-        {/each}
-      {/await}
-
-      {#await authors then authors}
-        {#each authors as author}
-          <span class="post">
-            <div class="avatar" />
-            <div class="title">{author.name}</div>
-          </span>
-        {/each}
-      {/await}
-
-    </div>
+    {/await}
 
   </div>
 
-  <div class="bottom-bar">Gen=>{padGen($generation)}</div>
+</div>
 
-  <div class="top-bar">Reality Settings / Seed => {$globalSeed}</div>
-{/if}
+<div class="bottom-bar">Gen=>{padGen($generation)}</div>
+
+<div class="top-bar">Reality Settings / Seed => {$globalSeed}</div>

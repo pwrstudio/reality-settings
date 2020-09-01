@@ -1,5 +1,5 @@
 <script>
-  import { links } from "svelte-routing";
+  import { links, navigate } from "svelte-routing";
   import random from "lodash/random";
   import has from "lodash/has";
   import shuffle from "lodash/shuffle";
@@ -18,12 +18,25 @@
   let size = 50;
   let friction = 30;
   let salt = 5;
-  let seed = random(0, 9999);
-  let fillColor = "#ff0000";
+  let seed = random(0, 65535);
+  let seedArray = [];
 
-  let parameterA = 50;
-  let parameterB = 50;
-  let parameterC = 50;
+  $: {
+    let seedToBits = (seed >>> 0).toString(2);
+    // console.dir(seedToBits);
+    // console.dir(seedToBits.length);
+
+    while (seedToBits.length < 16) {
+      seedToBits = seedToBits + "0";
+    }
+
+    seedArray = seedToBits;
+  }
+  // let fillColor = "#ff0000";
+
+  // let parameterA = 50;
+  // let parameterB = 50;
+  // let parameterC = 50;
 
   // $: {
   //   seed = md5(
@@ -31,21 +44,27 @@
   //   );
   // }
 
-  const mapRange = (x, in_min, in_max, out_min, out_max) =>
-    ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
+  // const mapRange = (x, in_min, in_max, out_min, out_max) =>
+  //   ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
 
-  console.log(parseInt("0xFFFFFF", 16));
+  // console.log(parseInt("0xFFFFFF", 16));
 
-  $: {
-    // console.log(mapRange(heat, 0, 1000, 0, 16000000).toString(16));
-    fillColor = "#" + mapRange(heat, 0, 1000, 0, 16000000).toString(16);
-    console.log(fillColor);
-  }
+  // $: {
+  //   // console.log(mapRange(heat, 0, 1000, 0, 16000000).toString(16));
+  //   fillColor = "#" + mapRange(heat, 0, 1000, 0, 16000000).toString(16);
+  //   console.log(fillColor);
+  // }
+
+  // return (dec >>> 0).toString(2);
 
   const padToFour = number =>
     number <= 9999 ? `000${number}`.slice(-4) : number;
 
-  const padToTwo = number => (number <= 99 ? `000${number}`.slice(-3) : number);
+  const padToTwo = number =>
+    number <= 9999 ? `00000${number}`.slice(-5) : number;
+
+  const padToSixteen = number =>
+    number <= 999999999999 ? `000000000000000${number}`.slice(-16) : number;
 </script>
 
 <style lang="scss">
@@ -58,7 +77,8 @@
     .header {
       font-family: "five", "Akkurat-Mono", monospace;
       font-size: 72px;
-      margin-bottom: 20px;
+      margin-bottom: 40px;
+      text-align: center;
     }
 
     .parameter {
@@ -127,6 +147,53 @@
       &:hover {
         background: lightgray;
       }
+    }
+  }
+
+  .sigil {
+    width: 400px;
+    height: 400px;
+    background: grey;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 80px;
+  }
+
+  .cell {
+    height: 100px;
+    width: 100px;
+    border-radius: 100px;
+    line-height: 100px;
+
+    // display: inline-block;
+    float: left;
+    background: #c4c4c4;
+    background: #a4a4a4;
+    font-size: 2px;
+    text-align: center;
+    color: #333333;
+    // display: inline-block;
+    // transform: rotateZ(45deg);
+    // background: green;
+    // background: #00ff00;
+
+    // &:nth-child(even) {
+    //   background: #848484;
+    //   background: #c4c4c4;
+    //   // background: #00ff00;
+    // }
+    transition: none;
+
+    .text {
+      display: none;
+    }
+
+    &.alive {
+      border-radius: 35px;
+
+      // transition: background 0.3s ease-out;
+      background: red;
+      // transform: rotateZ(90deg);
     }
   }
 
@@ -332,7 +399,7 @@
     <div class="preview">{friction}</div>
   </div> -->
 
-  <div class="parameter top">
+  <!-- <div class="parameter top">
     <div class="label">Affinity</div>
     <input min="0" max="100" type="range" bind:value={parameterA} />
     <div class="preview">{padToTwo(parameterA)}</div>
@@ -348,28 +415,29 @@
     <div class="label">Heat</div>
     <input min="0" max="100" type="range" bind:value={parameterC} />
     <div class="preview">{padToTwo(parameterC)}</div>
+  </div> -->
+
+  <div class="sigil">
+    {#each seedArray as cell}
+      <div class="cell" class:alive={cell == '1'} />
+    {/each}
   </div>
 
   <div class="parameter bottom">
     <div class="label small">Seed</div>
-    <input min="0" max="100" type="range" bind:value={seed} />
+    <input min="0" max="65535" type="range" bind:value={seed} />
     <div class="preview">{padToTwo(seed)}</div>
     <!-- <div class="preview"></div> -->
   </div>
 
-  <!-- <svg
-    id="color-fill"
-    xmlns="http://www.w3.org/2000/svg"
-    version="1.1"
-    width="100%"
-    height="300"
-    style="fill:{fillColor};"
-    xmlns:xlink="http://www.w3.org/1999/xlink">
-    <polygon class="hex" points="300,140 225,280 75,230 0,150 75,10 225,10" />
-  </svg> -->
-
   <div class="parameter">
-    <a class="run" href={'/' + seed}>Run</a>
+    <div
+      class="run"
+      on:click={() => {
+        navigate('/' + (seed >>> 0).toString(2));
+      }}>
+      Start
+    </div>
   </div>
 
 </div>

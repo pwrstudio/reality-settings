@@ -8,7 +8,6 @@
   // IMPORTS
   import { onMount } from "svelte";
   import { Router, Route } from "svelte-routing";
-  import * as Colyseus from "colyseus.js";
   import { fade, fly } from "svelte/transition";
 
   // STORES
@@ -17,66 +16,11 @@
   // ROUTES
   import Arena from "./Arena.svelte";
   import Landing from "./Landing.svelte";
+  import Settings from "./Components/Settings.svelte";
   import Single from "./Single.svelte";
 
   // COMPONENTS
   import Ball from "./Components/Ball.svelte";
-
-  // const client = new Colyseus.Client("ws://18.194.21.39:6666");
-  const client = new Colyseus.Client("wss://rs.scarmonger.xyz");
-  // const client = new Colyseus.Client("wss://18.194.21.39:3000");
-
-  let localPlayers = {};
-  let mainRoom = {};
-
-  const sendClick = e => {
-    // console.dir(e);f
-    // mainRoom.send("click", { x: e.clientX, y: e.clientY });
-  };
-
-  // onMount(async () => {
-  //   mainRoom = await client.joinOrCreate("main", {});
-
-  //   mainRoom.state.players.onRemove = (player, sessionId) => {
-  //     try {
-  //       delete localPlayers[sessionId];
-  //       localPlayers = localPlayers;
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-
-  //   // ADD
-  //   mainRoom.state.players.onAdd = (player, sessionId) => {
-  //     localPlayers[sessionId] = sessionId;
-  //   };
-
-  //   // STATE CHANGE
-  //   mainRoom.state.players.onChange = function(player, sessionId) {
-  //     console.dir(player);
-  //   };
-
-  //   mainRoom.onMessage("click", message => {
-  //     console.dir(message.x);
-  //     console.dir(message.y);
-  //     var newDiv = document.createElement("div");
-  //     newDiv.style.height = "30px";
-  //     newDiv.style.borderRadius = "30px";
-  //     newDiv.style.opacity = 0.75;
-  //     newDiv.style.width = "30px";
-  //     newDiv.style.backgroundColor = "#ff0000";
-  //     newDiv.style.position = "fixed";
-  //     newDiv.style.top = message.y + "px";
-  //     newDiv.style.left = message.x + "px";
-  //     document.body.appendChild(newDiv);
-  //   });
-
-  //   // ERROR
-  //   mainRoom.onError((code, message) => {
-  //     console.error("!!! COLYSEUS ERROR:");
-  //     console.error(message);
-  //   });
-  // });
 </script>
 
 <style lang="scss" global>
@@ -134,7 +78,7 @@
 
 <main>
   <Router>
-    <Route path="/" component={Landing} />
+    <Route path="/" component={Settings} />
     <Route path="/:seed/" start={true} component={Landing} />
     <!-- <Route path="/arena" component={Arena} /> -->
     <Route path="/text" component={Arena} />
