@@ -18,7 +18,7 @@
   } from "./sanity.js";
 
   // STORES
-  import { running, globalSeed, globalHeat, generation } from "./stores.js";
+  import { globalSeed, globalHeat, generation, inSession } from "./stores.js";
 
   // PROPS
   export let seed = false;
@@ -48,6 +48,7 @@
   let allTextOnly = "";
   let markovMaterial = [];
   let landingContainerEl = {};
+  let worldEl = {};
 
   let cells = [];
 
@@ -55,34 +56,66 @@
 
   let allSentences = [];
 
-  const life = new Life(39, 39);
+  const WORLD_WIDTH = 29;
+  const WORLD_HEIGTH = 29;
+  const WORLD_SIZE = WORLD_WIDTH * WORLD_HEIGTH;
+  const genDuration = 50;
 
-  // console.dir(life);
+  const life = new Life(WORLD_WIDTH, WORLD_HEIGTH);
+  // life.colors = 4;
 
-  // for (let row = 0; row < 39; row++) {
-  //   cells.push([]);
-  //   for (let column = 0; column < 39; column++) {
-  //     cells[row].push({
-  //       y: row,
-  //       x: column,
-  //       active: false,
-  //       id: uuidv4()
-  //     });
-  //   }
-  // }
-
-  // console.dir(cells);
-
-  let conGen = 0;
+  let worldLoop = {};
   let worldOut = [];
+
+  let running = true;
+
   life.randomize();
 
-  for (let i = 0; i < 1521; i++) {
-    setTimeout(() => {
-      console.log(i);
-      worldOut.push(life.board[i]);
-      worldOut = worldOut;
-    }, i * 0.5);
+  const transitionWorld = index => {
+    if (index < WORLD_SIZE) {
+      let temp = [];
+      for (let x = 0; x < WORLD_WIDTH; x++) {
+        temp.push(life.board[index + x]);
+      }
+      worldOut = [...worldOut, ...temp];
+      window.requestAnimationFrame(() => {
+        transitionWorld(index + WORLD_WIDTH);
+      });
+    } else {
+      inSession.set(true);
+      startWorld();
+    }
+  };
+
+  const startWorld = () => {
+    running = true;
+    generation.set($generation + 1);
+    life.next();
+    worldOut = life.board;
+    worldLoop = setInterval(() => {
+      generation.set($generation + 1);
+      life.next();
+      worldOut = life.board;
+    }, genDuration);
+  };
+
+  const stopWorld = () => {
+    running = false;
+    clearInterval(worldLoop);
+  };
+
+  const resetWorld = () => {
+    stopWorld();
+    generation.set(0);
+    life.randomize();
+    worldOut = life.board;
+    // startWorld();
+  };
+
+  if (!$inSession) {
+    transitionWorld(0);
+  } else {
+    startWorld();
   }
 
   // $: {
@@ -216,97 +249,30 @@
     // console.dir(keywords)
   });
 
-  // function updateGen() {
-  //   // for (row in cells) {
-  //   //   for (col in cells[row]) {
-  //   //     console.dir(cells[row][col]);
-  //   //     // // Update the current generation with
-  //   //     // // the results of createNextGen function
-  //   //     // currGen[row][col] = nextGen[row][col];
-  //   //     // // Set nextGen back to empty
-  //   //     // nextGen[row][col] = 0;
-  //   //   }
-  //   // }
-
-  //   for (let row = 0; row < 39; row++) {
-  //     for (let column = 0; column < 39; column++) {
-  //       // console.dir(cells[row][column]);
-  //     }
-  //   }
-  // }
-
-  // function getNeighborCount(row, col) {
-  //   let count = 0;
-  //   let nrow = Number(row);
-  //   let ncol = Number(col);
-
-  //   // Make sure we are not at the first row
-  //   if (nrow - 1 >= 0) {
-  //     // Check top neighbor
-  //     if (currGen[nrow - 1][ncol] == 1) count++;
-  //   }
-  //   // Make sure we are not in the first cell
-  //   // Upper left corner
-  //   if (nrow - 1 >= 0 && ncol - 1 >= 0) {
-  //     //Check upper left neighbor
-  //     if (currGen[nrow - 1][ncol - 1] == 1) count++;
-  //   }
-  //   // Make sure we are not on the first row last column
-  //   // Upper right corner
-  //   if (nrow - 1 >= 0 && ncol + 1 < cols) {
-  //     //Check upper right neighbor
-  //     if (currGen[nrow - 1][ncol + 1] == 1) count++;
-  //   }
-  //   // Make sure we are not on the first column
-  //   if (ncol - 1 >= 0) {
-  //     //Check left neighbor
-  //     if (currGen[nrow][ncol - 1] == 1) count++;
-  //   }
-  //   // Make sure we are not on the last column
-  //   if (ncol + 1 < cols) {
-  //     //Check right neighbor
-  //     if (currGen[nrow][ncol + 1] == 1) count++;
-  //   }
-  //   // Make sure we are not on the bottom left corner
-  //   if (nrow + 1 < rows && ncol - 1 >= 0) {
-  //     //Check bottom left neighbor
-  //     if (currGen[nrow + 1][ncol - 1] == 1) count++;
-  //   }
-  //   // Make sure we are not on the bottom right
-  //   if (nrow + 1 < rows && ncol + 1 < cols) {
-  //     //Check bottom right neighbor
-  //     if (currGen[nrow + 1][ncol + 1] == 1) count++;
-  //   }
-
-  //   // Make sure we are not on the last row
-  //   if (nrow + 1 < rows) {
-  //     //Check bottom neighbor
-  //     if (currGen[nrow + 1][ncol] == 1) count++;
-  //   }
-
-  //   return count;
-  // }
-
-  // updateGen();
-
   const padGen = number =>
     number <= 999999 ? `00000${number}`.slice(-6) : number;
 
-  onMount(async () => {
-    setTimeout(() => {
-      setInterval(() => {
-        // conGen++;
-        // console.log(conGen);
-        generation.set($generation + 1);
-        life.next();
-        worldOut = life.board;
-      }, 200);
-    }, 5000);
-  });
+  // onMount(async () => {
+  //   setTimeout(() => {
+  //     setInterval(() => {
+  //       // conGen++;
+  //       // console.log(conGen);
+  //       generation.set($generation + 1);
+  //       life.next();
+  //       worldOut = life.board;
+  //     }, 200);
+  //   }, 5000);
+  // });
 </script>
 
 <style lang="scss">
   @import "./variables.scss";
+
+  $WORLD_WIDTH: 29;
+  $WORLD_HEIGHT: 29;
+  $CELL_DIMENSION: 2vw;
+  $CELL_DIMENSION_PHONE: 3.2vw;
+  $CELL_DIMENSION_SHORT: 1.5vw;
 
   .landing {
     box-sizing: border-box;
@@ -360,71 +326,113 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 75%;
+      width: calc(100% - 400px);
+
+      @include screen-size("small") {
+        width: 100%;
+      }
     }
 
     &.right {
       // width: 33.33%;
-      left: 75%;
+      left: calc(100% - 400px);
       // left: 66.66%;
       background: grey;
       background: lightgray;
       padding: 20px;
       padding-top: 60px;
-      width: calc(26% - 40px);
+      width: calc(400px - 40px);
       overflow-y: scroll;
       height: calc(100vh - 80px);
+
+      @include screen-size("small") {
+        display: none;
+      }
     }
   }
 
   .world {
-    width: 585px;
-    height: 585px;
-    width: 46.8vw;
-    height: 46.8vw;
+    width: $WORLD_WIDTH * $CELL_DIMENSION;
+    height: $WORLD_HEIGHT * $CELL_DIMENSION;
     background: grey;
+    // transform-origin: top left;
     // transform: scale(1.45);
     // transition: transform 0.5s ease-out;
     // will-change: transform;
 
+    @media (min-aspect-ratio: 16/9) {
+      width: $WORLD_WIDTH * $CELL_DIMENSION_SHORT;
+      height: $WORLD_HEIGHT * $CELL_DIMENSION_SHORT;
+      // background: green;
+    }
+
+    @include screen-size("small") {
+      width: $WORLD_WIDTH * $CELL_DIMENSION_PHONE;
+      height: $WORLD_HEIGHT * $CELL_DIMENSION_PHONE;
+    }
+
     &.zoomed {
-      transform: scale(6) rotateZ(45deg);
+      transform: scale(6);
     }
   }
 
   .cell {
-    height: 1.2vw;
-    width: 1.2vw;
-    border-radius: 1.2vw;
-    line-height: 1.2vw;
-
-    // display: inline-block;
+    height: $CELL_DIMENSION;
+    width: $CELL_DIMENSION;
+    border-radius: $CELL_DIMENSION;
+    line-height: $CELL_DIMENSION;
+    user-select: none;
     float: left;
-    background: #c4c4c4;
     background: #a4a4a4;
     font-size: 2px;
     text-align: center;
     color: #333333;
-    // background: green;
-    // background: #00ff00;
-
-    // &:nth-child(even) {
-    //   background: #848484;
-    //   background: #c4c4c4;
-    //   // background: #00ff00;
-    // }
     transition: none;
+
+    // &:hover {
+    //   background: #b4b4b4;
+    // }
+
+    @media (min-aspect-ratio: 16/9) {
+      height: $CELL_DIMENSION_SHORT;
+      width: $CELL_DIMENSION_SHORT;
+      border-radius: $CELL_DIMENSION_SHORT;
+      line-height: $CELL_DIMENSION_SHORT;
+    }
+
+    @include screen-size("small") {
+      height: $CELL_DIMENSION_PHONE;
+      width: $CELL_DIMENSION_PHONE;
+      border-radius: $CELL_DIMENSION_PHONE;
+      line-height: $CELL_DIMENSION_PHONE;
+    }
 
     .text {
       display: none;
     }
 
     &.alive {
-      border-radius: 4px;
-
-      // transition: background 0.3s ease-out;
+      border-radius: 5px;
       background: red;
-      // transform: rotateZ(90deg);
+      // &:hover {
+      //   background: #d70000;
+      // }
+    }
+
+    &.colorTwo {
+      border-radius: 5px;
+      background: #00ff00;
+      // &:hover {
+      //   background: #d70000;
+      // }
+    }
+
+    &.colorThree {
+      border-radius: 5px;
+      background: #ffff00;
+      // &:hover {
+      //   background: #d70000;
+      // }
     }
   }
 
@@ -437,16 +445,49 @@
   }
 
   .bottom-bar {
-    height: 80px;
-    line-height: 80px;
+    height: 40px;
+    line-height: 40px;
     position: fixed;
     bottom: 0;
-    width: 75%;
+    width: calc(100% - 400px);
     left: 0;
     // background: #a4a4a4;
     font-size: 12px;
     // padding-left: 20px;
     text-align: center;
+
+    @include screen-size("small") {
+      width: 100%;
+    }
+  }
+
+  .world-control {
+    height: 40px;
+    line-height: 40px;
+    position: fixed;
+    top: 0;
+    width: calc(100% - 400px);
+    left: 0;
+    font-size: 12px;
+    // padding-left: 20px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    user-select: none;
+
+    .control {
+      cursor: pointer;
+      &.first {
+        margin-right: 20px;
+      }
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    @include screen-size("small") {
+      width: 100%;
+    }
   }
 
   .top-bar {
@@ -454,46 +495,58 @@
     line-height: 40px;
     position: fixed;
     top: 0;
-    width: 25%;
+    width: 400px;
+    overflow: hidden;
     right: 0;
     background: #a4a4a4;
     font-size: 12px;
     // padding-left: 20px;
     text-align: center;
+
+    @include screen-size("small") {
+      display: none;
+    }
   }
 
   .post {
     margin: 5px;
-    padding: 10px;
+    margin-bottom: 10px;
+    padding: 20px;
     background: #a4a4a4;
     border-radius: 20px;
-    display: inline-block;
+    display: block;
     font-size: 12px;
     // max-width: 300px;
-    display: inline-flex;
+    display: flex;
     align-items: center;
+
+    &:hover {
+      transition: background 0.3 ease-out;
+      text-decoration: none;
+      background: #949494;
+    }
   }
 
   .icon {
-    height: 20px;
-    width: 20px;
-    border-radius: 20px;
+    height: 10px;
+    width: 10px;
+    // border-radius: 20px;
     background: red;
     margin-right: 10px;
   }
 
   .avatar {
-    height: 20px;
-    width: 20px;
-    border-radius: 20px;
+    height: 10px;
+    width: 10px;
+    // border-radius: 20px;
     background: #00ff00;
     margin-right: 10px;
   }
 
   .key {
-    height: 20px;
-    width: 20px;
-    border-radius: 20px;
+    height: 10px;
+    width: 10px;
+    // border-radius: 20px;
     background: #ffff00;
     margin-right: 10px;
   }
@@ -509,46 +562,39 @@
     <div
       class="world"
       class:zoomed
-      on:click={() => {
-        zoomed = !zoomed;
+      bind:this={worldEl}
+      on:click={e => {
+        if (zoomed) {
+          zoomed = false;
+          worldEl.style.transformOrigin = 'center center';
+        } else {
+          zoomed = true;
+          worldEl.style.transformOrigin = e.x - 40 + 'px ' + (e.y - 40) + 'px';
+        }
       }}>
-
-      <!-- {#each cells as row}
-          {#each row as c (c.id)}
-            <div
-              class="cell"
-              data-x={c.x}
-              data-y={c.y}
-              on:click={e => (c.active = !c.active)}
-              class:active={c.active}
-              id={c.id} />
-          {/each}
-        {/each} -->
 
       {#each worldOut as cell, index}
         <div
           class="cell"
           data-index={index}
           data-x={index % 39}
-          on:click={() => {
-            console.log('CLICKED');
-            life.set(index % 39, Math.floor(index / 39), !cell);
-          }}
           data-y={Math.floor(index / 39)}
-          class:alive={cell == 1}>
+          class:alive={cell == 1}
+          class:colorTwo={cell == 2}
+          class:colorThree={cell == 3}>
           <span class="text">{index}</span>
         </div>
       {/each}
     </div>
   </div>
 
-  <div class="pane right">
+  <div class="pane right" use:links>
 
     {#each keywords as keyword}
-      <span class="post" in:fade>
+      <a href={'/keyword/' + keyword} class="post" in:fade>
         <div class="key" />
         <div class="title">{keyword}</div>
-      </span>
+      </a>
     {/each}
 
     {#await posts then posts}
@@ -562,14 +608,59 @@
 
     {#await authors then authors}
       {#each authors as author}
-        <span class="post" in:fade>
+        <a href={'/author/' + author.slug.current} class="post" in:fade>
           <div class="avatar" />
           <div class="title">{author.name}</div>
-        </span>
+        </a>
       {/each}
     {/await}
 
   </div>
+
+</div>
+
+<div class="world-control">
+  {#if running}
+    <div
+      class="control first"
+      on:click={() => {
+        stopWorld();
+      }}>
+      Pause
+    </div>
+  {:else}
+    <div
+      class="control first"
+      on:click={() => {
+        startWorld();
+      }}>
+      Start
+    </div>
+  {/if}
+  <div
+    class="control first"
+    on:click={() => {
+      resetWorld();
+    }}>
+    Reset
+  </div>
+  {#if zoomed}
+    <div
+      class="control"
+      on:click={() => {
+        zoomed = false;
+      }}>
+      Zoom Out
+    </div>
+  {:else}
+    <div
+      class="control"
+      on:click={() => {
+        zoomed = true;
+      }}>
+      Zoom In
+    </div>
+  {/if}
 
 </div>
 

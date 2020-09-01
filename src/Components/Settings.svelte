@@ -74,11 +74,20 @@
     padding: 40px;
     font-size: 32px;
 
+    @include screen-size("small") {
+      font-size: 16px;
+    }
+
     .header {
       font-family: "five", "Akkurat-Mono", monospace;
       font-size: 72px;
       margin-bottom: 40px;
       text-align: center;
+
+      @include screen-size("small") {
+        font-size: 48px;
+        margin-bottom: 40px;
+      }
     }
 
     .parameter {
@@ -91,11 +100,17 @@
       .label {
         // background: red;
         display: inline-block;
+        @include screen-size("small") {
+          display: none;
+        }
       }
 
       .preview {
         // background: red;
         display: inline-block;
+        @include screen-size("small") {
+          display: none;
+        }
       }
 
       // &.top {
@@ -143,6 +158,7 @@
       display: block;
       text-align: center;
       transition: background 0.5s $transtion2;
+      border-radius: 5px;
 
       &:hover {
         background: lightgray;
@@ -153,10 +169,16 @@
   .sigil {
     width: 400px;
     height: 400px;
+
     background: grey;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 80px;
+    @include screen-size("small") {
+      width: 200px;
+      height: 200px;
+      margin-bottom: 40px;
+    }
   }
 
   .cell {
@@ -164,6 +186,13 @@
     width: 100px;
     border-radius: 100px;
     line-height: 100px;
+
+    @include screen-size("small") {
+      height: 50px;
+      width: 50px;
+      border-radius: 50px;
+      line-height: 50px;
+    }
 
     // display: inline-block;
     float: left;
@@ -189,7 +218,7 @@
     }
 
     &.alive {
-      border-radius: 35px;
+      border-radius: 25px;
 
       // transition: background 0.3s ease-out;
       background: red;

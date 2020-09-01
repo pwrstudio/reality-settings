@@ -4,7 +4,7 @@
   export let slug = "";
 
   // VARIABLES
-  let query = "*[slug.current == $slug][0]{...,authors[]->{...,name}}";
+  let query = "*[slug.current == $slug][0]";
 
   // VARIABLES
   let post = loadData(query, { slug: slug });
@@ -54,15 +54,7 @@
 <main>
   <div class="project">
     {#await post then post}
-      <h1>{post.title}</h1>
-      {#if post.authors}
-        {#each post.authors as author (author._id)}
-          <div class="author">{author.name}</div>
-        {/each}
-      {/if}
-      <div class="main-text">
-        {@html renderBlockText(post.mainContent.content)}
-      </div>
+      <h1>{post.name}</h1>
     {/await}
   </div>
 

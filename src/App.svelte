@@ -18,6 +18,7 @@
   import Landing from "./Landing.svelte";
   import Settings from "./Components/Settings.svelte";
   import Single from "./Single.svelte";
+  import Author from "./Author.svelte";
 
   // COMPONENTS
   import Ball from "./Components/Ball.svelte";
@@ -26,6 +27,10 @@
 <style lang="scss" global>
   h1 {
     padding: 20px;
+  }
+
+  * {
+    box-sizing: border-box;
   }
 
   .project {
@@ -74,8 +79,6 @@
   }
 </style>
 
-<svelte:window on:click={sendClick} />
-
 <main>
   <Router>
     <Route path="/" component={Settings} />
@@ -83,5 +86,6 @@
     <!-- <Route path="/arena" component={Arena} /> -->
     <Route path="/text" component={Arena} />
     <Route path="/project/:slug" component={Single} />
+    <Route path="/author/:slug" component={Author} />
   </Router>
 </main>
