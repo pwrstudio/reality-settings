@@ -590,13 +590,6 @@
 
   <div class="pane right" use:links>
 
-    {#each keywords as keyword}
-      <a href={'/keyword/' + keyword} class="post" in:fade>
-        <div class="key" />
-        <div class="title">{keyword}</div>
-      </a>
-    {/each}
-
     {#await posts then posts}
       {#each posts as post}
         <a href={'/project/' + post.slug.current} class="post" in:fade>
@@ -605,6 +598,13 @@
         </a>
       {/each}
     {/await}
+
+    {#each keywords as keyword}
+      <a href={'/keyword/' + keyword} class="post" in:fade>
+        <div class="key" />
+        <div class="title">{keyword}</div>
+      </a>
+    {/each}
 
     {#await authors then authors}
       {#each authors as author}
@@ -664,6 +664,6 @@
 
 </div>
 
-<div class="bottom-bar">Gen=>{padGen($generation)}</div>
+<div class="bottom-bar">Gen => {padGen($generation)}</div>
 
 <div class="top-bar">Reality Settings / Seed => {$globalSeed}</div>
