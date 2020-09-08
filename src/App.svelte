@@ -6,22 +6,22 @@
   // # # # # # # # # # # # # #
 
   // IMPORTS
-  import { onMount } from "svelte";
-  import { Router, Route } from "svelte-routing";
-  import { fade, fly } from "svelte/transition";
+  import { onMount } from 'svelte'
+  import { Router, Route } from 'svelte-routing'
+  import { fade, fly } from 'svelte/transition'
 
   // STORES
-  import { running, globalSeed, globalHeat } from "./stores.js";
+  import { running, globalSeed, globalHeat } from './stores.js'
 
   // ROUTES
-  import Arena from "./Arena.svelte";
-  import Landing from "./Landing.svelte";
-  import Settings from "./Components/Settings.svelte";
-  import Single from "./Single.svelte";
-  import Author from "./Author.svelte";
+  import Arena from './Arena.svelte'
+  import Landing from './Landing.svelte'
+  import Settings from './Components/Settings.svelte'
+  import Single from './Single.svelte'
+  import Author from './Author.svelte'
 
   // COMPONENTS
-  import Ball from "./Components/Ball.svelte";
+  import Ball from './Components/Ball.svelte'
 </script>
 
 <style lang="scss" global>
@@ -83,9 +83,8 @@
   <Router>
     <Route path="/" component={Settings} />
     <Route path="/:seed/" start={true} component={Landing} />
-    <!-- <Route path="/arena" component={Arena} /> -->
-    <Route path="/text" component={Arena} />
-    <Route path="/project/:slug" component={Single} />
-    <Route path="/author/:slug" component={Author} />
+    <Route path="/project/:slug" component={Landing} project={true} />
+    <Route path="/author/:slug" component={Landing} author={true} />
+    <Route path="/author/:slug" component={Landing} introduction={true} />
   </Router>
 </main>

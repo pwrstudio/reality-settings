@@ -1,121 +1,133 @@
 <script>
-  import { onMount } from "svelte";
-  import { links } from "svelte-routing";
-  import { fade } from "svelte/transition";
-  import { Life } from "dat-life";
-  import has from "lodash/has";
-  import shuffle from "lodash/shuffle";
-  import flatMap from "lodash/flatMap";
-  import Markov from "markov-strings";
-  import { v4 as uuidv4 } from "uuid";
+  import { onMount } from 'svelte'
+  import { links } from 'svelte-routing'
+  import { fade } from 'svelte/transition'
+  import { Life } from 'dat-life'
+  import has from 'lodash/has'
+  import shuffle from 'lodash/shuffle'
+  import flatMap from 'lodash/flatMap'
+  import Markov from 'markov-strings'
+  import { v4 as uuidv4 } from 'uuid'
 
   import {
     urlFor,
     loadData,
     renderBlockText,
     toPlainText,
-    singleToPlainText
-  } from "./sanity.js";
+    singleToPlainText,
+  } from './sanity.js'
 
   // STORES
-  import { globalSeed, globalHeat, generation, inSession } from "./stores.js";
+  import { globalSeed, globalHeat, generation, inSession } from './stores.js'
 
   // PROPS
-  export let seed = false;
-  export let heat = false;
-  export let start = false;
+  export let seed = false
+  export let heat = false
+  export let start = false
+  export let project = false
+  export let slug = false
 
   // COMPONENTS
-  import ImageBlock from "./Components/Blocks/ImageBlock.svelte";
-  import VideoBlock from "./Components/Blocks/VideoBlock.svelte";
-  import AudioBlock from "./Components/Blocks/AudioBlock.svelte";
-  import EmbedBlock from "./Components/Blocks/EmbedBlock.svelte";
-  import Molecule from "./Components/Molecule.svelte";
-  import Ball from "./Components/Ball.svelte";
+  import ImageBlock from './Components/Blocks/ImageBlock.svelte'
+  import VideoBlock from './Components/Blocks/VideoBlock.svelte'
+  import AudioBlock from './Components/Blocks/AudioBlock.svelte'
+  import EmbedBlock from './Components/Blocks/EmbedBlock.svelte'
+  import Molecule from './Components/Molecule.svelte'
+  import Ball from './Components/Ball.svelte'
 
   // CONSTANTS
-  const query = '*[_type == "project"]';
-  const authorQuery = '*[_type == "author"]';
+  const query = '*[_type == "project"]'
+  const authorQuery = '*[_type == "author"]'
 
   // VARIABLES
-  let posts = loadData(query);
-  let authors = loadData(authorQuery);
-  let blocks = [];
-  let testBlocks = [];
-  let currentBlocks = [];
-  let postsMap = {};
-  let keywords = [];
-  let allTextOnly = "";
-  let markovMaterial = [];
-  let landingContainerEl = {};
-  let worldEl = {};
+  let posts = loadData(query)
+  let authors = loadData(authorQuery)
+  let blocks = []
+  let testBlocks = []
+  let currentBlocks = []
+  let postsMap = {}
+  let postsArray = []
+  let keywords = []
+  let allTextOnly = ''
+  let markovMaterial = []
+  let landingContainerEl = {}
+  let worldEl = {}
 
-  let cells = [];
+  let cells = []
 
-  let zoomed = false;
+  let zoomed = false
 
-  let allSentences = [];
+  let allSentences = []
 
-  const WORLD_WIDTH = 29;
-  const WORLD_HEIGTH = 29;
-  const WORLD_SIZE = WORLD_WIDTH * WORLD_HEIGTH;
-  const genDuration = 50;
+  const WORLD_WIDTH = 29
+  const WORLD_HEIGTH = 29
+  const WORLD_SIZE = WORLD_WIDTH * WORLD_HEIGTH
+  const genDuration = 50
 
-  const life = new Life(WORLD_WIDTH, WORLD_HEIGTH);
+  const life = new Life(WORLD_WIDTH, WORLD_HEIGTH)
   // life.colors = 4;
 
-  let worldLoop = {};
-  let worldOut = [];
+  let worldLoop = {}
+  let worldOut = []
 
-  let running = true;
+  let running = true
 
-  life.randomize();
+  life.randomize()
 
-  const transitionWorld = index => {
+  const transitionWorld = (index) => {
     if (index < WORLD_SIZE) {
-      let temp = [];
+      let temp = []
       for (let x = 0; x < WORLD_WIDTH; x++) {
-        temp.push(life.board[index + x]);
+        temp.push(life.board[index + x])
       }
-      worldOut = [...worldOut, ...temp];
+      worldOut = [...worldOut, ...temp]
       window.requestAnimationFrame(() => {
-        transitionWorld(index + WORLD_WIDTH);
-      });
+        transitionWorld(index + WORLD_WIDTH)
+      })
     } else {
-      inSession.set(true);
-      startWorld();
+      inSession.set(true)
+      startWorld()
     }
-  };
+  }
+
+  let projectPost = false
 
   const startWorld = () => {
-    running = true;
-    generation.set($generation + 1);
-    life.next();
-    worldOut = life.board;
+    running = true
+    generation.set($generation + 1)
+    life.next()
+    worldOut = life.board
     worldLoop = setInterval(() => {
-      generation.set($generation + 1);
-      life.next();
-      worldOut = life.board;
-    }, genDuration);
-  };
+      generation.set($generation + 1)
+      life.next()
+      worldOut = life.board
+    }, genDuration)
+  }
 
   const stopWorld = () => {
-    running = false;
-    clearInterval(worldLoop);
-  };
+    running = false
+    clearInterval(worldLoop)
+  }
 
   const resetWorld = () => {
-    stopWorld();
-    generation.set(0);
-    life.randomize();
-    worldOut = life.board;
+    stopWorld()
+    generation.set(0)
+    life.randomize()
+    worldOut = life.board
     // startWorld();
-  };
+  }
 
   if (!$inSession) {
-    transitionWorld(0);
+    transitionWorld(0)
   } else {
-    startWorld();
+    startWorld()
+  }
+
+  $: {
+    if (slug && postsArray) {
+      console.log(slug)
+      projectPost = postsArray.find((p) => p.slug.current == slug)
+    }
   }
 
   // $: {
@@ -130,77 +142,86 @@
   // }
   // }
 
-  globalSeed.set(seed);
+  globalSeed.set(seed)
 
-  posts.then(posts => {
+  posts.then((posts) => {
+    // if (slug) {
+    //   console.log(slug)
+    //   projectPost = posts.find((p) => p.slug.current == slug)
+    //   console.dir(projectPost)
+    // }
+
     // console.dir(posts);
-    posts.forEach(post => {
+
+    postsArray = posts
+
+    posts.forEach((post) => {
       // Add to map
-      postsMap[post._id] = post;
+      postsMap[post._id] = post
 
       if (toPlainText(post.mainContent.content).length > 10) {
         allTextOnly =
           allTextOnly +
           toPlainText(post.mainContent.content)
-            .replace(/\r?\n|\r/g, " ")
-            .trim();
+            .replace(/\r?\n|\r/g, ' ')
+            .trim()
       }
 
       // console.log(toPlainText(post.mainContent.content));
       // console.log(post.title);
       // console.log(allTextOnly);
 
-      let sentences = allTextOnly.match(/[^\.!\?]+[\.!\?]+/g);
+      let sentences = allTextOnly.match(/[^\.!\?]+[\.!\?]+/g)
 
       if (sentences) {
-        sentences = sentences.map(s => {
-          return { text: s.trim(), title: post.title, slug: post.slug.current };
-        });
+        sentences = sentences.map((s) => {
+          return { text: s.trim(), title: post.title, slug: post.slug.current }
+        })
         // console.dir(sentences);
 
-        allSentences = [...allSentences, ...sentences];
+        allSentences = [...allSentences, ...sentences]
       }
 
       // Get all blocks
-      post.mainContent.content.forEach(block => {
+      post.mainContent.content.forEach((block) => {
         // console.log(singleToPlainText(block).length)
-        if (block._type !== "block" || singleToPlainText(block).length > 0) {
+        if (block._type !== 'block' || singleToPlainText(block).length > 0) {
           blocks.push({
             id: post._id,
             uid: uuidv4(),
-            content: block
-          });
+            content: block,
+          })
         }
         // if (block._type == "block") {
         //   console.dir(block);
         // }
-      });
+      })
 
       // KEYWORDS
       let children = flatMap(
         post.mainContent.content
-          .filter(c => c._type == "block")
-          .map(b => b.children)
-      );
+          .filter((c) => c._type == 'block')
+          .map((b) => b.children)
+      )
 
-      console.dir(children);
+      console.dir(children)
 
-      children.forEach(c => {
-        if (c.marks.length > 0 && c.marks.includes("keyword")) {
+      children.forEach((c) => {
+        if (c.marks.length > 0 && c.marks.includes('keyword')) {
           // console.dir(c)
-          keywords.push(c.text);
+          keywords.push(c.text)
         }
-      });
+      })
 
       // let b = a.map(x => x);
 
       // console.dir(b);
 
       // keywords = [...keywords, ...a.filter(x => x._type === "keyword")];
-    });
+    })
 
-    console.dir(keywords);
-    keywords = keywords;
+    console.dir(keywords)
+    keywords = keywords
 
     // console.dir(allSentences);
 
@@ -233,11 +254,11 @@
 
     // console.dir(result);
 
-    testBlocks = shuffle(blocks);
+    testBlocks = shuffle(blocks)
     // allSentences = shuffle(allSentences);
 
     // currentBlocks.push(testBlocks.pop());
-    currentBlocks = testBlocks;
+    currentBlocks = testBlocks
 
     // setInterval(() => {
     //   currentBlocks.push(testBlocks.pop());
@@ -247,10 +268,11 @@
     // console.dir(testBlocks);
 
     // console.dir(keywords)
-  });
+    return posts
+  })
 
-  const padGen = number =>
-    number <= 999999 ? `00000${number}`.slice(-6) : number;
+  const padGen = (number) =>
+    number <= 999999 ? `00000${number}`.slice(-6) : number
 
   // onMount(async () => {
   //   setTimeout(() => {
@@ -266,7 +288,7 @@
 </script>
 
 <style lang="scss">
-  @import "./variables.scss";
+  @import './variables.scss';
 
   $WORLD_WIDTH: 29;
   $WORLD_HEIGHT: 29;
@@ -328,8 +350,13 @@
       align-items: center;
       width: calc(100% - 400px);
 
-      @include screen-size("small") {
+      @include screen-size('small') {
         width: 100%;
+      }
+
+      &.mini {
+        // transform: translateY(-600px);
+        display: none;
       }
     }
 
@@ -345,7 +372,7 @@
       overflow-y: scroll;
       height: calc(100vh - 80px);
 
-      @include screen-size("small") {
+      @include screen-size('small') {
         display: none;
       }
     }
@@ -366,7 +393,7 @@
       // background: green;
     }
 
-    @include screen-size("small") {
+    @include screen-size('small') {
       width: $WORLD_WIDTH * $CELL_DIMENSION_PHONE;
       height: $WORLD_HEIGHT * $CELL_DIMENSION_PHONE;
     }
@@ -400,7 +427,7 @@
       line-height: $CELL_DIMENSION_SHORT;
     }
 
-    @include screen-size("small") {
+    @include screen-size('small') {
       height: $CELL_DIMENSION_PHONE;
       width: $CELL_DIMENSION_PHONE;
       border-radius: $CELL_DIMENSION_PHONE;
@@ -456,7 +483,7 @@
     // padding-left: 20px;
     text-align: center;
 
-    @include screen-size("small") {
+    @include screen-size('small') {
       width: 100%;
     }
   }
@@ -485,7 +512,7 @@
       }
     }
 
-    @include screen-size("small") {
+    @include screen-size('small') {
       width: 100%;
     }
   }
@@ -503,7 +530,7 @@
     // padding-left: 20px;
     text-align: center;
 
-    @include screen-size("small") {
+    @include screen-size('small') {
       display: none;
     }
   }
@@ -554,25 +581,69 @@
   .title {
     max-width: 240px;
   }
+
+  .project {
+    margin-right: 20px;
+    margin-left: 20px;
+    // background: yellow;
+    z-index: 100;
+    position: fixed;
+    top: 0;
+    left: 0px;
+    width: calc(100% - 440px);
+    overflow: scroll;
+    padding: 10px;
+    height: 100vh;
+    padding-bottom: 40px;
+
+    /* padding-top: 20px; */
+
+    img {
+      max-width: 100%;
+    }
+
+    .main-text {
+      font-size: 16px;
+      max-width: 700px;
+
+      /* font-family: "times new roman", times, serif; */
+    }
+
+    .author {
+      font-size: 16px;
+      margin-bottom: 40px;
+
+      /* font-family: "times new roman", times, serif; */
+    }
+
+    h1 {
+      /* padding: 20px 0px; */
+      font-family: 'five', 'Akkurat-Mono', monospace;
+      font-size: 72px;
+      font-weight: normal;
+      line-height: 0.8em;
+      margin-bottom: 40px;
+      // max-width: 1000px;
+    }
+  }
 </style>
 
 <div class="landing" use:links bind:this={landingContainerEl}>
-
-  <div class="pane left">
+  <div class="pane left" class:mini={project && projectPost}>
     <div
       class="world"
       class:zoomed
+      class:mini={project && projectPost}
       bind:this={worldEl}
-      on:click={e => {
+      on:click={(e) => {
         if (zoomed) {
-          zoomed = false;
-          worldEl.style.transformOrigin = 'center center';
+          zoomed = false
+          worldEl.style.transformOrigin = 'center center'
         } else {
-          zoomed = true;
-          worldEl.style.transformOrigin = e.x - 40 + 'px ' + (e.y - 40) + 'px';
+          zoomed = true
+          worldEl.style.transformOrigin = e.x - 40 + 'px ' + (e.y - 40) + 'px'
         }
       }}>
-
       {#each worldOut as cell, index}
         <div
           class="cell"
@@ -589,7 +660,6 @@
   </div>
 
   <div class="pane right" use:links>
-
     {#await posts then posts}
       {#each posts as post}
         <a href={'/project/' + post.slug.current} class="post" in:fade>
@@ -614,9 +684,21 @@
         </a>
       {/each}
     {/await}
-
   </div>
 
+  {#if project && projectPost}
+    <div class="project" in:fade>
+      <h1>{projectPost.title}</h1>
+      {#if projectPost.authors}
+        {#each projectPost.authors as author (author._id)}
+          <div class="author">{author.name}</div>
+        {/each}
+      {/if}
+      <div class="main-text">
+        {@html renderBlockText(projectPost.mainContent.content)}
+      </div>
+    </div>
+  {/if}
 </div>
 
 <div class="world-control">
@@ -624,7 +706,7 @@
     <div
       class="control first"
       on:click={() => {
-        stopWorld();
+        stopWorld()
       }}>
       Pause
     </div>
@@ -632,7 +714,7 @@
     <div
       class="control first"
       on:click={() => {
-        startWorld();
+        startWorld()
       }}>
       Start
     </div>
@@ -640,7 +722,7 @@
   <div
     class="control first"
     on:click={() => {
-      resetWorld();
+      resetWorld()
     }}>
     Reset
   </div>
@@ -648,7 +730,7 @@
     <div
       class="control"
       on:click={() => {
-        zoomed = false;
+        zoomed = false
       }}>
       Zoom Out
     </div>
@@ -656,12 +738,11 @@
     <div
       class="control"
       on:click={() => {
-        zoomed = true;
+        zoomed = true
       }}>
       Zoom In
     </div>
   {/if}
-
 </div>
 
 <div class="bottom-bar">Gen => {padGen($generation)}</div>
