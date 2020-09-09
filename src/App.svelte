@@ -1,7 +1,7 @@
 <script>
   // # # # # # # # # # # # # #
   //
-  //  TSoaP Client
+  //  REALITY SETTINGS
   //
   // # # # # # # # # # # # # #
 
@@ -15,10 +15,8 @@
 
   // ROUTES
   import Arena from './Arena.svelte'
-  import Landing from './Landing.svelte'
+  import Main from './Main.svelte'
   import Settings from './Components/Settings.svelte'
-  import Single from './Single.svelte'
-  import Author from './Author.svelte'
 
   // COMPONENTS
   import Ball from './Components/Ball.svelte'
@@ -66,7 +64,7 @@
     max-width: 100%;
   }
 
-  .landing {
+  .Main {
     p {
       display: inline;
     }
@@ -82,9 +80,9 @@
 <main>
   <Router>
     <Route path="/" component={Settings} />
-    <Route path="/:seed/" start={true} component={Landing} />
-    <Route path="/project/:slug" component={Landing} project={true} />
-    <Route path="/author/:slug" component={Landing} author={true} />
-    <Route path="/author/:slug" component={Landing} introduction={true} />
+    <Route path="/:seed/" start={true} component={Main} />
+    <Route path="/project/:slug" component={Main} project={true} />
+    <Route path="/author/:slug" component={Main} author={true} />
+    <Route path="/meta" component={Main} meta={true} />
   </Router>
 </main>

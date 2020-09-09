@@ -7,6 +7,7 @@
   import shuffle from 'lodash/shuffle'
   import flatMap from 'lodash/flatMap'
   import Markov from 'markov-strings'
+  import random from 'lodash/random'
   import { v4 as uuidv4 } from 'uuid'
 
   import {
@@ -25,6 +26,8 @@
   export let heat = false
   export let start = false
   export let project = false
+  export let author = false
+  export let meta = false
   export let slug = false
 
   // COMPONENTS
@@ -34,43 +37,52 @@
   import EmbedBlock from './Components/Blocks/EmbedBlock.svelte'
   import Molecule from './Components/Molecule.svelte'
   import Ball from './Components/Ball.svelte'
+  import ProjectView from './ProjectView.svelte'
+  import AuthorView from './AuthorView.svelte'
+  import MetaView from './MetaView.svelte'
 
   // CONSTANTS
-  const query = '*[_type == "project"]'
+  const query = '*[_type == "project"]{...,authors[]->{...}}'
   const authorQuery = '*[_type == "author"]'
-
-  // VARIABLES
-  let posts = loadData(query)
-  let authors = loadData(authorQuery)
-  let blocks = []
-  let testBlocks = []
-  let currentBlocks = []
-  let postsMap = {}
-  let postsArray = []
-  let keywords = []
-  let allTextOnly = ''
-  let markovMaterial = []
-  let landingContainerEl = {}
-  let worldEl = {}
-
-  let cells = []
-
-  let zoomed = false
-
-  let allSentences = []
-
+  const metaQuery = '*[_id == "introduction"]{...,authors[]->{...}}[0]'
   const WORLD_WIDTH = 29
   const WORLD_HEIGTH = 29
   const WORLD_SIZE = WORLD_WIDTH * WORLD_HEIGTH
   const genDuration = 50
 
-  const life = new Life(WORLD_WIDTH, WORLD_HEIGTH)
-  // life.colors = 4;
-
+  // VARIABLES
+  let blocks = []
+  let testBlocks = []
+  let currentBlocks = []
+  let keywords = []
+  let allTextOnly = ''
+  let markovMaterial = []
+  let landingContainerEl = {}
+  let worldEl = {}
+  let cells = []
+  let zoomed = false
+  let allSentences = []
   let worldLoop = {}
   let worldOut = []
-
   let running = true
+
+  // => Posts
+  let posts = loadData(query)
+  let postsMap = {}
+  let postsArray = []
+  let projectPost = false
+
+  // => Authors
+  let authors = loadData(authorQuery)
+  let authorsArray = []
+  let authorPost = false
+
+  // => Meta
+  let metaData = loadData(metaQuery)
+  let metaPost = false
+
+  const life = new Life(WORLD_WIDTH, WORLD_HEIGTH)
+  // life.colors = 4;
 
   life.randomize()
 
@@ -89,8 +101,6 @@
       startWorld()
     }
   }
-
-  let projectPost = false
 
   const startWorld = () => {
     running = true
@@ -124,9 +134,21 @@
   }
 
   $: {
-    if (slug && postsArray) {
+    if (project && slug && postsArray) {
+      // console.log(slug)
+      stopWorld()
+      projectPost = false
+      setTimeout(() => {
+        projectPost = postsArray.find((p) => p.slug.current == slug)
+      }, 100)
+    }
+    if (author && slug && authorsArray) {
+      stopWorld()
       console.log(slug)
-      projectPost = postsArray.find((p) => p.slug.current == slug)
+      authorPost = authorsArray.find((p) => p.slug.current == slug)
+    }
+    if (meta && metaPost) {
+      stopWorld()
     }
   }
 
@@ -142,17 +164,18 @@
   // }
   // }
 
-  globalSeed.set(seed)
+  // Set random seed if undefined
+  globalSeed.set(seed ? seed : (random(0, 65535) >>> 0).toString(2))
+
+  metaData.then((metaData) => {
+    metaPost = metaData
+  })
+
+  authors.then((authors) => {
+    authorsArray = authors
+  })
 
   posts.then((posts) => {
-    // if (slug) {
-    //   console.log(slug)
-    //   projectPost = posts.find((p) => p.slug.current == slug)
-    //   console.dir(projectPost)
-    // }
-
-    // console.dir(posts);
-
     postsArray = posts
 
     posts.forEach((post) => {
@@ -204,7 +227,7 @@
           .map((b) => b.children)
       )
 
-      console.dir(children)
+      // console.dir(children)
 
       children.forEach((c) => {
         if (c.marks.length > 0 && c.marks.includes('keyword')) {
@@ -220,7 +243,7 @@
       // keywords = [...keywords, ...a.filter(x => x._type === "keyword")];
     })
 
-    console.dir(keywords)
+    // console.dir(keywords)
     keywords = keywords
 
     // console.dir(allSentences);
@@ -581,85 +604,61 @@
   .title {
     max-width: 240px;
   }
-
-  .project {
-    margin-right: 20px;
-    margin-left: 20px;
-    // background: yellow;
-    z-index: 100;
-    position: fixed;
-    top: 0;
-    left: 0px;
-    width: calc(100% - 440px);
-    overflow: scroll;
-    padding: 10px;
-    height: 100vh;
-    padding-bottom: 40px;
-
-    /* padding-top: 20px; */
-
-    img {
-      max-width: 100%;
-    }
-
-    .main-text {
-      font-size: 16px;
-      max-width: 700px;
-
-      /* font-family: "times new roman", times, serif; */
-    }
-
-    .author {
-      font-size: 16px;
-      margin-bottom: 40px;
-
-      /* font-family: "times new roman", times, serif; */
-    }
-
-    h1 {
-      /* padding: 20px 0px; */
-      font-family: 'five', 'Akkurat-Mono', monospace;
-      font-size: 72px;
-      font-weight: normal;
-      line-height: 0.8em;
-      margin-bottom: 40px;
-      // max-width: 1000px;
-    }
-  }
 </style>
 
 <div class="landing" use:links bind:this={landingContainerEl}>
-  <div class="pane left" class:mini={project && projectPost}>
-    <div
-      class="world"
-      class:zoomed
-      class:mini={project && projectPost}
-      bind:this={worldEl}
-      on:click={(e) => {
-        if (zoomed) {
-          zoomed = false
-          worldEl.style.transformOrigin = 'center center'
-        } else {
-          zoomed = true
-          worldEl.style.transformOrigin = e.x - 40 + 'px ' + (e.y - 40) + 'px'
-        }
-      }}>
-      {#each worldOut as cell, index}
-        <div
-          class="cell"
-          data-index={index}
-          data-x={index % 39}
-          data-y={Math.floor(index / 39)}
-          class:alive={cell == 1}
-          class:colorTwo={cell == 2}
-          class:colorThree={cell == 3}>
-          <span class="text">{index}</span>
-        </div>
-      {/each}
-    </div>
+  <div class="pane left">
+    <!-- WORLD -->
+    {#if !project && !author && !meta}
+      <div
+        class="world"
+        class:zoomed
+        class:mini={project && projectPost}
+        bind:this={worldEl}
+        on:click={(e) => {
+          if (zoomed) {
+            zoomed = false
+            worldEl.style.transformOrigin = 'center center'
+          } else {
+            zoomed = true
+            worldEl.style.transformOrigin = e.x - 40 + 'px ' + (e.y - 40) + 'px'
+          }
+        }}>
+        {#each worldOut as cell, index}
+          <div
+            class="cell"
+            data-index={index}
+            data-x={index % 39}
+            data-y={Math.floor(index / 39)}
+            class:alive={cell == 1}
+            class:colorTwo={cell == 2}
+            class:colorThree={cell == 3}>
+            <span class="text">{index}</span>
+          </div>
+        {/each}
+      </div>
+    {/if}
+
+    <!-- PROJECT -->
+    {#if project && projectPost}
+      <ProjectView {projectPost} />
+    {/if}
+
+    <!-- AUTHOR -->
+    {#if author && authorPost}
+      <AuthorView {authorPost} />
+    {/if}
+
+    <!-- META -->
+    {#if meta && metaPost}
+      <MetaView {metaPost} />
+    {/if}
   </div>
 
+  <!-- INFO PANE -->
   <div class="pane right" use:links>
+    <div class="top-bar">Reality Settings / Seed => {$globalSeed}</div>
+
     {#await posts then posts}
       {#each posts as post}
         <a href={'/project/' + post.slug.current} class="post" in:fade>
@@ -685,66 +684,52 @@
       {/each}
     {/await}
   </div>
+</div>
 
-  {#if project && projectPost}
-    <div class="project" in:fade>
-      <h1>{projectPost.title}</h1>
-      {#if projectPost.authors}
-        {#each projectPost.authors as author (author._id)}
-          <div class="author">{author.name}</div>
-        {/each}
-      {/if}
-      <div class="main-text">
-        {@html renderBlockText(projectPost.mainContent.content)}
+{#if !project && !author && !meta}
+  <div class="world-control">
+    {#if running}
+      <div
+        class="control first"
+        on:click={() => {
+          stopWorld()
+        }}>
+        Pause
       </div>
-    </div>
-  {/if}
-</div>
-
-<div class="world-control">
-  {#if running}
+    {:else}
+      <div
+        class="control first"
+        on:click={() => {
+          startWorld()
+        }}>
+        Start
+      </div>
+    {/if}
     <div
       class="control first"
       on:click={() => {
-        stopWorld()
+        resetWorld()
       }}>
-      Pause
+      Reset
     </div>
-  {:else}
-    <div
-      class="control first"
-      on:click={() => {
-        startWorld()
-      }}>
-      Start
-    </div>
-  {/if}
-  <div
-    class="control first"
-    on:click={() => {
-      resetWorld()
-    }}>
-    Reset
+    {#if zoomed}
+      <div
+        class="control"
+        on:click={() => {
+          zoomed = false
+        }}>
+        Zoom Out
+      </div>
+    {:else}
+      <div
+        class="control"
+        on:click={() => {
+          zoomed = true
+        }}>
+        Zoom In
+      </div>
+    {/if}
   </div>
-  {#if zoomed}
-    <div
-      class="control"
-      on:click={() => {
-        zoomed = false
-      }}>
-      Zoom Out
-    </div>
-  {:else}
-    <div
-      class="control"
-      on:click={() => {
-        zoomed = true
-      }}>
-      Zoom In
-    </div>
-  {/if}
-</div>
 
-<div class="bottom-bar">Gen => {padGen($generation)}</div>
-
-<div class="top-bar">Reality Settings / Seed => {$globalSeed}</div>
+  <div class="bottom-bar">Gen => {padGen($generation)}</div>
+{/if}
