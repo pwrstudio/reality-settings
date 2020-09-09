@@ -57,7 +57,7 @@
     width: 100px;
     height: 100px;
     border-radius: 100px;
-    background: red;
+    background: orangered;
     position: fixed;
     top: 0;
     left: 0;

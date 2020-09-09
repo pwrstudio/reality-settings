@@ -119,7 +119,7 @@
 
       &::-webkit-progress-value {
         background-color: #a4a4a4;
-        background-color: red;
+        background-color: orangered;
       }
 
       &::-webkit-progress-bar {

@@ -411,8 +411,9 @@
     // transform: scale(1.45);
     // transition: transform 0.5s ease-out;
     // will-change: transform;
+    // will-change: transform;
 
-    @media (min-aspect-ratio: 16/10) {
+    @media (min-aspect-ratio: 16/9) {
       width: $WORLD_WIDTH * $CELL_DIMENSION_SHORT;
       height: $WORLD_HEIGHT * $CELL_DIMENSION_SHORT;
       // background: green;
@@ -424,7 +425,7 @@
     }
 
     &.zoomed {
-      transform: scale(6);
+      transform: scale(5);
     }
   }
 
@@ -465,7 +466,7 @@
 
     &.alive {
       border-radius: 5px;
-      background: red;
+      background: orangered;
       // &:hover {
       //   background: #d70000;
       // }
@@ -583,7 +584,7 @@
     height: 10px;
     width: 10px;
     // border-radius: 20px;
-    background: red;
+    background: orangered;
     margin-right: 10px;
   }
 
@@ -622,7 +623,9 @@
             worldEl.style.transformOrigin = 'center center'
           } else {
             zoomed = true
-            worldEl.style.transformOrigin = e.x - 40 + 'px ' + (e.y - 40) + 'px'
+            // console.dir(worldEl.offsetTop)
+            // console.dir(worldEl.offsetLeft)
+            worldEl.style.transformOrigin = e.x - worldEl.offsetLeft + 'px ' + (e.y - worldEl.offsetTop) + 'px'
           }
         }}>
         {#each worldOut as cell, index}

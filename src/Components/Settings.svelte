@@ -166,7 +166,7 @@
       border-radius: 25px;
 
       // transition: background 0.3s ease-out;
-      background: red;
+      background: orangered;
       // transform: rotateZ(90deg);
     }
   }
