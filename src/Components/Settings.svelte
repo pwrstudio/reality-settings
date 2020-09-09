@@ -178,7 +178,7 @@
   // MIT License
 
   $track-color: #333333 !default;
-  $thumb-color: #ff0000 !default;
+  $thumb-color: orangered !default;
 
   $thumb-radius: 40px !default;
   $thumb-height: 40px !default;

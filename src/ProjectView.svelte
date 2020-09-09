@@ -63,7 +63,8 @@
 
     .main-text {
       font-size: 16px;
-      max-width: 700px;
+      width: 700px;
+      max-width: 90%;
       padding-bottom: 140px;
     }
 

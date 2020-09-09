@@ -65,7 +65,7 @@
   @import "../../variables.scss";
 
   .audio-container {
-    width: $text_width;
+    // width: $text_width;
     margin-left: auto;
     margin-right: auto;
 

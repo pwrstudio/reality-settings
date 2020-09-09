@@ -25,7 +25,7 @@
   @import "../../variables.scss";
 
   .video {
-    width: $text_width;
+    // width: $text_width;
     max-width: 100%;
     margin-left: auto;
     margin-right: auto;

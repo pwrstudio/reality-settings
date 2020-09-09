@@ -408,8 +408,8 @@
     height: $WORLD_HEIGHT * $CELL_DIMENSION;
     background: grey;
     // transform-origin: top left;
-    // transform: scale(1.45);
-    // transition: transform 0.5s ease-out;
+    transform: scale(1) translate3d(0, 0, 0);;
+    transition: transform 0.3s ease-out;
     // will-change: transform;
     // will-change: transform;
 
@@ -425,7 +425,7 @@
     }
 
     &.zoomed {
-      transform: scale(5);
+      transform: scale(7) translate3d(0, 0, 0);;
     }
   }
 
