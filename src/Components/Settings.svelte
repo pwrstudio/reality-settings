@@ -2,9 +2,6 @@
   import { links, navigate } from "svelte-routing";
   import random from "lodash/random";
   import has from "lodash/has";
-  import shuffle from "lodash/shuffle";
-  import flatMap from "lodash/flatMap";
-  import md5 from "blueimp-md5";
 
   import {
     urlFor,
@@ -14,17 +11,11 @@
     singleToPlainText
   } from "../sanity.js";
 
-  let heat = 0;
-  let size = 50;
-  let friction = 30;
-  let salt = 5;
   let seed = random(0, 65535);
   let seedArray = [];
 
   $: {
     let seedToBits = (seed >>> 0).toString(2);
-    // console.dir(seedToBits);
-    // console.dir(seedToBits.length);
 
     while (seedToBits.length < 16) {
       seedToBits = seedToBits + "0";
@@ -32,47 +23,21 @@
 
     seedArray = seedToBits;
   }
-  // let fillColor = "#ff0000";
-
-  // let parameterA = 50;
-  // let parameterB = 50;
-  // let parameterC = 50;
-
-  // $: {
-  //   seed = md5(
-  //     parameterA.toString() + parameterB.toString() + parameterC.toString()
-  //   );
-  // }
-
-  // const mapRange = (x, in_min, in_max, out_min, out_max) =>
-  //   ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
-
-  // console.log(parseInt("0xFFFFFF", 16));
-
-  // $: {
-  //   // console.log(mapRange(heat, 0, 1000, 0, 16000000).toString(16));
-  //   fillColor = "#" + mapRange(heat, 0, 1000, 0, 16000000).toString(16);
-  //   console.log(fillColor);
-  // }
-
-  // return (dec >>> 0).toString(2);
-
-  const padToFour = number =>
-    number <= 9999 ? `000${number}`.slice(-4) : number;
 
   const padToTwo = number =>
     number <= 9999 ? `00000${number}`.slice(-5) : number;
 
-  const padToSixteen = number =>
-    number <= 999999999999 ? `000000000000000${number}`.slice(-16) : number;
 </script>
 
 <style lang="scss">
   @import "../variables.scss";
 
   .settings {
-    padding: 40px;
+    padding: 30px;
     font-size: 32px;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
 
     @include screen-size("small") {
       font-size: 16px;
@@ -80,13 +45,19 @@
 
     .header {
       font-family: "five", "Akkurat-Mono", monospace;
-      font-size: 72px;
-      margin-bottom: 40px;
+      font-size: 96px;
+      margin-bottom: 30px;
       text-align: center;
+      -webkit-text-stroke-width: 5px;
+      -webkit-text-stroke-color: #222222;
+      letter-spacing: -2px;
 
       @include screen-size("small") {
+        letter-spacing: -1px;
         font-size: 48px;
         margin-bottom: 40px;
+        -webkit-text-stroke-width: 3px;
+      -webkit-text-stroke-color: #222222;
       }
     }
 
@@ -94,11 +65,8 @@
       margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
-      // position: fixed;
-      // width: 50vw;
 
       .label {
-        // background: red;
         display: inline-block;
         @include screen-size("small") {
           display: none;
@@ -106,36 +74,11 @@
       }
 
       .preview {
-        // background: red;
         display: inline-block;
         @include screen-size("small") {
           display: none;
         }
       }
-
-      // &.top {
-      //   top: 20px;
-      //   left: 20px;
-      //   background: yellow;
-      // }
-
-      // &.left {
-      //   top: 80px;
-      //   left: calc(50vw + 20px);
-      //   transform-origin: top left;
-      //   transform: rotateZ(90deg);
-      //   background: blue;
-      // }
-
-      // &.right {
-      //   background: green;
-      // }
-
-      // &.bottom {
-      //   top: calc(50vw + 60px);
-      //   left: 20px;
-      //   background: red;
-      // }
     }
 
     input {
@@ -153,12 +96,14 @@
       text-decoration: none;
       color: #222222;
       padding: 10px 40px;
-      margin-top: 40px;
+      margin-top: 30px;
       width: 100%;
       display: block;
       text-align: center;
       transition: background 0.5s $transtion2;
       border-radius: 5px;
+      margin-left: auto;
+    margin-right: auto;
 
       &:hover {
         background: lightgray;
@@ -167,25 +112,25 @@
   }
 
   .sigil {
-    width: 400px;
-    height: 400px;
+    width: 300px;
+    height: 300px;
 
     background: grey;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 80px;
+    margin-bottom: 60px;
     @include screen-size("small") {
       width: 200px;
       height: 200px;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
   }
 
   .cell {
-    height: 100px;
-    width: 100px;
-    border-radius: 100px;
-    line-height: 100px;
+    height: 75px;
+    width: 75px;
+    border-radius: 75px;
+    line-height: 75px;
 
     @include screen-size("small") {
       height: 50px;
@@ -463,7 +408,7 @@
     <div
       class="run"
       on:click={() => {
-        navigate('/' + (seed >>> 0).toString(2));
+        navigate('/seed/' + (seed >>> 0).toString(2));
       }}>
       Start
     </div>

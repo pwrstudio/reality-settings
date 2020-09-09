@@ -35,6 +35,17 @@
     overflow: scroll;
     padding: 10px;
     height: 100vh;
+    background: grey;
+
+
+    @include screen-size('small') {
+        margin-right: 0px;
+        margin-left: 0px;
+        width: calc(100vw - 20px);
+        height: 100vh;
+        left:0;
+        top: 0;
+      }
 
     /* padding-top: 20px; */
 
@@ -70,7 +81,7 @@
 
 <div class="author" in:fade>
   <!-- BACK LINK -->
-  <a href={'/' + $globalSeed} class="back-link">BACK</a>
+  <a href={'/seed/' + $globalSeed} class="back-link">&#x2039&#x2039&#x2039 BACK</a>
   <!-- CONTENT -->
   <h1>{authorPost.name}</h1>
   <!-- <div class="main-text">

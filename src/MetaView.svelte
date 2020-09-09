@@ -12,6 +12,12 @@
 
   import { urlFor, renderBlockText, singleToPlainText } from './sanity.js'
 
+  // BLOCKS
+  import ImageBlock from './Components/Blocks/ImageBlock.svelte'
+  import VideoBlock from './Components/Blocks/VideoBlock.svelte'
+  import AudioBlock from './Components/Blocks/AudioBlock.svelte'
+  import EmbedBlock from './Components/Blocks/EmbedBlock.svelte'
+
   // STORES
   import { globalSeed, globalHeat, generation, inSession } from './stores.js'
 
@@ -37,6 +43,17 @@
     padding: 10px;
     height: 100vh;
     padding-bottom: 40px;
+    background: grey;
+
+
+    @include screen-size('small') {
+        margin-right: 0px;
+        margin-left: 0px;
+        width: calc(100vw - 20px);
+        height: 100vh;
+        left:0;
+        top: 0;
+      }
 
     /* padding-top: 20px; */
 
@@ -64,7 +81,6 @@
       font-size: 72px;
       font-weight: normal;
       line-height: 0.8em;
-      margin-bottom: 40px;
       // max-width: 1000px;
     }
   }
@@ -72,11 +88,27 @@
 
 <div class="meta" in:fade use:links>
   <!-- BACK LINK -->
-  <a href={'/' + $globalSeed} class="back-link">BACK</a>
+  <a href={'/seed/' + $globalSeed} class="back-link">&#x2039&#x2039&#x2039 BACK</a>
 
-  <!-- CONTENT => MAIN CONTENT -->
-  <div class="main-text">
-    {@html renderBlockText(metaPost.mainContent.content)}
+   <!-- CONTENT => MAIN CONTENT -->
+   <div class="main-text">
+    {#each projectPost.mainContent.content as block}
+      {#if block._type === 'block'}
+        {@html renderBlockText(block)}
+      {/if}
+      {#if block._type === 'imageBlock'}
+        <ImageBlock {block} />
+      {/if}
+      {#if block._type === 'videoBlock'}
+        <VideoBlock {block} />
+      {/if}
+      {#if block._type === 'audioBlock'}
+        <AudioBlock {block} />
+      {/if}
+      {#if block._type === 'embedBlock'}
+        <EmbedBlock {block} />
+      {/if}
+    {/each}
   </div>
 
   <!-- CONTENT => AUTHORS -->

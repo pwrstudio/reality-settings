@@ -25,16 +25,11 @@
   export let seed = false
   export let heat = false
   export let start = false
-  export let project = false
-  export let author = false
   export let meta = false
   export let slug = false
+  export let section = false
 
   // COMPONENTS
-  import ImageBlock from './Components/Blocks/ImageBlock.svelte'
-  import VideoBlock from './Components/Blocks/VideoBlock.svelte'
-  import AudioBlock from './Components/Blocks/AudioBlock.svelte'
-  import EmbedBlock from './Components/Blocks/EmbedBlock.svelte'
   import Molecule from './Components/Molecule.svelte'
   import Ball from './Components/Ball.svelte'
   import ProjectView from './ProjectView.svelte'
@@ -134,7 +129,7 @@
   }
 
   $: {
-    if (project && slug && postsArray) {
+    if (section == 'project' && slug && postsArray) {
       // console.log(slug)
       stopWorld()
       projectPost = false
@@ -142,10 +137,13 @@
         projectPost = postsArray.find((p) => p.slug.current == slug)
       }, 100)
     }
-    if (author && slug && authorsArray) {
+    if (section == 'author' && slug && authorsArray) {
       stopWorld()
       console.log(slug)
-      authorPost = authorsArray.find((p) => p.slug.current == slug)
+      authorPost = false
+      setTimeout(() => {
+        authorPost = authorsArray.find((p) => p.slug.current == slug)
+      }, 100)
     }
     if (meta && metaPost) {
       stopWorld()
@@ -375,6 +373,7 @@
 
       @include screen-size('small') {
         width: 100%;
+        height: 50%;
       }
 
       &.mini {
@@ -396,7 +395,10 @@
       height: calc(100vh - 80px);
 
       @include screen-size('small') {
-        display: none;
+        width: calc(100% - 40px);
+        height: 50%;
+        left:0;
+        top: 50%;
       }
     }
   }
@@ -410,7 +412,7 @@
     // transition: transform 0.5s ease-out;
     // will-change: transform;
 
-    @media (min-aspect-ratio: 16/9) {
+    @media (min-aspect-ratio: 16/10) {
       width: $WORLD_WIDTH * $CELL_DIMENSION_SHORT;
       height: $WORLD_HEIGHT * $CELL_DIMENSION_SHORT;
       // background: green;
@@ -609,11 +611,10 @@
 <div class="landing" use:links bind:this={landingContainerEl}>
   <div class="pane left">
     <!-- WORLD -->
-    {#if !project && !author && !meta}
+    {#if !section && !meta}
       <div
         class="world"
         class:zoomed
-        class:mini={project && projectPost}
         bind:this={worldEl}
         on:click={(e) => {
           if (zoomed) {
@@ -639,21 +640,24 @@
       </div>
     {/if}
 
-    <!-- PROJECT -->
-    {#if project && projectPost}
-      <ProjectView {projectPost} />
-    {/if}
 
-    <!-- AUTHOR -->
-    {#if author && authorPost}
-      <AuthorView {authorPost} />
-    {/if}
-
-    <!-- META -->
-    {#if meta && metaPost}
-      <MetaView {metaPost} />
-    {/if}
   </div>
+
+  <!-- PROJECT -->
+  {#if section == 'project' && projectPost}
+    <ProjectView {projectPost} />
+  {/if}
+
+  <!-- AUTHOR -->
+  {#if section == 'author' && authorPost}
+    <AuthorView {authorPost} />
+  {/if}
+
+  <!-- META -->
+  {#if meta && metaPost}
+    <MetaView {metaPost} />
+  {/if}
+
 
   <!-- INFO PANE -->
   <div class="pane right" use:links>
@@ -686,7 +690,7 @@
   </div>
 </div>
 
-{#if !project && !author && !meta}
+{#if !section && !meta}
   <div class="world-control">
     {#if running}
       <div

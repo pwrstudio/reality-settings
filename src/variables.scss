@@ -22,7 +22,7 @@ $font_size_caption: $font_size_normal;
 $font_size_small: 12px;
 $font_size_large: 17px;
 
-$line-height: 22px;
+$line-height: 32px;
 $margin: 42px;
 $phone-margin: 21px;
 
@@ -43,7 +43,7 @@ $breakpoints: (
         max-width: 1600px,
     ),
     "short": (
-        max-height: 700px,
+        max-height: 600px,
     ),
 );
 

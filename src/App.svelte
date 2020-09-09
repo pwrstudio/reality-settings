@@ -80,9 +80,8 @@
 <main>
   <Router>
     <Route path="/" component={Settings} />
-    <Route path="/:seed/" start={true} component={Main} />
-    <Route path="/project/:slug" component={Main} project={true} />
-    <Route path="/author/:slug" component={Main} author={true} />
-    <Route path="/meta" component={Main} meta={true} />
+    <Route path="/meta/" component={Main} meta={true}/>
+    <Route path="/seed/:seed/" start={true} component={Main} />
+    <Route path="/:section/:slug" component={Main} />
   </Router>
 </main>

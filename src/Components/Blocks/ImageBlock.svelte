@@ -12,6 +12,8 @@
 
   // PROPS
   export let block = {}
+
+  console.dir(block)
 </script>
 
 <style lang="scss">
@@ -83,10 +85,6 @@
       <figcaption class="caption">
         {@html renderBlockText(block.caption.content)}
       </figcaption>
-    {/if}
-    ATTRIBUTION
-    {#if has(block, 'attribution')}
-      <figcaption class="attribution">{block.attribution}</figcaption>
     {/if}
   </div>
 
