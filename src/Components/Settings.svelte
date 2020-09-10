@@ -33,8 +33,7 @@
   @import '../variables.scss';
 
   $CELL_DIMENSION: 120px;
-  $CELL_DIMENSION_PHONE: 60px;
-
+  $CELL_DIMENSION_PHONE: 80px;
 
   .settings {
     height: 100vh;
@@ -135,7 +134,7 @@
     color: black;
     // font-size: 16px;
     font-size: 52px;
-    -webkit-tap-highlight-color: lightgray;
+    -webkit-tap-highlight-color: rgba(211, 211, 211, 0.3);
 
     @include screen-size('small') {
       height:  $CELL_DIMENSION_PHONE;

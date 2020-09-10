@@ -62,6 +62,7 @@
   let running = false
   let stopFlag = false
   let index = false
+  let countDownMarker  = false
 
   // => Posts
   let posts = loadData(query)
@@ -309,9 +310,22 @@ const stopWorld = () => {
   const padGen = (number) =>
     number <= 999999 ? `00000${number}`.slice(-6) : number
 
+  const countDown = i => {
+    console.log(i % 2)
+    if(i === 0) {
+      countDownMarker = false
+      startWorld()
+    } else {
+      countDownMarker = $globalSeed[i]
+      setTimeout(() => {
+        countDown(--i)
+      }, 60)
+    }
+  }
+
   onMount(async () => {
     if(!section && !meta) {
-      startWorld()
+      countDown(15)
     }
 
     const resizeWorld = () => {
@@ -460,7 +474,7 @@ const stopWorld = () => {
     height: $CELL_DIMENSION;
     width: $CELL_DIMENSION;
     border-radius: $CELL_DIMENSION;
-    line-height: $CELL_DIMENSION + 10px;
+    line-height: $CELL_DIMENSION - 10px;
     user-select: none;
     float: left;
     background: #a4a4a4;
@@ -490,7 +504,7 @@ const stopWorld = () => {
 
     .text {
       display: none;
-      line-height: $CELL_DIMENSION - 8px;
+      line-height: $CELL_DIMENSION + 2px;
       color: rgb(133, 255, 133);
     }
 
@@ -646,11 +660,25 @@ const stopWorld = () => {
   .authors {
     margin-top: 0.5em;
   }
+
+  .countdown-marker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    z-index: 1000;
+    font-size: 96px;
+    color: lightgray;
+  }
 </style>
 
 <div class="landing" use:links bind:this={landingContainerEl}>
   <div class="pane left" bind:this={paneEl}>
     <!-- WORLD -->
+    {#if countDownMarker }
+      <div class='countdown-marker'>{countDownMarker}</div>
+    {/if}
+
     {#if !section && !meta}
       <div
         class="world"
@@ -660,11 +688,14 @@ const stopWorld = () => {
           if (zoomed) {
             zoomed = false
             worldEl.style.transformOrigin = 'center center'
+            worldEl.style.transform = 'scale(1)';
+
           } else {
             zoomed = true
             // console.dir(worldEl.offsetTop)
             // console.dir(worldEl.offsetLeft)
             worldEl.style.transformOrigin = e.x - worldEl.offsetLeft + 'px ' + (e.y - worldEl.offsetTop) + 'px'
+            worldEl.style.transform = 'scale(5)';
           }
         }}>
         {#each worldOut as cell, index}
@@ -792,5 +823,4 @@ const stopWorld = () => {
     {/if}
   </div>
 
-  <!-- <div class="bottom-bar">Gen => {padGen($generation)}</div> -->
 {/if}
