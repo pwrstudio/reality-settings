@@ -33,7 +33,7 @@
   @import '../variables.scss';
 
   $CELL_DIMENSION: 120px;
-  $CELL_DIMENSION_PHONE: 80px;
+  $CELL_DIMENSION_PHONE: 60px;
 
 
   .settings {
@@ -135,8 +135,7 @@
     color: black;
     // font-size: 16px;
     font-size: 52px;
-
-
+    -webkit-tap-highlight-color: lightgray;
 
     @include screen-size('small') {
       height:  $CELL_DIMENSION_PHONE;
@@ -171,7 +170,9 @@
     &:hover {
       .plus {
         display: block;
-
+        @include screen-size('small') {
+          display: none;
+        }
       }
     }
 
@@ -184,12 +185,13 @@
       &:hover {
         .minus {
           display: block;
+          @include screen-size('small') {
+            display: none;
+          }
         }
-
         .plus {
           display: none;
         }
-    
       }
     }
 

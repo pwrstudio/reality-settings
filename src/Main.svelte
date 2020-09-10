@@ -331,7 +331,6 @@ const stopWorld = () => {
       }
     }
 
-
     resizeWorld()
 
     window.onresize = resizeWorld
@@ -356,10 +355,7 @@ const stopWorld = () => {
     top: 0;
     left: 0;
     height: 100vh;
-    padding-right: 10%;
-    padding-left: 10%;
     overflow-y: scroll;
-    padding-bottom: 25vh;
 
     @include hide-scroll;
   }
@@ -393,24 +389,15 @@ const stopWorld = () => {
     top: 0;
 
     &.left {
-      // width: 66.66%;
-
+      position: relative;
       left: 0;
       background: lightgray;
       background: grey;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       width: calc(100% - 400px);
 
       @include screen-size('small') {
-        width: 100%;
-        height: 50%;
-      }
-
-      &.mini {
-        // transform: translateY(-600px);
-        display: none;
+        width: 100vw;
+        height: 50vh;
       }
     }
 
@@ -425,8 +412,8 @@ const stopWorld = () => {
       height: calc(100vh - 80px);
 
       @include screen-size('small') {
-        width: calc(100% - 40px);
-        height: 50%;
+        width: calc(100vw - 20px);
+        height: 50vh;
         left: 0;
         top: 50%;
       }
@@ -443,6 +430,11 @@ const stopWorld = () => {
     background: grey;
     // background: lightgray;
     // transform-origin: top left;
+    position: absolute;
+    top: 50%;
+    margin-top: -($WORLD_WIDTH * $CELL_DIMENSION / 2);
+    left: 50%;
+    margin-left: -($WORLD_WIDTH * $CELL_DIMENSION / 2);
     transform: scale(1) translate3d(0, 0, 0);
     // transition: transform 0.3s ease-out;
     // will-change: transform;
@@ -535,23 +527,6 @@ const stopWorld = () => {
     }
   }
 
-  .bottom-bar {
-    height: 40px;
-    line-height: 40px;
-    position: fixed;
-    bottom: 0;
-    width: calc(100% - 400px);
-    left: 0;
-    // background: #a4a4a4;
-    font-size: 12px;
-    // padding-left: 20px;
-    text-align: center;
-
-    @include screen-size('small') {
-      width: 100%;
-    }
-  }
-
   .world-control {
     height: 40px;
     line-height: 40px;
@@ -560,7 +535,6 @@ const stopWorld = () => {
     width: calc(100% - 400px);
     left: 0;
     font-size: 12px;
-    // padding-left: 20px;
     text-align: center;
     display: flex;
     justify-content: center;
@@ -578,6 +552,7 @@ const stopWorld = () => {
 
     @include screen-size('small') {
       width: 100%;
+      display: none;
     }
   }
 
@@ -612,7 +587,8 @@ const stopWorld = () => {
     }
 
     @include screen-size('small') {
-      display: none;
+      top: 50%;
+      width: 100vw;
     }
   }
 
