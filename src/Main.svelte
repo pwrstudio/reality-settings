@@ -34,7 +34,6 @@
   import ProjectView from './ProjectView.svelte'
   import AuthorView from './AuthorView.svelte'
   import MetaView from './MetaView.svelte'
-import { window } from 'lodash/_freeGlobal';
 
   // CONSTANTS
   const query = '*[_type == "project"]{...,authors[]->{...}}'
@@ -142,7 +141,6 @@ const stopWorld = () => {
 
   $: {
     if (section == 'project' && slug && postsArray) {
-      // console.log(slug)
       stopWorld()
       projectPost = false
       setTimeout(() => {
@@ -179,8 +177,6 @@ const stopWorld = () => {
 
   life.randomizeFromSeed($globalSeed)
 
-
-
   metaData.then((metaData) => {
     metaPost = metaData
   })
@@ -191,6 +187,8 @@ const stopWorld = () => {
 
   posts.then((posts) => {
     postsArray = posts
+
+    console.log(postsArray)
 
     posts.forEach((post) => {
       // Add to map
@@ -316,21 +314,21 @@ const stopWorld = () => {
       startWorld()
     }
 
-
-
     const resizeWorld = () => {
-      console.log('worldEl.clientHeight', worldEl.clientHeight)
-      console.log('worldEl.clientWidth', worldEl.clientWidth)
-      console.log('paneEl.clientHeight', paneEl.clientHeight)
-      console.log('paneEl.clientWidth', paneEl.clientWidth)
-      console.log('paneEl.clientHeight / worldEl.clientHeight', paneEl.clientHeight / worldEl.clientHeight)
-      console.log('paneEl.clientWidth / worldEl.clientWidth', paneEl.clientWidth / worldEl.clientWidth)
-      let heightRatio = paneEl.clientHeight / worldEl.clientHeight
-      let widthRatio = paneEl.widthHeight / worldEl.widthHeight
-      let smallestRatio = heightRatio >= widthRatio ? widthRatio : heightRatio
-      let roundedSmallestRatio = Math.floor(smallestRatio * 10) / 10
-      console.log('roundedSmallestRatio', roundedSmallestRatio)
-      worldEl.style.transform = 'scale(' + roundedSmallestRatio + ')';
+      if(worldEl && paneEl) {
+        console.log('worldEl.clientHeight', worldEl.clientHeight)
+        console.log('worldEl.clientWidth', worldEl.clientWidth)
+        console.log('paneEl.clientHeight', paneEl.clientHeight)
+        console.log('paneEl.clientWidth', paneEl.clientWidth)
+        console.log('paneEl.clientHeight / worldEl.clientHeight', paneEl.clientHeight / worldEl.clientHeight)
+        console.log('paneEl.clientWidth / worldEl.clientWidth', paneEl.clientWidth / worldEl.clientWidth)
+        let heightRatio = paneEl.clientHeight / worldEl.clientHeight
+        let widthRatio = paneEl.widthHeight / worldEl.widthHeight
+        let smallestRatio = heightRatio >= widthRatio ? widthRatio : heightRatio
+        let roundedSmallestRatio = Math.floor(smallestRatio * 10) / 10
+        console.log('roundedSmallestRatio', roundedSmallestRatio)
+        worldEl.style.transform = 'scale(' + roundedSmallestRatio + ')';
+      }
     }
 
 
@@ -420,9 +418,9 @@ const stopWorld = () => {
       left: calc(100% - 400px);
       background: grey;
       background: lightgray;
-      padding: 20px;
+      padding: 10px;
       padding-top: 90px;
-      width: calc(400px - 40px);
+      width: calc(400px - 20px);
       overflow-y: scroll;
       height: calc(100vh - 80px);
 
@@ -595,6 +593,7 @@ const stopWorld = () => {
     font-size: 12px;
     text-align: center;
     user-select: none;
+    z-index: 100;
     
     .menu-item {
       line-height: 40px;
@@ -626,8 +625,9 @@ const stopWorld = () => {
     display: block;
     font-size: 12px;
     // max-width: 300px;
-    display: flex;
-    align-items: center;
+    // display: flex;
+    // align-items: center;
+    // flex
 
     &:hover {
       transition: background 0.3 ease-out;
@@ -661,7 +661,14 @@ const stopWorld = () => {
   }
 
   .title {
-    max-width: 240px;
+    // max-width: 240px;
+    font-size: 16px;
+    line-height: 1em;
+    font-family: 'five', 'Akkurat-Mono', monospace;
+  }
+
+  .authors {
+    margin-top: 0.5em;
   }
 </style>
 
@@ -730,14 +737,20 @@ const stopWorld = () => {
         <div class='index-bar'>
           {#each posts as post, index (post._id)}
             <a href={'/project/' + post.slug.current} class="post" in:fade={{delay: 40 * index}}>
-              <div class="icon" />
               <div class="title">{post.title}</div>
+              <div class="authors">
+                {#if post.authors && Array.isArray(post.authors)}
+                  {#each post.authors as author}
+                      <div class="author">{author.name}</div>
+                  {/each}
+                {/if}
+              </div>
+
             </a>
           {/each}
 
           {#each keywords as keyword}
             <a href={'/keyword/' + keyword} class="post" in:fade>
-              <div class="key" />
               <div class="title">{keyword}</div>
             </a>
           {/each}
@@ -746,11 +759,10 @@ const stopWorld = () => {
     {/if}
 
     <!-- SIDEBAR => META -->
-    {#if meta}
+    {#if meta && !index}
       {#await authors then authors}
         {#each authors as author}
           <a href={'/author/' + author.slug.current} class="post" in:fade>
-            <div class="avatar" />
             <div class="title">{author.name}</div>
           </a>
         {/each}

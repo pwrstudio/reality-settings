@@ -75,7 +75,7 @@
       font-weight: normal;
       line-height: 1em;
       margin-bottom: 40px;
-      max-width: 80%;
+      max-width: 90%;
       margin-top: 20px;
       -webkit-text-stroke-width: 4px;
       -webkit-text-stroke-color: #222222;
