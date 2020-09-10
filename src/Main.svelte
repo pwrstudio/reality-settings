@@ -297,7 +297,7 @@ const stopWorld = () => {
     };
 
     let result = [];
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 10; i++) {
       let newMarkov = { ...markov.generate(options), uid: uuidv4() };
       result.push(newMarkov);
     }
@@ -307,7 +307,9 @@ const stopWorld = () => {
     logBlocks= [...logBlocks, result.pop(), ];
 
     setInterval(() => {
-      logBlocks= [...logBlocks, result.pop(), ];
+      if(result.length > 0){
+        logBlocks= [...logBlocks, result.pop(), ];
+      }
     }, 2000);
 
     // console.dir(testBlocks);
@@ -440,7 +442,7 @@ const stopWorld = () => {
 
       @include screen-size('small') {
         width: calc(100vw - 20px);
-        height: 50vh;
+        height: calc(50vh - 90px);
         left: 0;
         top: 50%;
       }
@@ -454,6 +456,10 @@ const stopWorld = () => {
   .log-bar {
     padding-bottom: 80px;
     font-size: 12px;
+    @include screen-size('small') {
+      padding-bottom: 40px;
+
+      }
   }
 
 

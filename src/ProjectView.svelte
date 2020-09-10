@@ -87,6 +87,12 @@
         background: white;
         text-decoration: none;
       }
+
+      @include screen-size('small') {
+
+        font-size: 22px;
+
+      }
     }
 
     .main-text {
@@ -113,6 +119,7 @@
       hyphens: auto;
       font-size: 46px;
       max-width: 100%;
+      -webkit-text-stroke-width: 3px;
       }
 
     }
@@ -121,7 +128,7 @@
 
 <div class="project" in:fade use:links>
   <!-- BACK LINK -->
-  <a href={'/seed/' + $globalSeed} class="back-link">Back</a>
+  <a href={'/seed/' + $globalSeed} class="back-link">&#x2039&#x2039&#x2039 Back</a>
 
   <!-- CONTENT => TITLE -->
   <h1>{projectPost.title}</h1>
