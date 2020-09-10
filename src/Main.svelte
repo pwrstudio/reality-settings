@@ -5,6 +5,7 @@
   import { Life } from 'dat-life'
   import has from 'lodash/has'
   import shuffle from 'lodash/shuffle'
+  import sample from 'lodash/sample'
   import flatMap from 'lodash/flatMap'
   import Markov from 'markov-strings'
   import random from 'lodash/random'
@@ -61,9 +62,10 @@
   let worldOut = []
   let running = false
   let stopFlag = false
-  let index = true
+  let index = false
   let countDownMarker  = false
   let initWorld =  []
+  let logBlocks = []
 
   // => Posts
   let posts = loadData(query)
@@ -99,6 +101,10 @@
   //   }
   // }
 
+  if(section == 'project') {
+    index = true;
+  }
+
 const advanceWorld = gen => {
   // console.log(gen)
   generation.set(gen)
@@ -130,10 +136,10 @@ const stopWorld = () => {
 }
 
   const resetWorld = () => {
-    // stopWorld()
-    // generation.set(0)
-    // life.randomizeFromSeed($globalSeed)
-    // worldOut = life.board
+    stopWorld()
+    generation.set(0)
+    life.randomizeFromSeed($globalSeed. Object.keys(postsMap))
+    worldOut = life.board
   }
 
   // if (!$inSession) {
@@ -163,17 +169,17 @@ const stopWorld = () => {
     }
   }
 
-  // $: {
-  // if (currentBlocks) {
-  //   setTimeout(() => {
-  //     landingContainerEl.scrollTo({
-  //       top: landingContainerEl.scrollHeight,
-  //       left: 0,
-  //       behavior: "smooth"
-  //     });
-  //   }, 100);
-  // }
-  // }
+  $: {
+  if (logBlocks && !section && !meta && !index) {
+    setTimeout(() => {
+      landingContainerEl.scrollTo({
+        top: landingContainerEl.scrollHeight,
+        left: 0,
+        behavior: "smooth"
+      });
+    }, 100);
+  }
+  }
 
   // Set random seed if undefined
   globalSeed.set(seed ? seed : (random(0, 65535) >>> 0).toString(2))
@@ -264,53 +270,45 @@ const stopWorld = () => {
       startWorld()
     }
 
-
-
-
     // console.dir(keywords)
     keywords = keywords
 
-    // console.dir(allSentences);
+    console.dir(allSentences);
 
-    // console.log("textonly");
-    // console.log(allTextOnly);
+    console.log("textonly");
+    console.log(allTextOnly);
 
-    // markovMaterial = allTextOnly
-    //   .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
-    //   .split("|");
+    markovMaterial = allTextOnly
+      .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
+      .split("|");
 
-    // console.dir(markovMaterial);
+    console.dir(markovMaterial);
 
     // Build the Markov generator
-    // const markov = new Markov(markovMaterial, { stateSize: 2 });
-    // markov.buildCorpus();
+    const markov = new Markov(markovMaterial, { stateSize: 2 });
+    markov.buildCorpus();
 
-    // const options = {
-    //   maxTries: 500,
-    //   filter: result => {
-    //     // result.string.split(" ").length >= 5 &&
-    //     return result.score > 10; // At least 5 words // End sentences with a dot.
-    //   }
-    // };
+    const options = {
+      maxTries: 200,
+      filter: result => {
+        // result.string.split(" ").length >= 5 &&
+        return result.score > 10; // At least 5 words // End sentences with a dot.
+      }
+    };
 
-    // let result = [];
-    // for (let i = 0; i < 50; i++) {
-    //   let newMarkov = { ...markov.generate(options), uid: uuidv4() };
-    //   result.push(newMarkov);
-    // }
+    let result = [];
+    for (let i = 0; i < 50; i++) {
+      let newMarkov = { ...markov.generate(options), uid: uuidv4() };
+      result.push(newMarkov);
+    }
 
-    // console.dir(result);
+    console.dir(result);
 
-    testBlocks = shuffle(blocks)
-    // allSentences = shuffle(allSentences);
+    logBlocks= [...logBlocks, result.pop(), ];
 
-    // currentBlocks.push(testBlocks.pop());
-    currentBlocks = testBlocks
-
-    // setInterval(() => {
-    //   currentBlocks.push(testBlocks.pop());
-    //   currentBlocks = currentBlocks;
-    // }, 5000);
+    setInterval(() => {
+      logBlocks= [...logBlocks, result.pop(), ];
+    }, 2000);
 
     // console.dir(testBlocks);
 
@@ -342,18 +340,18 @@ const stopWorld = () => {
         // console.log('worldEl.clientWidth', worldEl.clientWidth)
         // console.log('paneEl.clientHeight', paneEl.clientHeight)
         // console.log('paneEl.clientWidth', paneEl.clientWidth)
-        console.log('heightRatio', paneEl.clientHeight / worldEl.clientHeight)
-        console.log('widthRatio', paneEl.clientWidth / worldEl.clientWidth)
+        // console.log('heightRatio', paneEl.clientHeight / worldEl.clientHeight)
+        // console.log('widthRatio', paneEl.clientWidth / worldEl.clientWidth)
         let heightRatio = paneEl.clientHeight / worldEl.clientHeight
         let widthRatio = paneEl.clientWidth / worldEl.clientWidth
         let smallestRatio = heightRatio > widthRatio ? widthRatio : heightRatio
-        console.log('smallestRatio', smallestRatio)
-        console.log(typeof heightRatio)
-        console.log(typeof widthRatio)
-        console.log('heightRatio > widthRatio', heightRatio > widthRatio )
-        console.log(heightRatio , '>', widthRatio, '==', heightRatio > widthRatio )
+        // console.log('smallestRatio', smallestRatio)
+        // console.log(typeof heightRatio)
+        // console.log(typeof widthRatio)
+        // console.log('heightRatio > widthRatio', heightRatio > widthRatio )
+        // console.log(heightRatio , '>', widthRatio, '==', heightRatio > widthRatio )
         let roundedSmallestRatio = Math.floor(smallestRatio * 10) / 10
-        console.log('roundedSmallestRatio', roundedSmallestRatio)
+        // console.log('roundedSmallestRatio', roundedSmallestRatio)
         worldEl.style.transform = 'scale(' + roundedSmallestRatio + ')';
       }
     }
@@ -453,6 +451,12 @@ const stopWorld = () => {
     padding-bottom: 80px;
   }
 
+  .log-bar {
+    padding-bottom: 80px;
+    font-size: 12px;
+  }
+
+
   .world {
     width: $WORLD_WIDTH * $CELL_DIMENSION;
     height: $WORLD_HEIGHT * $CELL_DIMENSION;
@@ -475,10 +479,9 @@ const stopWorld = () => {
     //   // background: green;
     // }
 
-    // @include screen-size('small') {
-    //   width: $WORLD_WIDTH * $CELL_DIMENSION_PHONE;
-    //   height: $WORLD_HEIGHT * $CELL_DIMENSION_PHONE;
-    // }
+    @include screen-size('small') {
+      pointer-events: none;
+    }
 
     &.zoomed {
       transform: scale(9) translate3d(0, 0, 0);
@@ -602,6 +605,7 @@ const stopWorld = () => {
     text-align: center;
     user-select: none;
     z-index: 100;
+    border-bottom: 1px solid lightgray;
     
     .menu-item {
       line-height: 40px;
@@ -637,6 +641,8 @@ const stopWorld = () => {
     // display: flex;
     // align-items: center;
     // flex
+    cursor: pointer;
+    user-select: none;
 
     &:hover {
       transition: background 0.3 ease-out;
@@ -693,7 +699,7 @@ const stopWorld = () => {
   }
 </style>
 
-<div class="landing" use:links bind:this={landingContainerEl}>
+<div class="landing" use:links>
   <div class="pane left" bind:this={paneEl}>
     <!-- WORLD -->
     {#if countDownMarker }
@@ -747,13 +753,26 @@ const stopWorld = () => {
   {/if}
 
   <!-- INFO PANE -->
-  <div class="pane right" use:links>
+  <div class="pane right" use:links bind:this={landingContainerEl}>
    
     <div class="menu">
       <a href='/' class="menu-item">{$globalSeed} => {padGen($generation)}</a>
       <div class="menu-item half" on:click={() => {index = !index}}>{#if !index}Index{:else}Log{/if}</div>
       <a href='/meta' class="menu-item half">Meta</a>
     </div>
+
+    <!-- SIDEBAR => LOG-->
+    {#if !meta && !index}
+      <div class='log-bar'>
+        {#each logBlocks as log (log.uid)}
+        <div class='post' in:fade on:click={e => {
+          navigate('/project/' + sample(postsArray).slug.current)
+        }}>
+          <div class="title">{log.string}</div>
+        </div>
+      {/each}
+      </div>
+    {/if}
 
     <!-- SIDEBAR => INDEX -->
     {#if index}
@@ -769,10 +788,8 @@ const stopWorld = () => {
                   {/each}
                 {/if}
               </div>
-
             </a>
           {/each}
-
           {#each keywords as keyword}
             <a href={'/keyword/' + keyword} class="post" in:fade>
               <div class="title">{keyword}</div>
