@@ -14,22 +14,19 @@
     "rollup-plugin-livereload": "^1.0.0",
     "rollup-plugin-svelte": "sveltejs/rollup-plugin-svelte",
     "rollup-plugin-terser": "^5.1.2",
-    "svelte": "^3.0.0"
+    "svelte": "^3.0.0",
+    "sirv-cli": "^1.0.0",
+    "svelte-preprocess": "^4.1.1"
   },
   "dependencies": {
     "@sanity/block-content-to-html": "^1.3.8",
     "@sanity/client": "^1.149.18",
     "@sanity/image-url": "^0.140.19",
     "are.na": "^0.1.4",
-    "blueimp-md5": "^2.17.0",
-    "colyseus": "^0.13.7",
-    "colyseus.js": "^0.13.1",
-    "dat-life": "^0.1.0",
+    "dat-life": "pwrstudio/dat-life",
     "get-video-id": "^3.1.4",
     "lodash": "^4.17.19",
     "markov-strings": "^2.1.1",
-    "sirv-cli": "^1.0.0",
-    "svelte-preprocess": "^4.1.1",
     "svelte-routing": "^1.4.2",
     "uuid": "^8.3.0"
   }

@@ -79,8 +79,6 @@
   const life = new Life(WORLD_WIDTH, WORLD_HEIGTH)
   // life.colors = 4;
 
-  life.randomize()
-
   const transitionWorld = (index) => {
     if (index < WORLD_SIZE) {
       let temp = []
@@ -117,7 +115,7 @@
   const resetWorld = () => {
     stopWorld()
     generation.set(0)
-    life.randomize()
+    life.randomizeFromSeed($globalSeed)
     worldOut = life.board
     // startWorld();
   }
@@ -164,6 +162,8 @@
 
   // Set random seed if undefined
   globalSeed.set(seed ? seed : (random(0, 65535) >>> 0).toString(2))
+
+  life.randomizeFromSeed($globalSeed)
 
   metaData.then((metaData) => {
     metaPost = metaData
@@ -313,9 +313,9 @@
 
   $WORLD_WIDTH: 29;
   $WORLD_HEIGHT: 29;
-  $CELL_DIMENSION: 2vw;
+  $CELL_DIMENSION: 20px;
   $CELL_DIMENSION_PHONE: 3.2vw;
-  $CELL_DIMENSION_SHORT: 1.5vw;
+  $CELL_DIMENSION_SHORT: 20px;
 
   .landing {
     box-sizing: border-box;
@@ -397,7 +397,7 @@
       @include screen-size('small') {
         width: calc(100% - 40px);
         height: 50%;
-        left:0;
+        left: 0;
         top: 50%;
       }
     }
@@ -407,17 +407,18 @@
     width: $WORLD_WIDTH * $CELL_DIMENSION;
     height: $WORLD_HEIGHT * $CELL_DIMENSION;
     background: grey;
+    // background: lightgray;
     // transform-origin: top left;
-    transform: scale(1) translate3d(0, 0, 0);;
-    transition: transform 0.3s ease-out;
+    transform: scale(1) translate3d(0, 0, 0);
+    // transition: transform 0.3s ease-out;
     // will-change: transform;
     // will-change: transform;
 
-    @media (min-aspect-ratio: 16/9) {
-      width: $WORLD_WIDTH * $CELL_DIMENSION_SHORT;
-      height: $WORLD_HEIGHT * $CELL_DIMENSION_SHORT;
-      // background: green;
-    }
+    // @include screen-size('short') {
+    //   width: $WORLD_WIDTH * $CELL_DIMENSION_SHORT;
+    //   height: $WORLD_HEIGHT * $CELL_DIMENSION_SHORT;
+    //   // background: green;
+    // }
 
     @include screen-size('small') {
       width: $WORLD_WIDTH * $CELL_DIMENSION_PHONE;
@@ -425,7 +426,7 @@
     }
 
     &.zoomed {
-      transform: scale(7) translate3d(0, 0, 0);;
+      transform: scale(7) translate3d(0, 0, 0);
     }
   }
 
@@ -433,10 +434,11 @@
     height: $CELL_DIMENSION;
     width: $CELL_DIMENSION;
     border-radius: $CELL_DIMENSION;
-    line-height: $CELL_DIMENSION;
+    line-height: $CELL_DIMENSION + 10px;
     user-select: none;
     float: left;
     background: #a4a4a4;
+    background: rgb(57, 227, 57);
     font-size: 2px;
     text-align: center;
     color: #333333;
@@ -446,12 +448,12 @@
     //   background: #b4b4b4;
     // }
 
-    @media (min-aspect-ratio: 16/9) {
-      height: $CELL_DIMENSION_SHORT;
-      width: $CELL_DIMENSION_SHORT;
-      border-radius: $CELL_DIMENSION_SHORT;
-      line-height: $CELL_DIMENSION_SHORT;
-    }
+    // @media (min-aspect-ratio: 16/9) {
+    //   height: $CELL_DIMENSION_SHORT;
+    //   width: $CELL_DIMENSION_SHORT;
+    //   border-radius: $CELL_DIMENSION_SHORT;
+    //   line-height: $CELL_DIMENSION_SHORT;
+    // }
 
     @include screen-size('small') {
       height: $CELL_DIMENSION_PHONE;
@@ -462,6 +464,8 @@
 
     .text {
       display: none;
+      line-height: $CELL_DIMENSION - 8px;
+      color: rgb(133, 255, 133);
     }
 
     &.alive {
@@ -642,8 +646,6 @@
         {/each}
       </div>
     {/if}
-
-
   </div>
 
   <!-- PROJECT -->
@@ -660,7 +662,6 @@
   {#if meta && metaPost}
     <MetaView {metaPost} />
   {/if}
-
 
   <!-- INFO PANE -->
   <div class="pane right" use:links>

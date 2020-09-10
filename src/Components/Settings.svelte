@@ -1,36 +1,35 @@
 <script>
-  import { links, navigate } from "svelte-routing";
-  import random from "lodash/random";
-  import has from "lodash/has";
+  import { links, navigate } from 'svelte-routing'
+  import random from 'lodash/random'
+  import has from 'lodash/has'
 
   import {
     urlFor,
     loadData,
     renderBlockText,
     toPlainText,
-    singleToPlainText
-  } from "../sanity.js";
+    singleToPlainText,
+  } from '../sanity.js'
 
-  let seed = random(0, 65535);
-  let seedArray = [];
+  let seed = random(0, 65535)
+  let seedArray = []
 
   $: {
-    let seedToBits = (seed >>> 0).toString(2);
+    let seedToBits = (seed >>> 0).toString(2)
 
     while (seedToBits.length < 16) {
-      seedToBits = seedToBits + "0";
+      seedToBits = seedToBits + '0'
     }
 
-    seedArray = seedToBits;
+    seedArray = seedToBits
   }
 
-  const padToTwo = number =>
-    number <= 9999 ? `00000${number}`.slice(-5) : number;
-
+  const padToTwo = (number) =>
+    number <= 9999 ? `00000${number}`.slice(-5) : number
 </script>
 
 <style lang="scss">
-  @import "../variables.scss";
+  @import '../variables.scss';
 
   .settings {
     padding: 30px;
@@ -39,12 +38,12 @@
     margin-left: auto;
     margin-right: auto;
 
-    @include screen-size("small") {
+    @include screen-size('small') {
       font-size: 16px;
     }
 
     .header {
-      font-family: "five", "Akkurat-Mono", monospace;
+      font-family: 'five', 'Akkurat-Mono', monospace;
       font-size: 96px;
       margin-bottom: 30px;
       text-align: center;
@@ -52,12 +51,12 @@
       -webkit-text-stroke-color: #222222;
       letter-spacing: -2px;
 
-      @include screen-size("small") {
+      @include screen-size('small') {
         letter-spacing: -1px;
         font-size: 48px;
         margin-bottom: 40px;
         -webkit-text-stroke-width: 3px;
-      -webkit-text-stroke-color: #222222;
+        -webkit-text-stroke-color: #222222;
       }
     }
 
@@ -68,14 +67,14 @@
 
       .label {
         display: inline-block;
-        @include screen-size("small") {
+        @include screen-size('small') {
           display: none;
         }
       }
 
       .preview {
         display: inline-block;
-        @include screen-size("small") {
+        @include screen-size('small') {
           display: none;
         }
       }
@@ -103,7 +102,7 @@
       transition: background 0.5s $transtion2;
       border-radius: 5px;
       margin-left: auto;
-    margin-right: auto;
+      margin-right: auto;
 
       &:hover {
         background: lightgray;
@@ -119,7 +118,7 @@
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 60px;
-    @include screen-size("small") {
+    @include screen-size('small') {
       width: 200px;
       height: 200px;
       margin-bottom: 30px;
@@ -132,7 +131,7 @@
     border-radius: 75px;
     line-height: 75px;
 
-    @include screen-size("small") {
+    @include screen-size('small') {
       height: 50px;
       width: 50px;
       border-radius: 50px;
@@ -142,7 +141,8 @@
     // display: inline-block;
     float: left;
     background: #c4c4c4;
-    background: #a4a4a4;
+    background: grey;
+    background: rgb(57, 227, 57);
     font-size: 2px;
     text-align: center;
     color: #333333;
@@ -229,7 +229,7 @@
     width: $thumb-width;
   }
 
-  [type="range"] {
+  [type='range'] {
     -webkit-appearance: none;
     background: transparent;
     margin: $thumb-height / 2 0;
@@ -408,10 +408,9 @@
     <div
       class="run"
       on:click={() => {
-        navigate('/seed/' + (seed >>> 0).toString(2));
+        navigate('/seed/' + (seed >>> 0).toString(2))
       }}>
       Start
     </div>
   </div>
-
 </div>
