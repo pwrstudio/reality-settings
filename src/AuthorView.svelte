@@ -24,6 +24,22 @@
 <style lang="scss">
   @import './variables.scss';
 
+  .back-link {
+    font-size: 12px;
+      display: inline-block;
+      background: orangered;
+      padding: 10px;
+      padding-left: 30px;
+      padding-right: 30px;
+      border-radius: 5px;
+      // margin-bottom: 20px;
+
+      &:hover {
+        background: white;
+        text-decoration: none;
+      }
+    }
+
   .author {
     margin-right: 20px;
     margin-left: 20px;

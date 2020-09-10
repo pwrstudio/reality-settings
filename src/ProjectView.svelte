@@ -30,6 +30,22 @@
 <style lang="scss">
   @import './variables.scss';
 
+  .back-link {
+      font-size: 12px;
+      display: inline-block;
+      background: orangered;
+      padding: 10px;
+      padding-left: 30px;
+      padding-right: 30px;
+      border-radius: 5px;
+      // margin-bottom: 20px;
+
+      &:hover {
+        background: white;
+        text-decoration: none;
+      }
+    }
+
   .project {
     margin-right: 20px;
     margin-left: 20px;
@@ -42,6 +58,8 @@
     padding: 10px;
     height: 100vh;
     background: grey;
+
+    @include hide-scroll;
 
     @include screen-size('small') {
         margin-right: 0px;
@@ -59,6 +77,16 @@
     .author {
       font-size: 16px;
       margin-bottom: 40px;
+      display: inline-block;
+      background: lightgrey;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 1.2em;
+
+      &:hover {
+        background: white;
+        text-decoration: none;
+      }
     }
 
     .main-text {
@@ -69,12 +97,13 @@
     }
 
     h1 {
+      border-top: 1px soldi lightgrey;
       /* padding: 20px 0px; */
       font-family: 'five', 'Akkurat-Mono', monospace;
       font-size: 72px;
       font-weight: normal;
       line-height: 1em;
-      margin-bottom: 40px;
+      margin-bottom: 20px;
       max-width: 90%;
       margin-top: 20px;
       -webkit-text-stroke-width: 4px;
@@ -92,7 +121,7 @@
 
 <div class="project" in:fade use:links>
   <!-- BACK LINK -->
-  <a href={'/seed/' + $globalSeed} class="back-link">&#x2039&#x2039&#x2039 BACK</a>
+  <a href={'/seed/' + $globalSeed} class="back-link">Back</a>
 
   <!-- CONTENT => TITLE -->
   <h1>{projectPost.title}</h1>

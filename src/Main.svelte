@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte'
-  import { links } from 'svelte-routing'
+  import { links, navigate } from 'svelte-routing'
   import { fade } from 'svelte/transition'
   import { Life } from 'dat-life'
   import has from 'lodash/has'
@@ -42,7 +42,7 @@
   const WORLD_WIDTH = 29
   const WORLD_HEIGTH = 29
   const WORLD_SIZE = WORLD_WIDTH * WORLD_HEIGTH
-  const genDuration = 50
+  const MILLISECONDS_PER_GENERATION = 50
 
   // VARIABLES
   let blocks = []
@@ -61,8 +61,9 @@
   let worldOut = []
   let running = false
   let stopFlag = false
-  let index = false
+  let index = true
   let countDownMarker  = false
+  let initWorld =  []
 
   // => Posts
   let posts = loadData(query)
@@ -102,11 +103,12 @@ const advanceWorld = gen => {
   // console.log(gen)
   generation.set(gen)
   life.next()
+  // worldOut = life.board
   worldOut = life.board
   if(!stopFlag) {
     setTimeout(() => {
       advanceWorld(gen + 1)
-    }, genDuration)
+    }, MILLISECONDS_PER_GENERATION)
   } 
 }
 
@@ -128,10 +130,10 @@ const stopWorld = () => {
 }
 
   const resetWorld = () => {
-    stopWorld()
-    generation.set(0)
-    life.randomizeFromSeed($globalSeed)
-    worldOut = life.board
+    // stopWorld()
+    // generation.set(0)
+    // life.randomizeFromSeed($globalSeed)
+    // worldOut = life.board
   }
 
   // if (!$inSession) {
@@ -176,8 +178,6 @@ const stopWorld = () => {
   // Set random seed if undefined
   globalSeed.set(seed ? seed : (random(0, 65535) >>> 0).toString(2))
 
-  life.randomizeFromSeed($globalSeed)
-
   metaData.then((metaData) => {
     metaPost = metaData
   })
@@ -189,7 +189,6 @@ const stopWorld = () => {
   posts.then((posts) => {
     postsArray = posts
 
-    console.log(postsArray)
 
     posts.forEach((post) => {
       // Add to map
@@ -202,6 +201,7 @@ const stopWorld = () => {
             .replace(/\r?\n|\r/g, ' ')
             .trim()
       }
+
 
       // console.log(toPlainText(post.mainContent.content));
       // console.log(post.title);
@@ -255,6 +255,17 @@ const stopWorld = () => {
 
       // keywords = [...keywords, ...a.filter(x => x._type === "keyword")];
     })
+
+
+    if(!section && !meta) {
+      // countDown(15)
+      life.randomizeFromSeed($globalSeed, Object.keys(postsMap))
+      initWorld = life.board
+      startWorld()
+    }
+
+
+
 
     // console.dir(keywords)
     keywords = keywords
@@ -324,21 +335,23 @@ const stopWorld = () => {
   }
 
   onMount(async () => {
-    if(!section && !meta) {
-      countDown(15)
-    }
 
     const resizeWorld = () => {
-      if(worldEl && paneEl) {
-        console.log('worldEl.clientHeight', worldEl.clientHeight)
-        console.log('worldEl.clientWidth', worldEl.clientWidth)
-        console.log('paneEl.clientHeight', paneEl.clientHeight)
-        console.log('paneEl.clientWidth', paneEl.clientWidth)
-        console.log('paneEl.clientHeight / worldEl.clientHeight', paneEl.clientHeight / worldEl.clientHeight)
-        console.log('paneEl.clientWidth / worldEl.clientWidth', paneEl.clientWidth / worldEl.clientWidth)
+      if(worldEl && worldEl.style && paneEl) {
+        // console.log('worldEl.clientHeight', worldEl.clientHeight)
+        // console.log('worldEl.clientWidth', worldEl.clientWidth)
+        // console.log('paneEl.clientHeight', paneEl.clientHeight)
+        // console.log('paneEl.clientWidth', paneEl.clientWidth)
+        console.log('heightRatio', paneEl.clientHeight / worldEl.clientHeight)
+        console.log('widthRatio', paneEl.clientWidth / worldEl.clientWidth)
         let heightRatio = paneEl.clientHeight / worldEl.clientHeight
-        let widthRatio = paneEl.widthHeight / worldEl.widthHeight
-        let smallestRatio = heightRatio >= widthRatio ? widthRatio : heightRatio
+        let widthRatio = paneEl.clientWidth / worldEl.clientWidth
+        let smallestRatio = heightRatio > widthRatio ? widthRatio : heightRatio
+        console.log('smallestRatio', smallestRatio)
+        console.log(typeof heightRatio)
+        console.log(typeof widthRatio)
+        console.log('heightRatio > widthRatio', heightRatio > widthRatio )
+        console.log(heightRatio , '>', widthRatio, '==', heightRatio > widthRatio )
         let roundedSmallestRatio = Math.floor(smallestRatio * 10) / 10
         console.log('roundedSmallestRatio', roundedSmallestRatio)
         worldEl.style.transform = 'scale(' + roundedSmallestRatio + ')';
@@ -425,6 +438,8 @@ const stopWorld = () => {
       overflow-y: scroll;
       height: calc(100vh - 80px);
 
+      @include hide-scroll;
+
       @include screen-size('small') {
         width: calc(100vw - 20px);
         height: 50vh;
@@ -466,7 +481,7 @@ const stopWorld = () => {
     // }
 
     &.zoomed {
-      transform: scale(7) translate3d(0, 0, 0);
+      transform: scale(9) translate3d(0, 0, 0);
     }
   }
 
@@ -479,6 +494,10 @@ const stopWorld = () => {
     float: left;
     background: #a4a4a4;
     background: rgb(57, 227, 57);
+    // background: rgb(18, 197, 18);
+    background: rgb(163, 15, 15);
+
+
     font-size: 2px;
     text-align: center;
     color: #333333;
@@ -505,8 +524,8 @@ const stopWorld = () => {
     .text {
       display: none;
       line-height: $CELL_DIMENSION + 2px;
-      color: rgb(133, 255, 133);
-    }
+      color: #333333;
+        }
 
     &.alive {
       border-radius: 5px;
@@ -652,9 +671,11 @@ const stopWorld = () => {
 
   .title {
     // max-width: 240px;
-    font-size: 16px;
+    // font-size: 16px;
     line-height: 1em;
-    font-family: 'five', 'Akkurat-Mono', monospace;
+    // font-family: 'five', 'Akkurat-Mono', monospace;
+    font-family: 'Akkurat-Mono', monospace;
+
   }
 
   .authors {
@@ -692,8 +713,6 @@ const stopWorld = () => {
 
           } else {
             zoomed = true
-            // console.dir(worldEl.offsetTop)
-            // console.dir(worldEl.offsetLeft)
             worldEl.style.transformOrigin = e.x - worldEl.offsetLeft + 'px ' + (e.y - worldEl.offsetTop) + 'px'
             worldEl.style.transform = 'scale(5)';
           }
@@ -704,10 +723,8 @@ const stopWorld = () => {
             data-index={index}
             data-x={index % 39}
             data-y={Math.floor(index / 39)}
-            class:alive={cell == 1}
-            class:colorTwo={cell == 2}
-            class:colorThree={cell == 3}>
-            <span class="text">{index}</span>
+            class:alive={cell}>
+            <span class="text">{index}:{initWorld[index]}</span>
           </div>
         {/each}
       </div>
@@ -823,4 +840,11 @@ const stopWorld = () => {
     {/if}
   </div>
 
+{/if}
+
+{#if zoomed}
+  <div class='nav-arrow up'>UP</div>
+  <div class='nav-arrow down'>DOWN</div>
+  <div class='nav-arrow left'>LEFT</div>
+  <div class='nav-arrow right'>RIGHT</div>
 {/if}
