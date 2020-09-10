@@ -92,7 +92,7 @@
 
    <!-- CONTENT => MAIN CONTENT -->
    <div class="main-text">
-    {#each projectPost.mainContent.content as block}
+    {#each metaPost.mainContent.content as block}
       {#if block._type === 'block'}
         {@html renderBlockText(block)}
       {/if}

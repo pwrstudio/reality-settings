@@ -19,11 +19,10 @@
   } from './sanity.js'
 
   // STORES
-  import { globalSeed, globalHeat, generation, inSession } from './stores.js'
+  import { globalSeed, generation, inSession } from './stores.js'
 
   // PROPS
   export let seed = false
-  export let heat = false
   export let start = false
   export let meta = false
   export let slug = false
@@ -35,6 +34,7 @@
   import ProjectView from './ProjectView.svelte'
   import AuthorView from './AuthorView.svelte'
   import MetaView from './MetaView.svelte'
+import { window } from 'lodash/_freeGlobal';
 
   // CONSTANTS
   const query = '*[_type == "project"]{...,authors[]->{...}}'
@@ -54,12 +54,15 @@
   let markovMaterial = []
   let landingContainerEl = {}
   let worldEl = {}
+  let paneEl = {}
   let cells = []
   let zoomed = false
   let allSentences = []
   let worldLoop = {}
   let worldOut = []
-  let running = true
+  let running = false
+  let stopFlag = false
+  let index = false
 
   // => Posts
   let posts = loadData(query)
@@ -79,52 +82,63 @@
   const life = new Life(WORLD_WIDTH, WORLD_HEIGTH)
   // life.colors = 4;
 
-  const transitionWorld = (index) => {
-    if (index < WORLD_SIZE) {
-      let temp = []
-      for (let x = 0; x < WORLD_WIDTH; x++) {
-        temp.push(life.board[index + x])
-      }
-      worldOut = [...worldOut, ...temp]
-      window.requestAnimationFrame(() => {
-        transitionWorld(index + WORLD_WIDTH)
-      })
-    } else {
-      inSession.set(true)
-      startWorld()
-    }
-  }
+  // const transitionWorld = (index) => {
+  //   if (index < WORLD_SIZE) {
+  //     let temp = []
+  //     for (let x = 0; x < WORLD_WIDTH; x++) {
+  //       temp.push(life.board[index + x])
+  //     }
+  //     worldOut = [...worldOut, ...temp]
+  //     window.requestAnimationFrame(() => {
+  //       transitionWorld(index + WORLD_WIDTH)
+  //     })
+  //   } else {
+  //     inSession.set(true)
+  //     startWorld()
+  //   }
+  // }
 
-  const startWorld = () => {
-    running = true
-    generation.set($generation + 1)
-    life.next()
-    worldOut = life.board
-    worldLoop = setInterval(() => {
-      generation.set($generation + 1)
-      life.next()
-      worldOut = life.board
+const advanceWorld = gen => {
+  // console.log(gen)
+  generation.set(gen)
+  life.next()
+  worldOut = life.board
+  if(!stopFlag) {
+    setTimeout(() => {
+      advanceWorld(gen + 1)
     }, genDuration)
-  }
+  } 
+}
 
-  const stopWorld = () => {
-    running = false
-    clearInterval(worldLoop)
+const startWorld = () => {
+  if(!running) {
+    console.log('start world')
+    running = true
+    stopFlag = false
+    advanceWorld($generation)
   }
+}
+
+const stopWorld = () => {
+  if(running) {
+    console.log('stop world')
+    stopFlag = true
+    running = false
+  }
+}
 
   const resetWorld = () => {
     stopWorld()
     generation.set(0)
     life.randomizeFromSeed($globalSeed)
     worldOut = life.board
-    // startWorld();
   }
 
-  if (!$inSession) {
-    transitionWorld(0)
-  } else {
-    startWorld()
-  }
+  // if (!$inSession) {
+  //   transitionWorld(0)
+  // } else {
+  //   startWorld()
+  // }
 
   $: {
     if (section == 'project' && slug && postsArray) {
@@ -164,6 +178,8 @@
   globalSeed.set(seed ? seed : (random(0, 65535) >>> 0).toString(2))
 
   life.randomizeFromSeed($globalSeed)
+
+
 
   metaData.then((metaData) => {
     metaPost = metaData
@@ -295,17 +311,35 @@
   const padGen = (number) =>
     number <= 999999 ? `00000${number}`.slice(-6) : number
 
-  // onMount(async () => {
-  //   setTimeout(() => {
-  //     setInterval(() => {
-  //       // conGen++;
-  //       // console.log(conGen);
-  //       generation.set($generation + 1);
-  //       life.next();
-  //       worldOut = life.board;
-  //     }, 200);
-  //   }, 5000);
-  // });
+  onMount(async () => {
+    if(!section && !meta) {
+      startWorld()
+    }
+
+
+
+    const resizeWorld = () => {
+      console.log('worldEl.clientHeight', worldEl.clientHeight)
+      console.log('worldEl.clientWidth', worldEl.clientWidth)
+      console.log('paneEl.clientHeight', paneEl.clientHeight)
+      console.log('paneEl.clientWidth', paneEl.clientWidth)
+      console.log('paneEl.clientHeight / worldEl.clientHeight', paneEl.clientHeight / worldEl.clientHeight)
+      console.log('paneEl.clientWidth / worldEl.clientWidth', paneEl.clientWidth / worldEl.clientWidth)
+      let heightRatio = paneEl.clientHeight / worldEl.clientHeight
+      let widthRatio = paneEl.widthHeight / worldEl.widthHeight
+      let smallestRatio = heightRatio >= widthRatio ? widthRatio : heightRatio
+      let roundedSmallestRatio = Math.floor(smallestRatio * 10) / 10
+      console.log('roundedSmallestRatio', roundedSmallestRatio)
+      worldEl.style.transform = 'scale(' + roundedSmallestRatio + ')';
+    }
+
+
+    resizeWorld()
+
+    window.onresize = resizeWorld
+
+
+  });
 </script>
 
 <style lang="scss">
@@ -383,13 +417,11 @@
     }
 
     &.right {
-      // width: 33.33%;
       left: calc(100% - 400px);
-      // left: 66.66%;
       background: grey;
       background: lightgray;
       padding: 20px;
-      padding-top: 60px;
+      padding-top: 90px;
       width: calc(400px - 40px);
       overflow-y: scroll;
       height: calc(100vh - 80px);
@@ -401,6 +433,10 @@
         top: 50%;
       }
     }
+  }
+
+  .index-bar {
+    padding-bottom: 80px;
   }
 
   .world {
@@ -420,10 +456,10 @@
     //   // background: green;
     // }
 
-    @include screen-size('small') {
-      width: $WORLD_WIDTH * $CELL_DIMENSION_PHONE;
-      height: $WORLD_HEIGHT * $CELL_DIMENSION_PHONE;
-    }
+    // @include screen-size('small') {
+    //   width: $WORLD_WIDTH * $CELL_DIMENSION_PHONE;
+    //   height: $WORLD_HEIGHT * $CELL_DIMENSION_PHONE;
+    // }
 
     &.zoomed {
       transform: scale(7) translate3d(0, 0, 0);
@@ -455,12 +491,12 @@
     //   line-height: $CELL_DIMENSION_SHORT;
     // }
 
-    @include screen-size('small') {
-      height: $CELL_DIMENSION_PHONE;
-      width: $CELL_DIMENSION_PHONE;
-      border-radius: $CELL_DIMENSION_PHONE;
-      line-height: $CELL_DIMENSION_PHONE;
-    }
+    // @include screen-size('small') {
+    //   height: $CELL_DIMENSION_PHONE;
+    //   width: $CELL_DIMENSION_PHONE;
+    //   border-radius: $CELL_DIMENSION_PHONE;
+    //   line-height: $CELL_DIMENSION_PHONE;
+    // }
 
     .text {
       display: none;
@@ -547,18 +583,34 @@
     }
   }
 
-  .top-bar {
-    height: 40px;
-    line-height: 40px;
+
+  .menu {
+    height: 80px;
     position: fixed;
-    top: 0;
+    top: 0px;
     width: 400px;
     overflow: hidden;
     right: 0;
     background: #a4a4a4;
     font-size: 12px;
-    // padding-left: 20px;
     text-align: center;
+    user-select: none;
+    
+    .menu-item {
+      line-height: 40px;
+      cursor: pointer;
+      display: block;
+
+      &.half {
+        width: 50%;
+        float: left;
+      }
+
+      &:hover {
+        text-decoration: none;
+        background: grey;
+      }
+    }
 
     @include screen-size('small') {
       display: none;
@@ -614,7 +666,7 @@
 </style>
 
 <div class="landing" use:links bind:this={landingContainerEl}>
-  <div class="pane left">
+  <div class="pane left" bind:this={paneEl}>
     <!-- WORLD -->
     {#if !section && !meta}
       <div
@@ -665,32 +717,45 @@
 
   <!-- INFO PANE -->
   <div class="pane right" use:links>
-    <div class="top-bar">Reality Settings / Seed => {$globalSeed}</div>
+   
+    <div class="menu">
+      <a href='/' class="menu-item">{$globalSeed} => {padGen($generation)}</a>
+      <div class="menu-item half" on:click={() => {index = !index}}>{#if !index}Index{:else}Log{/if}</div>
+      <a href='/meta' class="menu-item half">Meta</a>
+    </div>
 
-    {#await posts then posts}
-      {#each posts as post}
-        <a href={'/project/' + post.slug.current} class="post" in:fade>
-          <div class="icon" />
-          <div class="title">{post.title}</div>
-        </a>
-      {/each}
-    {/await}
+    <!-- SIDEBAR => INDEX -->
+    {#if index}
+      {#await posts then posts}
+        <div class='index-bar'>
+          {#each posts as post, index (post._id)}
+            <a href={'/project/' + post.slug.current} class="post" in:fade={{delay: 40 * index}}>
+              <div class="icon" />
+              <div class="title">{post.title}</div>
+            </a>
+          {/each}
 
-    {#each keywords as keyword}
-      <a href={'/keyword/' + keyword} class="post" in:fade>
-        <div class="key" />
-        <div class="title">{keyword}</div>
-      </a>
-    {/each}
+          {#each keywords as keyword}
+            <a href={'/keyword/' + keyword} class="post" in:fade>
+              <div class="key" />
+              <div class="title">{keyword}</div>
+            </a>
+          {/each}
+        </div>
+      {/await}
+    {/if}
 
-    {#await authors then authors}
-      {#each authors as author}
-        <a href={'/author/' + author.slug.current} class="post" in:fade>
-          <div class="avatar" />
-          <div class="title">{author.name}</div>
-        </a>
-      {/each}
-    {/await}
+    <!-- SIDEBAR => META -->
+    {#if meta}
+      {#await authors then authors}
+        {#each authors as author}
+          <a href={'/author/' + author.slug.current} class="post" in:fade>
+            <div class="avatar" />
+            <div class="title">{author.name}</div>
+          </a>
+        {/each}
+      {/await}
+    {/if}
   </div>
 </div>
 
@@ -739,5 +804,5 @@
     {/if}
   </div>
 
-  <div class="bottom-bar">Gen => {padGen($generation)}</div>
+  <!-- <div class="bottom-bar">Gen => {padGen($generation)}</div> -->
 {/if}
