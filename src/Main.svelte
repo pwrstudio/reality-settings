@@ -1,15 +1,15 @@
 <script>
-  import { onMount } from 'svelte'
-  import { links, navigate } from 'svelte-routing'
-  import { fade } from 'svelte/transition'
-  import { Life } from 'dat-life'
-  import has from 'lodash/has'
-  import shuffle from 'lodash/shuffle'
-  import sample from 'lodash/sample'
-  import flatMap from 'lodash/flatMap'
-  import Markov from 'markov-strings'
-  import random from 'lodash/random'
-  import { v4 as uuidv4 } from 'uuid'
+  import { onMount } from "svelte"
+  import { links, navigate } from "svelte-routing"
+  import { fade } from "svelte/transition"
+  import { Life } from "dat-life"
+  import has from "lodash/has"
+  import shuffle from "lodash/shuffle"
+  import sample from "lodash/sample"
+  import flatMap from "lodash/flatMap"
+  import Markov from "markov-strings"
+  import random from "lodash/random"
+  import { v4 as uuidv4 } from "uuid"
 
   import {
     urlFor,
@@ -17,10 +17,10 @@
     renderBlockText,
     toPlainText,
     singleToPlainText,
-  } from './sanity.js'
+  } from "./sanity.js"
 
   // STORES
-  import { globalSeed, generation, inSession } from './stores.js'
+  import { globalSeed, generation, inSession } from "./stores.js"
 
   // PROPS
   export let seed = false
@@ -30,11 +30,11 @@
   export let section = false
 
   // COMPONENTS
-  import Molecule from './Components/Molecule.svelte'
-  import Ball from './Components/Ball.svelte'
-  import ProjectView from './ProjectView.svelte'
-  import AuthorView from './AuthorView.svelte'
-  import MetaView from './MetaView.svelte'
+  import Molecule from "./Components/Molecule.svelte"
+  import Ball from "./Components/Ball.svelte"
+  import ProjectView from "./ProjectView.svelte"
+  import AuthorView from "./AuthorView.svelte"
+  import MetaView from "./MetaView.svelte"
 
   // CONSTANTS
   const query = '*[_type == "project"]{...,authors[]->{...}}'
@@ -43,14 +43,14 @@
   const WORLD_WIDTH = 29
   const WORLD_HEIGTH = 29
   const WORLD_SIZE = WORLD_WIDTH * WORLD_HEIGTH
-  const MILLISECONDS_PER_GENERATION = 50
+  const MILLISECONDS_PER_GENERATION = 1000
 
   // VARIABLES
   let blocks = []
   let testBlocks = []
   let currentBlocks = []
   let keywords = []
-  let allTextOnly = ''
+  let allTextOnly = ""
   let markovMaterial = []
   let landingContainerEl = {}
   let worldEl = {}
@@ -63,8 +63,8 @@
   let running = false
   let stopFlag = false
   let index = false
-  let countDownMarker  = false
-  let initWorld =  []
+  let countDownMarker = false
+  let initWorld = []
   let logBlocks = []
 
   // => Posts
@@ -101,44 +101,44 @@
   //   }
   // }
 
-  if(section == 'project') {
-    index = true;
+  if (section == "project") {
+    index = true
   }
 
-const advanceWorld = gen => {
-  // console.log(gen)
-  generation.set(gen)
-  life.next()
-  // worldOut = life.board
-  worldOut = life.board
-  if(!stopFlag) {
-    setTimeout(() => {
-      advanceWorld(gen + 1)
-    }, MILLISECONDS_PER_GENERATION)
-  } 
-}
-
-const startWorld = () => {
-  if(!running) {
-    console.log('start world')
-    running = true
-    stopFlag = false
-    advanceWorld($generation)
+  const advanceWorld = (gen) => {
+    // console.log(gen)
+    generation.set(gen)
+    life.next()
+    // worldOut = life.board
+    worldOut = life.board
+    if (!stopFlag) {
+      setTimeout(() => {
+        advanceWorld(gen + 1)
+      }, MILLISECONDS_PER_GENERATION)
+    }
   }
-}
 
-const stopWorld = () => {
-  if(running) {
-    console.log('stop world')
-    stopFlag = true
-    running = false
+  const startWorld = () => {
+    if (!running) {
+      console.log("start world")
+      running = true
+      stopFlag = false
+      advanceWorld($generation)
+    }
   }
-}
+
+  const stopWorld = () => {
+    if (running) {
+      console.log("stop world")
+      stopFlag = true
+      running = false
+    }
+  }
 
   const resetWorld = () => {
     stopWorld()
     generation.set(0)
-    life.randomizeFromSeed($globalSeed. Object.keys(postsMap))
+    life.randomizeFromSeed($globalSeed.Object.keys(postsMap))
     worldOut = life.board
   }
 
@@ -149,14 +149,14 @@ const stopWorld = () => {
   // }
 
   $: {
-    if (section == 'project' && slug && postsArray) {
+    if (section == "project" && slug && postsArray) {
       stopWorld()
       projectPost = false
       setTimeout(() => {
         projectPost = postsArray.find((p) => p.slug.current == slug)
       }, 100)
     }
-    if (section == 'author' && slug && authorsArray) {
+    if (section == "author" && slug && authorsArray) {
       stopWorld()
       console.log(slug)
       authorPost = false
@@ -170,15 +170,15 @@ const stopWorld = () => {
   }
 
   $: {
-  if (logBlocks && !section && !meta && !index) {
-    setTimeout(() => {
-      landingContainerEl.scrollTo({
-        top: landingContainerEl.scrollHeight,
-        left: 0,
-        behavior: "smooth"
-      });
-    }, 100);
-  }
+    if (logBlocks && !section && !meta && !index) {
+      setTimeout(() => {
+        landingContainerEl.scrollTo({
+          top: landingContainerEl.scrollHeight,
+          left: 0,
+          behavior: "smooth",
+        })
+      }, 100)
+    }
   }
 
   // Set random seed if undefined
@@ -195,7 +195,6 @@ const stopWorld = () => {
   posts.then((posts) => {
     postsArray = posts
 
-
     posts.forEach((post) => {
       // Add to map
       postsMap[post._id] = post
@@ -204,10 +203,9 @@ const stopWorld = () => {
         allTextOnly =
           allTextOnly +
           toPlainText(post.mainContent.content)
-            .replace(/\r?\n|\r/g, ' ')
+            .replace(/\r?\n|\r/g, " ")
             .trim()
       }
-
 
       // console.log(toPlainText(post.mainContent.content));
       // console.log(post.title);
@@ -227,7 +225,7 @@ const stopWorld = () => {
       // Get all blocks
       post.mainContent.content.forEach((block) => {
         // console.log(singleToPlainText(block).length)
-        if (block._type !== 'block' || singleToPlainText(block).length > 0) {
+        if (block._type !== "block" || singleToPlainText(block).length > 0) {
           blocks.push({
             id: post._id,
             uid: uuidv4(),
@@ -242,14 +240,14 @@ const stopWorld = () => {
       // KEYWORDS
       let children = flatMap(
         post.mainContent.content
-          .filter((c) => c._type == 'block')
+          .filter((c) => c._type == "block")
           .map((b) => b.children)
       )
 
       // console.dir(children)
 
       children.forEach((c) => {
-        if (c.marks.length > 0 && c.marks.includes('keyword')) {
+        if (c.marks.length > 0 && c.marks.includes("keyword")) {
           // console.dir(c)
           keywords.push(c.text)
         }
@@ -262,8 +260,7 @@ const stopWorld = () => {
       // keywords = [...keywords, ...a.filter(x => x._type === "keyword")];
     })
 
-
-    if(!section && !meta) {
+    if (!section && !meta) {
       // countDown(15)
       life.randomizeFromSeed($globalSeed, Object.keys(postsMap))
       initWorld = life.board
@@ -273,44 +270,44 @@ const stopWorld = () => {
     // console.dir(keywords)
     keywords = keywords
 
-    console.dir(allSentences);
+    console.dir(allSentences)
 
-    console.log("textonly");
-    console.log(allTextOnly);
+    console.log("textonly")
+    console.log(allTextOnly)
 
     markovMaterial = allTextOnly
       .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
-      .split("|");
+      .split("|")
 
-    console.dir(markovMaterial);
+    console.dir(markovMaterial)
 
     // Build the Markov generator
-    const markov = new Markov(markovMaterial, { stateSize: 2 });
-    markov.buildCorpus();
+    const markov = new Markov(markovMaterial, { stateSize: 2 })
+    markov.buildCorpus()
 
     const options = {
       maxTries: 200,
-      filter: result => {
+      filter: (result) => {
         // result.string.split(" ").length >= 5 &&
-        return result.score > 10; // At least 5 words // End sentences with a dot.
-      }
-    };
-
-    let result = [];
-    for (let i = 0; i < 10; i++) {
-      let newMarkov = { ...markov.generate(options), uid: uuidv4() };
-      result.push(newMarkov);
+        return result.score > 10 // At least 5 words // End sentences with a dot.
+      },
     }
 
-    console.dir(result);
+    let result = []
+    for (let i = 0; i < 10; i++) {
+      let newMarkov = { ...markov.generate(options), uid: uuidv4() }
+      result.push(newMarkov)
+    }
 
-    logBlocks= [...logBlocks, result.pop(), ];
+    console.dir(result)
+
+    logBlocks = [...logBlocks, result.pop()]
 
     setInterval(() => {
-      if(result.length > 0){
-        logBlocks= [...logBlocks, result.pop(), ];
+      if (result.length > 0) {
+        logBlocks = [...logBlocks, result.pop()]
       }
-    }, 2000);
+    }, 2000)
 
     // console.dir(testBlocks);
 
@@ -321,9 +318,9 @@ const stopWorld = () => {
   const padGen = (number) =>
     number <= 999999 ? `00000${number}`.slice(-6) : number
 
-  const countDown = i => {
+  const countDown = (i) => {
     console.log(i % 2)
-    if(i === 0) {
+    if (i === 0) {
       countDownMarker = false
       startWorld()
     } else {
@@ -335,9 +332,8 @@ const stopWorld = () => {
   }
 
   onMount(async () => {
-
     const resizeWorld = () => {
-      if(worldEl && worldEl.style && paneEl) {
+      if (worldEl && worldEl.style && paneEl) {
         // console.log('worldEl.clientHeight', worldEl.clientHeight)
         // console.log('worldEl.clientWidth', worldEl.clientWidth)
         // console.log('paneEl.clientHeight', paneEl.clientHeight)
@@ -354,20 +350,18 @@ const stopWorld = () => {
         // console.log(heightRatio , '>', widthRatio, '==', heightRatio > widthRatio )
         let roundedSmallestRatio = Math.floor(smallestRatio * 10) / 10
         // console.log('roundedSmallestRatio', roundedSmallestRatio)
-        worldEl.style.transform = 'scale(' + roundedSmallestRatio + ')';
+        worldEl.style.transform = "scale(" + roundedSmallestRatio + ")"
       }
     }
 
     resizeWorld()
 
     window.onresize = resizeWorld
-
-
-  });
+  })
 </script>
 
 <style lang="scss">
-  @import './variables.scss';
+  @import "./variables.scss";
 
   $WORLD_WIDTH: 29;
   $WORLD_HEIGHT: 29;
@@ -422,7 +416,7 @@ const stopWorld = () => {
       background: grey;
       width: calc(100% - 400px);
 
-      @include screen-size('small') {
+      @include screen-size("small") {
         width: 100vw;
         height: 50vh;
       }
@@ -440,7 +434,7 @@ const stopWorld = () => {
 
       @include hide-scroll;
 
-      @include screen-size('small') {
+      @include screen-size("small") {
         width: calc(100vw - 20px);
         height: calc(50vh - 90px);
         left: 0;
@@ -456,12 +450,10 @@ const stopWorld = () => {
   .log-bar {
     padding-bottom: 80px;
     font-size: 12px;
-    @include screen-size('small') {
+    @include screen-size("small") {
       padding-bottom: 40px;
-
-      }
+    }
   }
-
 
   .world {
     width: $WORLD_WIDTH * $CELL_DIMENSION;
@@ -485,7 +477,7 @@ const stopWorld = () => {
     //   // background: green;
     // }
 
-    @include screen-size('small') {
+    @include screen-size("small") {
       pointer-events: none;
     }
 
@@ -505,7 +497,8 @@ const stopWorld = () => {
     background: rgb(57, 227, 57);
     // background: rgb(18, 197, 18);
     background: rgb(163, 15, 15);
-
+    // background: rgb(255, 119, 70);
+    background: darkgrey;
 
     font-size: 2px;
     text-align: center;
@@ -534,10 +527,12 @@ const stopWorld = () => {
       display: none;
       line-height: $CELL_DIMENSION + 2px;
       color: #333333;
-        }
+    }
+
+    transition: background 0.5s ease-out, border-radius 1s ease-out;
 
     &.alive {
-      border-radius: 5px;
+      border-radius: 0px;
       background: orangered;
       // &:hover {
       //   background: #d70000;
@@ -592,12 +587,11 @@ const stopWorld = () => {
       }
     }
 
-    @include screen-size('small') {
+    @include screen-size("small") {
       width: 100%;
       display: none;
     }
   }
-
 
   .menu {
     height: 80px;
@@ -612,7 +606,7 @@ const stopWorld = () => {
     user-select: none;
     z-index: 100;
     border-bottom: 1px solid lightgray;
-    
+
     .menu-item {
       line-height: 40px;
       cursor: pointer;
@@ -629,7 +623,7 @@ const stopWorld = () => {
       }
     }
 
-    @include screen-size('small') {
+    @include screen-size("small") {
       top: 50%;
       width: 100vw;
     }
@@ -686,8 +680,7 @@ const stopWorld = () => {
     // font-size: 16px;
     line-height: 1em;
     // font-family: 'five', 'Akkurat-Mono', monospace;
-    font-family: 'Akkurat-Mono', monospace;
-
+    font-family: "Akkurat-Mono", monospace;
   }
 
   .authors {
@@ -708,8 +701,8 @@ const stopWorld = () => {
 <div class="landing" use:links>
   <div class="pane left" bind:this={paneEl}>
     <!-- WORLD -->
-    {#if countDownMarker }
-      <div class='countdown-marker'>{countDownMarker}</div>
+    {#if countDownMarker}
+      <div class="countdown-marker">{countDownMarker}</div>
     {/if}
 
     {#if !section && !meta}
@@ -721,12 +714,11 @@ const stopWorld = () => {
           if (zoomed) {
             zoomed = false
             worldEl.style.transformOrigin = 'center center'
-            worldEl.style.transform = 'scale(1)';
-
+            worldEl.style.transform = 'scale(1)'
           } else {
             zoomed = true
             worldEl.style.transformOrigin = e.x - worldEl.offsetLeft + 'px ' + (e.y - worldEl.offsetTop) + 'px'
-            worldEl.style.transform = 'scale(5)';
+            worldEl.style.transform = 'scale(5)'
           }
         }}>
         {#each worldOut as cell, index}
@@ -760,37 +752,48 @@ const stopWorld = () => {
 
   <!-- INFO PANE -->
   <div class="pane right" use:links bind:this={landingContainerEl}>
-   
     <div class="menu">
-      <a href='/' class="menu-item">{$globalSeed} => {padGen($generation)}</a>
-      <div class="menu-item half" on:click={() => {index = !index}}>{#if !index}Index{:else}Log{/if}</div>
-      <a href='/meta' class="menu-item half">Meta</a>
+      <a href="/" class="menu-item">{$globalSeed} => {padGen($generation)}</a>
+      <div
+        class="menu-item half"
+        on:click={() => {
+          index = !index
+        }}>
+        {#if !index}Index{:else}Log{/if}
+      </div>
+      <a href="/meta" class="menu-item half">Meta</a>
     </div>
 
     <!-- SIDEBAR => LOG-->
     {#if !meta && !index}
-      <div class='log-bar'>
+      <div class="log-bar">
         {#each logBlocks as log (log.uid)}
-        <div class='post' in:fade on:click={e => {
-          navigate('/project/' + sample(postsArray).slug.current)
-        }}>
-          <div class="title">{log.string}</div>
-        </div>
-      {/each}
+          <div
+            class="post"
+            in:fade
+            on:click={(e) => {
+              navigate('/project/' + sample(postsArray).slug.current)
+            }}>
+            <div class="title">{log.string}</div>
+          </div>
+        {/each}
       </div>
     {/if}
 
     <!-- SIDEBAR => INDEX -->
     {#if index}
       {#await posts then posts}
-        <div class='index-bar'>
+        <div class="index-bar">
           {#each posts as post, index (post._id)}
-            <a href={'/project/' + post.slug.current} class="post" in:fade={{delay: 40 * index}}>
+            <a
+              href={'/project/' + post.slug.current}
+              class="post"
+              in:fade={{ delay: 40 * index }}>
               <div class="title">{post.title}</div>
               <div class="authors">
                 {#if post.authors && Array.isArray(post.authors)}
                   {#each post.authors as author}
-                      <div class="author">{author.name}</div>
+                    <div class="author">{author.name}</div>
                   {/each}
                 {/if}
               </div>
@@ -862,12 +865,11 @@ const stopWorld = () => {
       </div>
     {/if}
   </div>
-
 {/if}
 
 {#if zoomed}
-  <div class='nav-arrow up'>UP</div>
-  <div class='nav-arrow down'>DOWN</div>
-  <div class='nav-arrow left'>LEFT</div>
-  <div class='nav-arrow right'>RIGHT</div>
+  <div class="nav-arrow up">UP</div>
+  <div class="nav-arrow down">DOWN</div>
+  <div class="nav-arrow left">LEFT</div>
+  <div class="nav-arrow right">RIGHT</div>
 {/if}
