@@ -64,8 +64,11 @@
 </style>
 
 <div class="author-list" use:links>
-  {#each authors as author}
-    <a href={'/authors/' + author.slug.current} class="post" in:fade>
+  {#each authors as author, index (author._id)}
+    <a
+      href={'/authors/' + author.slug.current}
+      class="post"
+      in:fade={{ delay: 40 * index, duration: 200 }}>
       <div class="title">{author.name}</div>
     </a>
   {/each}

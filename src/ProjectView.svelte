@@ -71,13 +71,14 @@
     }
 
     .author {
-      font-size: 16px;
       margin-bottom: 40px;
       display: inline-block;
       background: lightgrey;
       padding: 10px;
       border-radius: 5px;
-      font-size: 1.2em;
+      font-size: 1em;
+      margin-right: 10px;
+      margin-bottom: 10px;
 
       &:hover {
         background: white;
@@ -94,13 +95,14 @@
       width: 700px;
       max-width: 90%;
       padding-bottom: 140px;
+      margin-top: 20px;
     }
 
     h1 {
       border-top: 1px soldi lightgrey;
       /* padding: 20px 0px; */
       font-family: "five", "Akkurat-Mono", monospace;
-      font-size: 72px;
+      font-size: 64px;
       font-weight: normal;
       line-height: 1em;
       margin-bottom: 20px;
@@ -130,7 +132,7 @@
   {#if projectPost.authors && Array.isArray(projectPost.authors)}
     {#each projectPost.authors as author (author._id)}
       <a
-        href={'/author/' + get(author, 'slug.current', '')}
+        href={'/authors/' + get(author, 'slug.current', '')}
         class="author">{author.name}</a>
     {/each}
   {/if}

@@ -7,6 +7,7 @@
 
   // IMPORTS
   import { fade } from "svelte/transition"
+  import { navigate } from "svelte-routing"
 
   // *** PROPS
   export let blocks = []
@@ -16,7 +17,6 @@
 
   $: {
     if (blocks && logListEl) {
-      console.log("added scrolls")
       setTimeout(() => {
         logListEl.scrollTo({
           top: logListEl.scrollHeight,
@@ -56,7 +56,7 @@
     user-select: none;
 
     &:hover {
-      transition: background 0.3 ease-out;
+      transition: background 0.3s ease-out;
       text-decoration: none;
       background: #949494;
     }
@@ -80,7 +80,12 @@
 
 <div class="log-list" bind:this={logListEl}>
   {#each blocks as block (block.uid)}
-    <div class="post" in:fade>
+    <div
+      class="post"
+      in:fade={{ duration: 200 }}
+      on:click={(e) => {
+        navigate('/projects/im-not-in-love-towards-expressive-anamophisms-in-music')
+      }}>
       <div class="meta"><span>{block.meta.epoch}</span></div>
       <div class="title">{block.string}</div>
     </div>

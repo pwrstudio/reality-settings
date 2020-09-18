@@ -9,6 +9,8 @@
   import { fade } from "svelte/transition"
   import { links } from "svelte-routing"
 
+  import { urlFor, loadData, renderBlockText } from "./sanity.js"
+
   // *** PROPS
   export let projects = []
 </script>
@@ -48,13 +50,29 @@
 
     .title {
       // max-width: 240px;
-      font-size: 26px;
+      font-size: 32px;
       line-height: 1em;
       font-family: "five", "helvetica", Arial, "Akkurat-Mono", monospace;
     }
 
     .authors {
-      margin-top: 0.5em;
+      margin-top: 1em;
+      margin-bottom: 1em;
+      .author {
+        display: inline-block;
+        background: lightgray;
+        padding: 10px;
+        border-radius: 5px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+      }
+    }
+
+    .image {
+      img {
+        max-width: 100%;
+        max-height: 340px;
+      }
     }
   }
 </style>
@@ -64,15 +82,25 @@
     <a
       href={'/projects/' + post.slug.current}
       class="post"
-      in:fade={{ delay: 40 * index }}>
+      in:fade={{ delay: 40 * index, duration: 200 }}>
       <div class="title">{post.title}</div>
-      <div class="authors">
-        {#if post.authors && Array.isArray(post.authors)}
+      {#if post.authors && Array.isArray(post.authors)}
+        <div class="authors">
           {#each post.authors as author}
             <div class="author">{author.name}</div>
           {/each}
-        {/if}
-      </div>
+        </div>
+      {/if}
+      {#if post.mainImage}
+        <div class="image">
+          <img
+            src={urlFor(post.mainImage)
+              .width(800)
+              .quality(90)
+              .auto('format')
+              .url()} />
+        </div>
+      {/if}
     </a>
   {/each}
 </div>

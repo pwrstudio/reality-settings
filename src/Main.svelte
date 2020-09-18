@@ -73,21 +73,21 @@
   let paneEl = {}
 
   // UI STATE
-  const UI = { state: STATE.GAME, slug: false, errorMessage: false }
+  const UI = { state: false, slug: false, errorMessage: false }
 
   const setUIState = (newState, newSlug = false, errorMessage = false) => {
     switch (newState) {
       case STATE.GAME:
         UI.state = STATE.GAME
-        UI.slug = newSlug
-        // Set random seed if undefined
-        // startWorld()
-        globalSeed.set(slug ? slug : (random(0, 65535) >>> 0).toString(2))
+        UI.slug = $globalSeed
+        console.log($globalSeed)
+        startWorld()
         history.pushState({}, "", "/seed/" + $globalSeed)
         break
       case STATE.PROJECTS:
         UI.state = STATE.PROJECTS
         UI.slug = false
+        startWorld()
         history.pushState({}, "", "/projects")
         break
       case STATE.META:
@@ -100,14 +100,21 @@
         UI.state = STATE.SINGLE_PROJECT
         UI.slug = newSlug
         stopWorld()
-        projectPost = projects.find((p) => p.slug.current == UI.slug)
+        projectPost = false
+        setTimeout(() => {
+          projectPost = projects.find((p) => p.slug.current == UI.slug)
+        }, 100)
         history.pushState({}, "", "/projects/" + UI.slug)
+
         break
       case STATE.SINGLE_AUTHOR:
         UI.state = STATE.SINGLE_AUTHOR
         UI.slug = newSlug
         stopWorld()
-        authorPost = authors.find((p) => p.slug.current == slug)
+        authorPost = false
+        setTimeout(() => {
+          authorPost = authors.find((p) => p.slug.current == slug)
+        }, 100)
         history.pushState({}, "", "/authors/" + UI.slug)
         break
       default:
@@ -120,12 +127,6 @@
 
   $: {
     console.log("STATE: ", UI.state)
-  }
-
-  $: {
-    if (section || slug) {
-      urlParamsToState()
-    }
   }
 
   // Game of Life
@@ -150,7 +151,7 @@
       if (logBlocks.length > 0) {
         let newBlock = logBlocks.pop()
         newBlock.meta = {
-          epoch: $epoch,
+          epoch: padGen($epoch),
           generation: $generation,
         }
         currentBlocks.push(newBlock)
@@ -169,9 +170,9 @@
     if (gen % EPOCH_LENGTH === EPOCH_LENGTH - 1) {
       epoch.set($epoch + 1)
       stopWorld()
-      console.dir(worldOut)
+      // console.dir(worldOut)
       const newGrid = listToMatrix(worldOut, WORLD.WIDTH)
-      console.dir(newGrid)
+      // console.dir(newGrid)
       const easystar = new EasyStar.js()
       easystar.setGrid(newGrid)
       easystar.setAcceptableTiles([0])
@@ -189,9 +190,9 @@
         randomEnd.x,
         randomEnd.y,
         (path) => {
-          console.dir(path)
+          // console.dir(path)
           if (path && Array.isArray(path) && path.length > 0) {
-            console.dir(path.length)
+            // console.dir(path.length)
             const endIndex =
               path[path.length - 1].x + WORLD.WIDTH * path[path.length - 1].y
             worldOut[endIndex] = 3
@@ -253,132 +254,15 @@
   let authors = []
   let metaPost = false
   let posts = loadData(QUERY.ALL)
-  posts.then((posts) => {
-    // console.dir(posts)
-    metaPost = posts.find((p) => p._type === "introduction")
-    authors = posts.filter((p) => p._type === "author")
-    projects = posts.filter((p) => p._type === "project")
-    console.dir(metaPost)
-    console.dir(projects)
-    console.dir(authors)
 
-    projects.forEach((post) => {
-      // Add to map
-      postsMap[post._id] = post
-
-      if (toPlainText(post.mainContent.content).length > 10) {
-        allTextOnly =
-          allTextOnly +
-          toPlainText(post.mainContent.content)
-            .replace(/\r?\n|\r/g, " ")
-            .trim()
-      }
-
-      // console.log(toPlainText(post.mainContent.content));
-      // console.log(post.title);
-      // console.log(allTextOnly);
-
-      let sentences = allTextOnly.match(/[^\.!\?]+[\.!\?]+/g)
-
-      if (sentences) {
-        sentences = sentences.map((s) => {
-          return { text: s.trim(), title: post.title, slug: post.slug.current }
-        })
-        // console.dir(sentences);
-
-        allSentences = [...allSentences, ...sentences]
-      }
-
-      // Get all blocks
-      post.mainContent.content.forEach((block) => {
-        // console.log(singleToPlainText(block).length)
-        if (block._type !== "block" || singleToPlainText(block).length > 0) {
-          blocks.push({
-            id: post._id,
-            uid: uuidv4(),
-            content: block,
-          })
-        }
-        // if (block._type == "block") {
-        //   console.dir(block);
-        // }
-      })
-
-      // KEYWORDS
-      let children = flatMap(
-        post.mainContent.content
-          .filter((c) => c._type == "block")
-          .map((b) => b.children)
-      )
-
-      // console.dir(children)
-
-      children.forEach((c) => {
-        if (c.marks.length > 0 && c.marks.includes("keyword")) {
-          // console.dir(c)
-          keywords.push(c.text)
-        }
-      })
-
-      // let b = a.map(x => x);
-
-      // console.dir(b);
-
-      // keywords = [...keywords, ...a.filter(x => x._type === "keyword")];
-    })
-
-    // START GAME
-    life.randomizeFromSeed($globalSeed, Object.keys(postsMap))
-    if (UI.state === STATE.GAME) {
-      startWorld()
+  $: {
+    if (metaPost && (section || slug)) {
+      urlParamsToState()
     }
-
-    keywords = keywords
-    console.dir(keywords)
-
-    // console.dir(allSentences)
-
-    // console.log("textonly")
-    // console.log(allTextOnly)
-
-    markovMaterial = allTextOnly
-      .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
-      .split("|")
-
-    // console.dir(markovMaterial)
-
-    // Build the Markov generator
-    const markov = new Markov(markovMaterial, { stateSize: 2 })
-    markov.buildCorpus()
-
-    const options = {
-      maxTries: 200,
-      filter: (result) => {
-        // result.string.split(" ").length >= 5 &&
-        return result.score > 10 // At least 5 words // End sentences with a dot.
-      },
-    }
-
-    let result = []
-    for (let i = 0; i < 10; i++) {
-      let newMarkov = { ...markov.generate(options), uid: uuidv4() }
-      result.push(newMarkov)
-    }
-
-    // console.dir(result)
-
-    logBlocks = result
-
-    // setInterval(() => {
-    //   if (result.length > 0) {
-    //     logBlocks = [...logBlocks, result.pop()]
-    //   }
-    // }, 2000)
-  })
+  }
 
   const resizeWorld = () => {
     worldEl = document.getElementById("world")
-    console.dir(worldEl)
     if (worldEl && worldEl.style && paneEl) {
       const heightRatio = (paneEl.clientHeight - 60) / worldEl.clientHeight
       const widthRatio = (paneEl.clientWidth - 60) / worldEl.clientWidth
@@ -411,10 +295,137 @@
   }
 
   onMount(async () => {
-    // Set state based on URL parameters
-    urlParamsToState()
-    // RESIZE
-    resizeWorld()
+    posts.then((posts) => {
+      // console.dir(posts)
+      metaPost = posts.find((p) => p._type === "introduction")
+      authors = posts.filter((p) => p._type === "author")
+      projects = posts.filter((p) => p._type === "project")
+      // console.dir(metaPost)
+      // console.dir(projects)
+      // console.dir(authors)
+
+      projects.forEach((post) => {
+        // Add to map
+        postsMap[post._id] = post
+
+        if (toPlainText(post.mainContent.content).length > 10) {
+          allTextOnly =
+            allTextOnly +
+            toPlainText(post.mainContent.content)
+              .replace(/\r?\n|\r/g, " ")
+              .trim()
+        }
+
+        // console.log(toPlainText(post.mainContent.content));
+        // console.log(post.title);
+        // console.log(allTextOnly);
+
+        let sentences = allTextOnly.match(/[^\.!\?]+[\.!\?]+/g)
+
+        if (sentences) {
+          sentences = sentences.map((s) => {
+            return {
+              text: s.trim(),
+              title: post.title,
+              slug: post.slug.current,
+            }
+          })
+          // console.dir(sentences);
+
+          allSentences = [...allSentences, ...sentences]
+        }
+
+        // Get all blocks
+        // post.mainContent.content.forEach((block) => {
+        //   // console.log(singleToPlainText(block).length)
+        //   if (block._type !== "block" || singleToPlainText(block).length > 0) {
+        //     blocks.push({
+        //       id: post._id,
+        //       uid: uuidv4(),
+        //       content: block,
+        //     })
+        //   }
+        // if (block._type == "block") {
+        //   console.dir(block);
+        // }
+        // })
+
+        // KEYWORDS
+        let children = flatMap(
+          post.mainContent.content
+            .filter((c) => c._type == "block")
+            .map((b) => b.children)
+        )
+
+        // console.dir(children)
+
+        children.forEach((c) => {
+          if (c.marks.length > 0 && c.marks.includes("keyword")) {
+            // console.dir(c)
+            keywords.push(c.text)
+          }
+        })
+
+        // let b = a.map(x => x);
+
+        // console.dir(b);
+
+        // keywords = [...keywords, ...a.filter(x => x._type === "keyword")];
+      })
+
+      markovMaterial = allTextOnly
+        .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
+        .split("|")
+
+      // Build the Markov generator
+      const markov = new Markov(markovMaterial, { stateSize: 2 })
+      markov.buildCorpus()
+
+      const options = {
+        maxTries: 200,
+        filter: (result) => {
+          // result.string.split(" ").length >= 5 &&
+          return result.score > 10 // At least 5 words // End sentences with a dot.
+        },
+      }
+
+      let result = []
+      for (let i = 0; i < 10; i++) {
+        let newMarkov = { ...markov.generate(options), uid: uuidv4() }
+        result.push(newMarkov)
+      }
+      // console.dir(result)
+      logBlocks = result
+
+      let newBlock = logBlocks.pop()
+      newBlock.meta = {
+        epoch: padGen($epoch),
+        generation: $generation,
+      }
+      currentBlocks.push(newBlock)
+      currentBlocks = currentBlocks
+
+      // START GAME
+      // ***
+      // ***
+      // ***
+      // ***
+      // ***
+      if (section === "seed" && slug) {
+        globalSeed.set(slug)
+      } else {
+        globalSeed.set((random(0, 65535) >>> 0).toString(2))
+      }
+      life.randomizeFromSeed($globalSeed, Object.keys(postsMap))
+      urlParamsToState()
+      // RESIZE
+      resizeWorld()
+      // ***
+      // ***
+      // ***
+      // ***
+      // ***
+    })
     window.onresize = resizeWorld
   })
 </script>
@@ -628,7 +639,7 @@
         <div
           class="menu-item"
           on:click={() => {
-            setUIState(STATE.GAME, $globalSeed)
+            setUIState(STATE.GAME)
           }}>
           Log
         </div>

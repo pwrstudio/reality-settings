@@ -6,9 +6,9 @@
   // # # # # # # # # # # # # #
 
   // IMPORTS
-  import { urlFor, loadData, renderBlockText } from '../../sanity.js'
-  import get from 'lodash/get'
-  import has from 'lodash/has'
+  import { urlFor, renderBlockText } from "../../sanity.js"
+  import get from "lodash/get"
+  import has from "lodash/has"
 
   // PROPS
   export let block = {}
@@ -17,7 +17,7 @@
 </script>
 
 <style lang="scss">
-  @import '../../variables.scss';
+  @import "../../variables.scss";
 
   .image {
     width: $text_width;
@@ -75,7 +75,6 @@
 </style>
 
 <figure class="image">
-
   <!-- IMAGE -->
   <img src={urlFor(block.image).width(1400).quality(90).auto('format').url()} />
 
@@ -87,5 +86,4 @@
       </figcaption>
     {/if}
   </div>
-
 </figure>
