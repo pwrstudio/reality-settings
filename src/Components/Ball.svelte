@@ -1,27 +1,27 @@
 <script>
-  import { onMount } from "svelte";
-  import random from "lodash/random";
-  import { window } from "lodash/_freeGlobal";
-  import { navigate } from "svelte-routing";
+  import { onMount } from "svelte"
+  import random from "lodash/random"
+  import { window } from "lodash/_freeGlobal"
+  import { navigate } from "svelte-routing"
 
   //   // PROPS
-  export let index = {};
-  export let project = {};
+  export let index = {}
+  export let project = {}
 
   // VARIABLES
-  let transX = document.documentElement.clientWidth / 2;
-  let transY = document.documentElement.clientHeight / 2;
-  let scaleFactor = 0.3;
+  let transX = document.documentElement.clientWidth / 2
+  let transY = document.documentElement.clientHeight / 2
+  let scaleFactor = 0.3
 
-  import { globalSeed, globalHeat } from "../stores.js";
+  import { globalSeed } from "../stores.js"
 
   // let docHeight = 0
 
   const move = (x, y, f) => {
     // console.log('Moving:', index)
-    transX = x;
-    transY = y;
-    scaleFactor = f;
+    transX = x
+    transY = y
+    scaleFactor = f
     // console.log(document.querySelector('.landing').scrollWidth)
     // console.log(document.querySelector('.landing').scrollHeight)
     setTimeout(() => {
@@ -29,9 +29,9 @@
         random(0, document.documentElement.clientWidth - 100),
         random(0, document.documentElement.clientHeight - 100),
         random(5, 10, true) / 10
-      );
-    }, random(4000, 10000));
-  };
+      )
+    }, random(4000, 10000))
+  }
 
   onMount(async () => {
     // docHeight = document.documentElement.clientHeight
@@ -45,9 +45,9 @@
       random(0, document.documentElement.clientWidth - 100),
       random(0, document.documentElement.clientHeight - 100),
       random(5, 10, true) / 10
-    );
+    )
     // }, random(0, 400))
-  });
+  })
 </script>
 
 <style lang="scss">
@@ -73,7 +73,7 @@
 
 <div
   class="ball"
-  on:click={e => {
-    navigate('/project/' + project.slug.current);
+  on:click={(e) => {
+    navigate('/project/' + project.slug.current)
   }}
   style={'transform: translateX(' + transX + 'px) translateY(' + transY + 'px) scale(' + scaleFactor + ');'} />

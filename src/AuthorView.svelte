@@ -5,15 +5,15 @@
   //
   // # # # # # # # # # # # # #
 
-  import { onMount } from 'svelte'
-  import { links } from 'svelte-routing'
-  import { fade } from 'svelte/transition'
-  import get from 'lodash/get'
+  import { onMount } from "svelte"
+  import { links } from "svelte-routing"
+  import { fade } from "svelte/transition"
+  import get from "lodash/get"
 
-  import { urlFor, renderBlockText, singleToPlainText } from './sanity.js'
+  import { urlFor, renderBlockText, singleToPlainText } from "./sanity.js"
 
   // STORES
-  import { globalSeed, globalHeat, generation, inSession } from './stores.js'
+  import { globalSeed } from "./stores.js"
 
   // PROPS
   export let authorPost = {}
@@ -22,46 +22,42 @@
 </script>
 
 <style lang="scss">
-  @import './variables.scss';
+  @import "./variables.scss";
 
   .back-link {
     font-size: 12px;
-      display: inline-block;
-      background: orangered;
-      padding: 10px;
-      padding-left: 30px;
-      padding-right: 30px;
-      border-radius: 5px;
-      // margin-bottom: 20px;
+    display: inline-block;
+    background: orangered;
+    padding: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+    border-radius: 5px;
+    // margin-bottom: 20px;
 
-      &:hover {
-        background: white;
-        text-decoration: none;
-      }
+    &:hover {
+      background: white;
+      text-decoration: none;
     }
+  }
 
   .author {
     margin-right: 20px;
     margin-left: 20px;
     z-index: 100;
-    position: fixed;
-    top: 0;
-    left: 0px;
-    width: calc(100% - 440px);
+    width: 100%;
     overflow: scroll;
     padding: 10px;
     height: 100vh;
     background: grey;
 
-
-    @include screen-size('small') {
-        margin-right: 0px;
-        margin-left: 0px;
-        width: calc(100vw - 20px);
-        height: 100vh;
-        left:0;
-        top: 0;
-      }
+    @include screen-size("small") {
+      margin-right: 0px;
+      margin-left: 0px;
+      width: calc(100vw - 20px);
+      height: 100vh;
+      left: 0;
+      top: 0;
+    }
 
     /* padding-top: 20px; */
 
@@ -85,7 +81,7 @@
 
     h1 {
       /* padding: 20px 0px; */
-      font-family: 'five', 'Akkurat-Mono', monospace;
+      font-family: "five", "Akkurat-Mono", monospace;
       font-size: 72px;
       font-weight: normal;
       line-height: 0.8em;

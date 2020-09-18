@@ -582,6 +582,13 @@ detect-indent@^6.0.0:
   resolved "https://registry.yarnpkg.com/detect-indent/-/detect-indent-6.0.0.tgz#0abd0f549f69fc6659a254fe96786186b6f528fd"
   integrity sha512-oSyFlqaTHCItVRGK5RmrmjB+CmaMOW7IaNA/kdxqhoa6d17j/5ce9O9eWXmV/KEdRwqpQA+Vqe8a8Bsybu4YnA==
 
+easystarjs@^0.4.3:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/easystarjs/-/easystarjs-0.4.3.tgz#0a33d2db2dd607f30fcf6adbf2c0f832a0a88952"
+  integrity sha512-1h+ICk/I8gmdwaDjlP7q02LgOfcMH01FMDpJVD1ig//oYPmfFMnCZR2DNqajTD9v7JfVrJdqZuZO7TX2DdNQ6A==
+  dependencies:
+    heap "0.2.6"
+
 ecc-jsbn@~0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/ecc-jsbn/-/ecc-jsbn-0.1.2.tgz#3a83a904e54353287874c564b7549386849a98c9"
@@ -872,6 +879,11 @@ has-unicode@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/has-unicode/-/has-unicode-2.0.1.tgz#e0e6fe6a28cf51138855e086d1691e771de2a8b9"
   integrity sha1-4Ob+aijPUROIVeCG0Wkedx3iqLk=
+
+heap@0.2.6:
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/heap/-/heap-0.2.6.tgz#087e1f10b046932fc8594dd9e6d378afc9d1e5ac"
+  integrity sha1-CH4fELBGky/IWU3Z5tN4r8nR5aw=
 
 hosted-git-info@^2.1.4:
   version "2.8.8"
