@@ -58,12 +58,12 @@
         }
       }
 
-      color: #222222;
+      color: $black;
       font-size: 16px;
       line-height: 1em;
       font-family: "Akkurat-Mono", monospace;
       // -webkit-text-stroke-width: 1px;
-      // -webkit-text-stroke-color: #222222;
+      // -webkit-text-stroke-color: $black;
       // letter-spacing: -1px;
     }
   }

@@ -18,8 +18,8 @@
 <style lang="scss">
   @import "./variables.scss";
 
-  $WORLD_WIDTH: 27;
-  $WORLD_HEIGHT: 41;
+  $WORLD_WIDTH: 31;
+  $WORLD_HEIGHT: 31;
   $CELL_DIMENSION: 20px;
   $CELL_DIMENSION_PHONE: 3.2vw;
   $CELL_DIMENSION_SHORT: 20px;
@@ -27,16 +27,20 @@
   .world {
     width: $WORLD_WIDTH * $CELL_DIMENSION;
     height: $WORLD_HEIGHT * $CELL_DIMENSION;
-    background: grey;
-    background: #222222;
+    background: $black;
+    background: orangered;
+
     // background: orangered;
+    // background: grey;
+    // background: rgb(152, 182, 152);
+
     // transform-origin: top left;
     position: absolute;
     top: 50%;
     margin-top: -($WORLD_HEIGHT * $CELL_DIMENSION / 2);
     left: 50%;
     margin-left: -($WORLD_WIDTH * $CELL_DIMENSION / 2);
-    transform: scale(1) translate3d(0, 0, 0);
+    transform: scale(1) translate3d(0, 0, 0) rotate(45deg);
     // transition: transform 0.3s ease-out;
     // will-change: transform;
     // will-change: transform;
@@ -52,7 +56,7 @@
     }
 
     &.zoomed {
-      transform: scale(9) translate3d(0, 0, 0);
+      transform: scale(9) translate3d(0, 0, 0) rotate(45deg);
     }
   }
 
@@ -60,12 +64,14 @@
     height: $CELL_DIMENSION;
     width: $CELL_DIMENSION;
     border-radius: $CELL_DIMENSION;
+    // border-radius: 8px;
     line-height: $CELL_DIMENSION - 10px;
     user-select: none;
     float: left;
     background: #a4a4a4;
-    background: orangered;
-    // border: 1px solid #222222;
+    background: $black;
+
+    // border: 1px solid $black;
 
     // background: rgb(18, 197, 18);
     // background: rgb(163, 15, 15);
@@ -99,15 +105,18 @@
     .text {
       display: none;
       line-height: $CELL_DIMENSION + 2px;
-      color: #333333;
+      color: $white;
     }
 
-    transition: background 0.5s ease-out, border-radius 1s ease-out;
+    transition: border-radius 2s ease-out;
 
     &.alive {
       border-radius: 0px;
-      // background: #7e7e7e;
-      background: orangered;
+      background: #7e7e7e;
+      // background: rgb(50, 114, 50);
+      // border: 2px solid orangered;
+      // background: $black;
+      // background: orangered;
 
       // &:hover {
       // background: #d70000;
@@ -115,8 +124,11 @@
     }
 
     &.path {
-      border-radius: 4px;
+      border-radius: 0px;
       background: rgb(174, 255, 174);
+      transition: background 0.2s ease-out, border-radius 0.2s ease-out;
+
+      // background: rgb(105, 72, 104);
       // background: rgb(100, 100, 100);
       // background: rgb(163, 15, 15);
 
@@ -126,10 +138,13 @@
     }
 
     &.destination {
-      border-radius: $CELL_DIMENSION;
+      border-radius: 0;
+      // transform: rotateZ(45deg) scale(1);
       background: #ffff00;
       background: rgb(10, 10, 10);
-      background: rgb(152, 182, 152);
+      background: #00ff00;
+      // background: $black;
+
       // background: rgb(255, 0, 0);
 
       // &:hover {
@@ -141,7 +156,7 @@
   .zoomed {
     .cell {
       .text {
-        // display: block;
+        display: block;
       }
     }
   }

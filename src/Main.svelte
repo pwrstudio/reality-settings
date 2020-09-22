@@ -7,9 +7,9 @@
 
   // IMPORTS
   import { onMount } from "svelte"
-  import { links, navigate } from "svelte-routing"
+  import { Router, Route, links, navigate } from "svelte-routing"
   import { Life } from "dat-life"
-  import has from "lodash/has"
+  import get from "lodash/get"
   import shuffle from "lodash/shuffle"
   import sample from "lodash/sample"
   import flatMap from "lodash/flatMap"
@@ -17,6 +17,7 @@
   import random from "lodash/random"
   import { v4 as uuidv4 } from "uuid"
   import EasyStar from "easystarjs"
+  import { fade } from "svelte/transition"
 
   // *** SANITY
   import {
@@ -42,10 +43,6 @@
     listToMatrix,
   } from "./global.js"
 
-  // *** PROPS
-  export let slug = false
-  export let section = false
-
   // *** COMPONENTS
   import ProjectView from "./ProjectView.svelte"
   import AuthorView from "./AuthorView.svelte"
@@ -54,6 +51,22 @@
   import ProjectsList from "./ProjectsList.svelte"
   import AuthorList from "./AuthorList.svelte"
   import World from "./World.svelte"
+
+  // *** PROPS
+  export let params = false
+
+  let section = false
+  let slug = false
+
+  $: {
+    // Split URL parameters
+    console.log("PARAMS updated")
+    console.dir(params)
+    const args = get(params, "[*]", "").split("/")
+    let section = args[0] && args[0].length > 0 ? args[0] : "seed"
+    let slug = args[1] && args[1].length > 0 ? args[1] : false
+    urlParamsToState()
+  }
 
   // *** VARIABLES
   let blocks = []
@@ -67,6 +80,7 @@
   let running = false
   let stopFlag = false
   let logBlocks = []
+  let inSession = false
 
   // *** DOM REFERENCES
   let worldEl = {}
@@ -80,8 +94,12 @@
       case STATE.GAME:
         UI.state = STATE.GAME
         UI.slug = $globalSeed
-        console.log($globalSeed)
-        startWorld()
+        resizeWorld()
+        if (inSession) {
+          startWorld()
+        } else {
+          transitionWorld(0)
+        }
         history.pushState({}, "", "/seed/" + $globalSeed)
         break
       case STATE.PROJECTS:
@@ -105,7 +123,6 @@
           projectPost = projects.find((p) => p.slug.current == UI.slug)
         }, 100)
         history.pushState({}, "", "/projects/" + UI.slug)
-
         break
       case STATE.SINGLE_AUTHOR:
         UI.state = STATE.SINGLE_AUTHOR
@@ -131,6 +148,31 @@
 
   // Game of Life
   const life = new Life(WORLD.WIDTH, WORLD.HEIGHT)
+
+  const transitionWorld = (index) => {
+    resizeWorld()
+    if (index < WORLD.SIZE) {
+      let temp = []
+      // worldOut.push(life.board[index])
+      // worldOut.push(life.board[index + 1])
+      // worldOut.push(life.board[index + 2])
+      // worldOut.push(life.board[index + 3])
+      // worldOut = worldOut
+      for (let x = 0; x < WORLD.WIDTH; x++) {
+        temp.push(life.board[index + x])
+      }
+      worldOut = [...worldOut, ...temp]
+      window.requestAnimationFrame(() => {
+        transitionWorld(index + WORLD.WIDTH)
+      })
+    } else {
+      inSession = true
+      setTimeout(() => {
+        startWorld()
+        // advanceWorld($generation + 1)
+      }, 500)
+    }
+  }
 
   const drawPath = (path) => {
     // const startIndex = path[0].x + WORLD.WIDTH * path[0].y
@@ -159,7 +201,7 @@
       }
       setTimeout(() => {
         startWorld()
-      }, 1000)
+      }, 1500)
     }
   }
 
@@ -177,12 +219,12 @@
       easystar.setGrid(newGrid)
       easystar.setAcceptableTiles([0])
       const randomStart = {
-        x: getRandomInt(0, 26),
-        y: getRandomInt(0, 40),
+        x: getRandomInt(0, WORLD.WIDTH - 1),
+        y: getRandomInt(0, WORLD.HEIGHT - 1),
       }
       const randomEnd = {
-        x: getRandomInt(0, 26),
-        y: getRandomInt(0, 34),
+        x: getRandomInt(0, WORLD.WIDTH - 1),
+        y: getRandomInt(0, WORLD.HEIGHT - 1),
       }
       easystar.findPath(
         randomStart.x,
@@ -196,6 +238,7 @@
             const endIndex =
               path[path.length - 1].x + WORLD.WIDTH * path[path.length - 1].y
             worldOut[endIndex] = 3
+            path.pop()
             drawPath(path)
           } else {
             startWorld()
@@ -216,7 +259,7 @@
         // requestAnimationFrame(() => {
         setTimeout(() => {
           advanceWorld(gen + 1)
-        }, 1000)
+        }, 2500)
         // })
       }
     }
@@ -224,7 +267,7 @@
 
   const startWorld = () => {
     if (!running) {
-      console.log("start world")
+      // console.log("start world")
       running = true
       stopFlag = false
       advanceWorld($generation + 1)
@@ -233,7 +276,7 @@
 
   const stopWorld = () => {
     if (running) {
-      console.log("stop world")
+      // console.log("stop world")
       stopFlag = true
       running = false
     }
@@ -255,24 +298,23 @@
   let authors = []
   let posts = loadData(QUERY.ALL)
 
-  $: {
-    if (metaPost && (section || slug)) {
-      urlParamsToState()
-    }
-  }
+  // $: {
+  //   if (metaPost && (section || slug)) {
+  //     urlParamsToState()
+  //   }
+  // }
 
   const resizeWorld = () => {
-    worldEl = document.getElementById("world")
-    if (worldEl && worldEl.style && paneEl) {
-      // const heightRatio = (paneEl.clientHeight - 60) / worldEl.clientHeight
-      // const widthRatio = (paneEl.clientWidth - 60) / worldEl.clientWidth
-      // const smallestRatio = heightRatio > widthRatio ? widthRatio : heightRatio
-      // const roundedSmallestRatio = Math.floor(smallestRatio * 10) / 10
-
-      console.log("worldwidh", worldEl.clientWidth)
-      const ratio = paneEl.clientWidth / worldEl.clientWidth
-      worldEl.style.transform = "scale(" + ratio + ")"
-    }
+    // worldEl = document.getElementById("world")
+    // if (worldEl && worldEl.style && paneEl) {
+    //   // const heightRatio = (paneEl.clientHeight - 60) / worldEl.clientHeight
+    //   // const widthRatio = (paneEl.clientWidth - 60) / worldEl.clientWidth
+    //   // const smallestRatio = heightRatio > widthRatio ? widthRatio : heightRatio
+    //   // const roundedSmallestRatio = Math.floor(smallestRatio * 10) / 10
+    //   console.log("worldwidh", worldEl.clientWidth)
+    //   const ratio = paneEl.clientWidth / worldEl.clientWidth
+    //   worldEl.style.transform = "scale(" + ratio + ")"
+    // }
   }
 
   const urlParamsToState = () => {
@@ -471,7 +513,7 @@
   .markov .info {
     font-size: 12px;
     padding: 5px;
-    color: #222222;
+    color: $black;
     background: rgb(255, 255, 161);
     display: inline-block;
   }
@@ -487,10 +529,10 @@
       background: lightgray;
       background: grey;
       background: orangered;
-      background: rgba(255, 0, 0, 1);
-      background: #222222;
-      width: calc(100% - #{$SIDEBAR_WIDTH});
-      width: 50%;
+      // background: rgba(255, 0, 0, 1);
+      // background: $black;
+      width: 60%;
+      overflow: hidden;
 
       @include screen-size("small") {
         width: 100vw;
@@ -499,15 +541,14 @@
     }
 
     &.right {
-      left: 50%;
+      opacity: 1;
+      left: 60%;
       background: lightgray;
-      background: #222222;
-
-      width: 50%;
+      background: $black;
+      // background:
+      width: 40%;
       overflow-y: scroll;
       height: 100vh;
-      // display: none;
-      // position: relative;
 
       @include hide-scroll;
 
@@ -525,13 +566,15 @@
     line-height: 20px;
     position: fixed;
     top: 0;
-    width: 50%;
+    width: 60%;
     left: 0;
-    font-size: 10px;
+    font-size: 12px;
     text-align: center;
     display: flex;
     justify-content: center;
     user-select: none;
+    background: $white;
+    color: $black;
 
     .control {
       cursor: pointer;
@@ -551,60 +594,64 @@
 
   .menu {
     position: fixed;
-    width: 50%;
+    width: 40%;
     overflow: hidden;
     right: 0;
-    background: rgb(120, 120, 120);
-    background: #222222;
-    font-size: 12px;
+    color: $black;
+    font-size: 16px;
     text-align: center;
     user-select: none;
     z-index: 100;
-    border-bottom: 1px solid lightgray;
-    color: white;
-
-    /* padding: 20px 0px; */
-    font-family: "five", "Akkurat-Mono", monospace;
-    font-size: 96px;
-    font-weight: normal;
-    line-height: 0.9em;
-    -webkit-text-stroke-width: 4px;
-    color: #222222;
-    color: orangered;
-    -webkit-text-stroke-color: orangered;
-
-    .menu-item {
-      line-height: 140px;
-      cursor: pointer;
-      display: block;
-
-      &:hover {
-        text-decoration: none;
-      }
-    }
 
     &.top {
       top: 0px;
-      height: 140px;
-      // font-family: "five", "Akkurat-Mono", monospace;
-      // font-size: 32px;
-
+      height: 70px;
       .menu-item {
-        line-height: 140px;
+        height: 70px;
+        line-height: 70px;
         cursor: pointer;
         display: block;
+        background: $black;
+        color: $white;
+        // font-family: "five", "Akkurat-Mono", monospace;
+        // font-size: 56px;
+        // font-weight: normal;
+        // color: orangered;
+        // -webkit-text-stroke-color: orangered;
+        // -webkit-text-stroke-width: 4px;
 
         &:hover {
-          text-decoration: none;
+          // text-decoration: none;
         }
       }
     }
 
     &.bottom {
+      line-height: 70px;
       bottom: 0px;
-      height: 80px;
-      border-top: 1px solid lightgray;
+      height: 70px;
       border-bottom: none;
+      .menu-item {
+        height: 70px;
+        line-height: 70px;
+        cursor: pointer;
+        display: block;
+        background: $black;
+        color: $white;
+
+        // border-radius: 6px;
+
+        // font-family: "five", "Akkurat-Mono", monospace;
+        // font-size: 56px;
+        // font-weight: normal;
+        // color: orangered;
+        // -webkit-text-stroke-color: orangered;
+        // -webkit-text-stroke-width: 4px;
+
+        &:hover {
+          // text-decoration: none;
+        }
+      }
     }
 
     @include screen-size("small") {
@@ -615,9 +662,11 @@
 
   .projects-list {
     position: absolute;
-    top: 70px;
-    height: calc(100vh - 140px);
-    padding: 10px;
+    top: 0px;
+    height: 100vh;
+    // padding: 10px;
+    padding-top: 73px;
+    padding-bottom: 70px;
     width: 100%;
     font-size: 12px;
     overflow: scroll;
@@ -627,7 +676,7 @@
   }
 </style>
 
-<div class="landing" use:links>
+<div class="landing">
   <!-- GAME -->
   <div class="pane left" bind:this={paneEl}>
     {#if UI.state === STATE.GAME || UI.state === STATE.PROJECTS}
@@ -651,67 +700,71 @@
   </div>
 
   <!-- INFO PANE -->
-  <div class="pane right" use:links>
-    <!-- MENU TOP -->
-    <div class="menu top">
-      {#if UI.state === STATE.GAME || UI.state === STATE.META || UI.state === STATE.SINGLE_AUTHOR}
-        <div
-          class="menu-item"
-          on:click={() => {
-            setUIState(STATE.PROJECTS)
-          }}>
-          Projects
+  {#await posts then posts}
+    {#if inSession}
+      <div class="pane right">
+        <!-- MENU TOP -->
+        <div class="menu top">
+          {#if UI.state === STATE.GAME || UI.state === STATE.META || UI.state === STATE.SINGLE_AUTHOR}
+            <div
+              class="menu-item"
+              on:click={() => {
+                setUIState(STATE.PROJECTS)
+              }}>
+              Projects
+            </div>
+          {/if}
+          {#if UI.state === STATE.PROJECTS || UI.state === STATE.SINGLE_PROJECT}
+            <div
+              class="menu-item"
+              on:click={() => {
+                setUIState(STATE.GAME)
+              }}>
+              World
+            </div>
+          {/if}
         </div>
-      {/if}
-      {#if UI.state === STATE.PROJECTS || UI.state === STATE.SINGLE_PROJECT}
-        <div
-          class="menu-item"
-          on:click={() => {
-            setUIState(STATE.GAME)
-          }}>
-          Log
+
+        <!-- GAME LOG-->
+        <!-- {#if UI.state === STATE.GAME}
+        <LogList blocks={currentBlocks} />
+      {/if} -->
+
+        <!-- PROJECT LIST -->
+        {#if UI.state === STATE.GAME || UI.state === STATE.PROJECTS || UI.state === STATE.SINGLE_PROJECT}
+          <div class="projects-list">
+            <ProjectsList {projects} slug={UI.slug} />
+          </div>
+        {/if}
+
+        <!-- AUTHOR LIST -->
+        {#if UI.state === STATE.META || UI.state === STATE.SINGLE_AUTHOR}
+          <AuthorList {authors} slug={UI.slug} />
+        {/if}
+
+        <!-- MENU BOTTOM -->
+        <div class="menu bottom">
+          {#if UI.state === STATE.META}
+            <div
+              class="menu-item"
+              on:click={() => {
+                setUIState(STATE.GAME)
+              }}>
+              X
+            </div>
+          {:else}
+            <div
+              class="menu-item"
+              on:click={() => {
+                setUIState(STATE.META)
+              }}>
+              Meta
+            </div>
+          {/if}
         </div>
-      {/if}
-    </div>
-
-    <!-- GAME LOG-->
-    {#if UI.state === STATE.GAME}
-      <LogList blocks={currentBlocks} />
-    {/if}
-
-    <!-- PROJECT LIST -->
-    {#if UI.state === STATE.PROJECTS || UI.state === STATE.SINGLE_PROJECT}
-      <div class="projects-list">
-        <ProjectsList {projects} slug={UI.slug} />
       </div>
     {/if}
-
-    <!-- AUTHOR LIST -->
-    {#if UI.state === STATE.META || UI.state === STATE.SINGLE_AUTHOR}
-      <AuthorList {authors} slug={UI.slug} />
-    {/if}
-
-    <!-- MENU BOTTOM -->
-    <div class="menu bottom">
-      {#if UI.state === STATE.META}
-        <div
-          class="menu-item"
-          on:click={() => {
-            setUIState(STATE.GAME)
-          }}>
-          X
-        </div>
-      {:else}
-        <div
-          class="menu-item"
-          on:click={() => {
-            setUIState(STATE.META)
-          }}>
-          Meta
-        </div>
-      {/if}
-    </div>
-  </div>
+  {/await}
 </div>
 
 {#if UI.state === STATE.GAME || UI.state === STATE.PROJECTS}
@@ -743,12 +796,12 @@
       }}>
       Reset
     </div>
+    <div
+      class="control first"
+      on:click={() => {
+        resetWorld()
+      }}>
+      New seed
+    </div>
   </div>
 {/if}
-
-<!-- {#if zoomed}
-  <div class="nav-arrow up">UP</div>
-  <div class="nav-arrow down">DOWN</div>
-  <div class="nav-arrow left">LEFT</div>
-  <div class="nav-arrow right">RIGHT</div>
-{/if} -->

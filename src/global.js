@@ -8,12 +8,12 @@ export const STATE = {
 }
 
 export const MILLISECONDS_PER_GENERATION = 50
-export const EPOCH_LENGTH = 2
+export const EPOCH_LENGTH = 8
 
 export const WORLD = {
-  HEIGHT: 41,
-  WIDTH: 27,
-  SIZE: 27 * 41,
+  HEIGHT: 31,
+  WIDTH: 31,
+  SIZE: 31 * 31,
 }
 
 export const QUERY = {

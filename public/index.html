@@ -14,6 +14,8 @@
     <style>
       * {
         box-sizing: border-box;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
       @font-face {
         font-family: "five";
@@ -35,11 +37,15 @@
       html {
         /* font-family: Helvetica, sans-serif; */
         font-family: "Akkurat-mono", monospace;
-        background: orangered;
+        background: rgba(10, 10, 10, 1);
+        /* background: orangered; */
         font-size: 24px;
         margin: 0;
         /* background: #e4e4e4; */
-        color: #222222;
+      }
+
+      body {
+        overscroll-behavior: none;
       }
 
       img,

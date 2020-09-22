@@ -21,8 +21,8 @@
 
 <main>
   <Router>
-    <Route path="/" component={Settings} />
-    <Route path="/:section" component={Main} />
-    <Route path="/:section/:slug" component={Main} />
+    <Route path="/*" let:params>
+      <Main {params} />
+    </Route>
   </Router>
 </main>

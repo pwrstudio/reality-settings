@@ -21,22 +21,22 @@
   @import "./variables.scss";
 
   .post {
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 0px;
+    margin-bottom: 3px;
     padding: 15px;
-    background: #a4a4a4;
-    border-radius: 6px;
+    padding-bottom: 0;
+    // border-radius: 20px;
     display: block;
-    font-size: 12px;
     cursor: pointer;
     user-select: none;
-    border: 3px solid #a4a4a4;
+    background: #949494;
+    border: 3px solid #949494;
 
     &:hover {
       transition: background 0.3 ease-out;
       text-decoration: none;
-      background: #949494;
-      border: 3px solid #949494;
+      background: $white;
+      border: 3px solid $white;
     }
 
     &.active {
@@ -47,12 +47,12 @@
     }
 
     .title {
-      color: #222222;
-      font-size: 26px;
-      line-height: 1em;
+      color: $black;
+      font-size: 48px;
+      line-height: 0.95em;
       font-family: "five", "helvetica", Arial, "Akkurat-Mono", monospace;
-      -webkit-text-stroke-width: 1px;
-      -webkit-text-stroke-color: #222222;
+      -webkit-text-stroke-width: 3px;
+      -webkit-text-stroke-color: $black;
       letter-spacing: -1px;
     }
 
@@ -60,8 +60,10 @@
       margin-top: 10px;
       margin-bottom: 10px;
       .author {
+        font-size: 12px;
+
         display: inline-block;
-        background: lightgray;
+        background: darkgrey;
         padding: 10px;
         border-radius: 3px;
         margin-right: 5px;
@@ -103,14 +105,13 @@
   }
 </style>
 
-<div use:links>
+<div in:fade={{ duration: 200 }}>
   {#each projects as post, index (post._id)}
     <a
       href={'/projects/' + post.slug.current}
       class="post"
       class:small
-      class:active={slug === post.slug.current}
-      in:fade={{ delay: 40 * index, duration: 200 }}>
+      class:active={slug === post.slug.current}>
       <div>
         <div class="title">{post.title}</div>
         {#if post.authors && Array.isArray(post.authors)}
@@ -121,7 +122,7 @@
           </div>
         {/if}
       </div>
-      {#if post.mainImage}
+      {#if post.mainImage && small}
         <div class="image">
           <img
             src={urlFor(post.mainImage)

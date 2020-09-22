@@ -3,8 +3,8 @@ $sans-stack: Helvetica, Arial, sans-serif;
 $serif-stack: "Janson Text LT Std", times, serif;
 $logo-stack: "helex", $sans-stack;
 
-$black: rgba(0, 0, 0, 1);
-$white: rgba(254, 254, 254, 1);
+$black: #0a0a0a;
+$white: rgba(224, 224, 224, 1);
 $grey: #e4e4e4;
 $darkgrey: #555555;
 // $thirdColor: rgb(197, 191, 191);
@@ -33,25 +33,25 @@ $menu_bar_height: $line-height * 3;
 $text_width: 900px;
 
 $breakpoints: (
-    "small": (
-        max-width: 900px,
-    ),
-    "medium": (
-        max-width: 1000px,
-    ),
-    "large": (
-        max-width: 1600px,
-    ),
-    "short": (
-        max-height: 600px,
-    ),
+  "small": (
+    max-width: 900px,
+  ),
+  "medium": (
+    max-width: 1000px,
+  ),
+  "large": (
+    max-width: 1600px,
+  ),
+  "short": (
+    max-height: 600px,
+  ),
 );
 
 @mixin hide-scroll {
-    &::-webkit-scrollbar {
-        display: none;
-    }
-    -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
 }
 
 /// Responsive manager.
@@ -59,13 +59,17 @@ $breakpoints: (
 /// @param {String} $breakpoint - Breakpoint
 /// @requires $breakpoints
 @mixin screen-size($breakpoint) {
-    $raw-query: map-get($breakpoints, $breakpoint);
-    @if $raw-query {
-        $query: if(type-of($raw-query) == "string", unquote($raw-query), inspect($raw-query));
-        @media #{$query} {
-            @content;
-        }
-    } @else {
-        @error 'No value found for `#{$breakpoint}`. ' + 'Please make sure it is defined in `$breakpoints` map.';
+  $raw-query: map-get($breakpoints, $breakpoint);
+  @if $raw-query {
+    $query: if(
+      type-of($raw-query) == "string",
+      unquote($raw-query),
+      inspect($raw-query)
+    );
+    @media #{$query} {
+      @content;
     }
+  } @else {
+    @error 'No value found for `#{$breakpoint}`. ' + 'Please make sure it is defined in `$breakpoints` map.';
+  }
 }

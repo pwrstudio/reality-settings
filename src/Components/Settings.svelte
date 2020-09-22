@@ -44,7 +44,7 @@
       margin-bottom: 30px;
       text-align: center;
       -webkit-text-stroke-width: 2px;
-      -webkit-text-stroke-color: #222222;
+      -webkit-text-stroke-color: $black;
       letter-spacing: -2px;
 
       @include screen-size("small") {
@@ -52,7 +52,7 @@
         font-size: 48px;
         margin-bottom: 40px;
         -webkit-text-stroke-width: 3px;
-        -webkit-text-stroke-color: #222222;
+        -webkit-text-stroke-color: $black;
       }
     }
 
@@ -78,7 +78,7 @@
       border: 0;
       background: orangered;
       text-decoration: none;
-      color: #222222;
+      color: $black;
       display: block;
       text-align: center;
       transition: background 0.5s $transtion2;
@@ -114,7 +114,7 @@
     width: 4 * $CELL_DIMENSION;
     height: 4 * $CELL_DIMENSION;
 
-    background: #222222;
+    background: $black;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: $CELL_DIMENSION_PHONE * 0.25;
@@ -130,7 +130,7 @@
     border-radius: $CELL_DIMENSION;
     line-height: $CELL_DIMENSION;
     cursor: pointer;
-    color: black;
+    color: $black;
     // font-size: 16px;
     font-size: 22px;
     -webkit-tap-highlight-color: rgba(211, 211, 211, 0.3);
@@ -160,13 +160,13 @@
     }
 
     .plus {
-      background: #222222;
+      background: $black;
       width: $CELL_DIMENSION / 2;
       height: 1px;
     }
 
     .minus {
-      background: #222222;
+      background: $black;
       height: $CELL_DIMENSION / 2;
       width: 1px;
     }
@@ -174,7 +174,7 @@
     .plus,
     .minus {
       display: none;
-      color: #222222;
+      color: $black;
       opacity: 1;
       user-select: none;
     }

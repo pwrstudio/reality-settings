@@ -107,7 +107,7 @@
       max-width: 90%;
       margin-top: 20px;
       -webkit-text-stroke-width: 4px;
-      -webkit-text-stroke-color: #222222;
+      -webkit-text-stroke-color: $black;
 
       @include screen-size("small") {
         hyphens: auto;
