@@ -23,7 +23,7 @@
 <style lang="scss">
   @import "../variables.scss";
 
-  $CELL_DIMENSION: 120px;
+  $CELL_DIMENSION: 140px;
   $CELL_DIMENSION_PHONE: 80px;
 
   .settings {
@@ -76,7 +76,7 @@
       cursor: pointer;
       outline: 0;
       border: 0;
-      background: lightgray;
+      background: orangered;
       text-decoration: none;
       color: #222222;
       display: block;
@@ -85,9 +85,21 @@
       border-radius: 5px;
       margin-left: auto;
       margin-right: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .inner {
+        //   width: 4 * $CELL_DIMENSION - 10px;
+        //   height: $CELL_DIMENSION * 0.55;
+        //   border-radius: 30px;
+        // background: orangered;
+      }
+
+      transition: border-radius 0.5s ease-out;
 
       &:hover {
-        background: white;
+        border-radius: 20px;
       }
 
       @include screen-size("small") {
@@ -102,7 +114,7 @@
     width: 4 * $CELL_DIMENSION;
     height: 4 * $CELL_DIMENSION;
 
-    background: grey;
+    background: #222222;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: $CELL_DIMENSION_PHONE * 0.25;
@@ -120,8 +132,11 @@
     cursor: pointer;
     color: black;
     // font-size: 16px;
-    font-size: 52px;
+    font-size: 22px;
     -webkit-tap-highlight-color: rgba(211, 211, 211, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     @include screen-size("small") {
       height: $CELL_DIMENSION_PHONE;
@@ -135,7 +150,8 @@
     float: left;
     background: #c4c4c4;
     background: grey;
-    background: rgb(57, 227, 57);
+    background: orangered;
+
     text-align: center;
     color: #333333;
 
@@ -143,15 +159,27 @@
       display: none;
     }
 
+    .plus {
+      background: #222222;
+      width: $CELL_DIMENSION / 2;
+      height: 1px;
+    }
+
+    .minus {
+      background: #222222;
+      height: $CELL_DIMENSION / 2;
+      width: 1px;
+    }
+
     .plus,
     .minus {
       display: none;
-      color: white;
-      opacity: 0.5;
+      color: #222222;
+      opacity: 1;
       user-select: none;
     }
 
-    transition: background 0.3s ease-out;
+    transition: border-radius 0.3s ease-out;
 
     &:hover {
       .plus {
@@ -163,9 +191,9 @@
     }
 
     &.alive {
-      border-radius: 25px;
+      border-radius: 30px;
       background: orangered;
-      transition: background 0.3s ease-out;
+      transition: border-radius 0.3s ease-out;
 
       &:hover {
         .minus {
@@ -208,20 +236,20 @@
             seedArray[index] = seedArray[index] == '1' ? '0' : '1'
             console.dir(seedArray)
           }}>
-          <div class="plus">+</div>
-          <div class="minus">-</div>
+          <!-- <div class="plus" />
+          <div class="minus" /> -->
         </div>
       {/each}
     </div>
 
-    <div class="parameter">
+    <!-- <div class="parameter">
       <div
         class="run"
         on:click={() => {
           navigate('/seed/' + seedArray.join(''))
         }}>
-        Seed: {seedArray.join('')}
+        <div class="inner">Seed: {seedArray.join('')}</div>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>

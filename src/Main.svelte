@@ -142,11 +142,11 @@
       const pointIndex = currentPoint.x + WORLD.WIDTH * currentPoint.y
       // console.log(pointIndex)
       worldOut[pointIndex] = 2
-      setTimeout(() => {
-        // requestAnimationFrame(() => {
+      // setTimeout(() => {
+      requestAnimationFrame(() => {
         drawPath(path)
-        // })
-      }, 50)
+      })
+      // }, 50)
     } else {
       if (logBlocks.length > 0) {
         let newBlock = logBlocks.pop()
@@ -157,9 +157,9 @@
         currentBlocks.push(newBlock)
         currentBlocks = currentBlocks
       }
-      // setTimeout(() => {
-      startWorld()
-      // }, 1000)
+      setTimeout(() => {
+        startWorld()
+      }, 1000)
     }
   }
 
@@ -177,12 +177,12 @@
       easystar.setGrid(newGrid)
       easystar.setAcceptableTiles([0])
       const randomStart = {
-        x: getRandomInt(0, 28),
-        y: getRandomInt(0, 28),
+        x: getRandomInt(0, 26),
+        y: getRandomInt(0, 40),
       }
       const randomEnd = {
-        x: getRandomInt(0, 28),
-        y: getRandomInt(0, 28),
+        x: getRandomInt(0, 26),
+        y: getRandomInt(0, 34),
       }
       easystar.findPath(
         randomStart.x,
@@ -216,7 +216,7 @@
         // requestAnimationFrame(() => {
         setTimeout(() => {
           advanceWorld(gen + 1)
-        }, 50)
+        }, 1000)
         // })
       }
     }
@@ -264,11 +264,14 @@
   const resizeWorld = () => {
     worldEl = document.getElementById("world")
     if (worldEl && worldEl.style && paneEl) {
-      const heightRatio = (paneEl.clientHeight - 60) / worldEl.clientHeight
-      const widthRatio = (paneEl.clientWidth - 60) / worldEl.clientWidth
-      const smallestRatio = heightRatio > widthRatio ? widthRatio : heightRatio
-      const roundedSmallestRatio = Math.floor(smallestRatio * 10) / 10
-      worldEl.style.transform = "scale(" + roundedSmallestRatio + ")"
+      // const heightRatio = (paneEl.clientHeight - 60) / worldEl.clientHeight
+      // const widthRatio = (paneEl.clientWidth - 60) / worldEl.clientWidth
+      // const smallestRatio = heightRatio > widthRatio ? widthRatio : heightRatio
+      // const roundedSmallestRatio = Math.floor(smallestRatio * 10) / 10
+
+      console.log("worldwidh", worldEl.clientWidth)
+      const ratio = paneEl.clientWidth / worldEl.clientWidth
+      worldEl.style.transform = "scale(" + ratio + ")"
     }
   }
 
@@ -483,8 +486,11 @@
       left: 0;
       background: lightgray;
       background: grey;
-      // background: orangered;
+      background: orangered;
+      background: rgba(255, 0, 0, 1);
+      background: #222222;
       width: calc(100% - #{$SIDEBAR_WIDTH});
+      width: 50%;
 
       @include screen-size("small") {
         width: 100vw;
@@ -493,11 +499,14 @@
     }
 
     &.right {
-      left: calc(100% - #{$SIDEBAR_WIDTH});
+      left: 50%;
       background: lightgray;
-      width: #{$SIDEBAR_WIDTH};
+      background: #222222;
+
+      width: 50%;
       overflow-y: scroll;
       height: 100vh;
+      // display: none;
       // position: relative;
 
       @include hide-scroll;
@@ -512,13 +521,13 @@
   }
 
   .world-control {
-    height: 30px;
-    line-height: 30px;
+    height: 20px;
+    line-height: 20px;
     position: fixed;
     top: 0;
-    width: calc(100% - #{$SIDEBAR_WIDTH});
+    width: 50%;
     left: 0;
-    font-size: 12px;
+    font-size: 10px;
     text-align: center;
     display: flex;
     justify-content: center;
@@ -542,10 +551,11 @@
 
   .menu {
     position: fixed;
-    width: #{$SIDEBAR_WIDTH};
+    width: 50%;
     overflow: hidden;
     right: 0;
     background: rgb(120, 120, 120);
+    background: #222222;
     font-size: 12px;
     text-align: center;
     user-select: none;
@@ -555,38 +565,37 @@
 
     /* padding: 20px 0px; */
     font-family: "five", "Akkurat-Mono", monospace;
-    font-size: 36px;
+    font-size: 96px;
     font-weight: normal;
     line-height: 0.9em;
-    -webkit-text-stroke-width: 2px;
+    -webkit-text-stroke-width: 4px;
     color: #222222;
-    -webkit-text-stroke-color: #222222;
+    color: orangered;
+    -webkit-text-stroke-color: orangered;
 
     .menu-item {
-      line-height: 80px;
+      line-height: 140px;
       cursor: pointer;
       display: block;
 
       &:hover {
         text-decoration: none;
-        background: grey;
       }
     }
 
     &.top {
       top: 0px;
-      height: 80px;
+      height: 140px;
       // font-family: "five", "Akkurat-Mono", monospace;
       // font-size: 32px;
 
       .menu-item {
-        line-height: 80px;
+        line-height: 140px;
         cursor: pointer;
         display: block;
 
         &:hover {
           text-decoration: none;
-          background: grey;
         }
       }
     }
