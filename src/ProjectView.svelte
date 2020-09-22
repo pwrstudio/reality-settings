@@ -30,7 +30,7 @@
 <style lang="scss">
   @import "./variables.scss";
 
-  .back-link {
+  .category {
     font-size: 12px;
     display: inline-block;
     background: orangered;
@@ -47,11 +47,12 @@
   }
 
   .project {
-    margin-right: 20px;
-    margin-left: 20px;
     width: 100%;
     overflow: scroll;
-    padding: 10px;
+    padding-top: 10px;
+    padding-bottom: 80px;
+    padding-left: 20px;
+    padding-right: 20px;
     height: 100vh;
     background: grey;
 
@@ -71,7 +72,6 @@
     }
 
     .author {
-      margin-bottom: 40px;
       display: inline-block;
       background: lightgrey;
       padding: 10px;
@@ -92,19 +92,17 @@
 
     .main-text {
       font-size: 16px;
-      width: 700px;
-      max-width: 90%;
-      padding-bottom: 140px;
-      margin-top: 20px;
+      max-width: 700px;
+      width: 100%;
+      margin-top: 30px;
     }
 
     h1 {
-      border-top: 1px soldi lightgrey;
       /* padding: 20px 0px; */
       font-family: "five", "Akkurat-Mono", monospace;
-      font-size: 64px;
+      font-size: 72px;
       font-weight: normal;
-      line-height: 1em;
+      line-height: 0.9em;
       margin-bottom: 20px;
       max-width: 90%;
       margin-top: 20px;
@@ -122,8 +120,8 @@
 </style>
 
 <div class="project" in:fade use:links>
-  <!-- BACK LINK -->
-  <a href={'/seed/' + $globalSeed} class="back-link">&#x2039&#x2039&#x2039 Back</a>
+  <!-- CATEGORIES -->
+  <div class="category">Embodied</div>
 
   <!-- CONTENT => TITLE -->
   <h1>{projectPost.title}</h1>
@@ -139,22 +137,24 @@
 
   <!-- CONTENT => MAIN CONTENT -->
   <div class="main-text">
-    {#each projectPost.mainContent.content as block}
-      {#if block._type === 'block'}
-        {@html renderBlockText(block)}
-      {/if}
-      {#if block._type === 'imageBlock'}
-        <ImageBlock {block} />
-      {/if}
-      {#if block._type === 'videoBlock'}
-        <VideoBlock {block} />
-      {/if}
-      {#if block._type === 'audioBlock'}
-        <AudioBlock {block} />
-      {/if}
-      {#if block._type === 'embedBlock'}
-        <EmbedBlock {block} />
-      {/if}
-    {/each}
+    {#if get(projectPost, 'mainContent.content', false) && Array.isArray(projectPost.mainContent.content)}
+      {#each projectPost.mainContent.content as block}
+        {#if block._type === 'block'}
+          {@html renderBlockText(block)}
+        {/if}
+        {#if block._type === 'imageBlock'}
+          <ImageBlock {block} />
+        {/if}
+        {#if block._type === 'videoBlock'}
+          <VideoBlock {block} />
+        {/if}
+        {#if block._type === 'audioBlock'}
+          <AudioBlock {block} />
+        {/if}
+        {#if block._type === 'embedBlock'}
+          <EmbedBlock {block} />
+        {/if}
+      {/each}
+    {/if}
   </div>
 </div>

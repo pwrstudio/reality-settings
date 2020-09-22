@@ -250,9 +250,9 @@
   let postsMap = {}
   let projectPost = false
   let authorPost = false
+  let metaPost = false
   let projects = []
   let authors = []
-  let metaPost = false
   let posts = loadData(QUERY.ALL)
 
   $: {
@@ -300,9 +300,6 @@
       metaPost = posts.find((p) => p._type === "introduction")
       authors = posts.filter((p) => p._type === "author")
       projects = posts.filter((p) => p._type === "project")
-      // console.dir(metaPost)
-      // console.dir(projects)
-      // console.dir(authors)
 
       projects.forEach((post) => {
         // Add to map
@@ -439,7 +436,7 @@
   $CELL_DIMENSION_PHONE: 3.2vw;
   $CELL_DIMENSION_SHORT: 20px;
 
-  $SIDEBAR_WIDTH: 500px;
+  $SIDEBAR_WIDTH: 400px;
 
   .landing {
     box-sizing: border-box;
@@ -556,8 +553,17 @@
     border-bottom: 1px solid lightgray;
     color: white;
 
+    /* padding: 20px 0px; */
+    font-family: "five", "Akkurat-Mono", monospace;
+    font-size: 36px;
+    font-weight: normal;
+    line-height: 0.9em;
+    -webkit-text-stroke-width: 2px;
+    color: #222222;
+    -webkit-text-stroke-color: #222222;
+
     .menu-item {
-      line-height: 40px;
+      line-height: 80px;
       cursor: pointer;
       display: block;
 
@@ -587,7 +593,7 @@
 
     &.bottom {
       bottom: 0px;
-      height: 40px;
+      height: 80px;
       border-top: 1px solid lightgray;
       border-bottom: none;
     }
@@ -595,6 +601,19 @@
     @include screen-size("small") {
       top: 50%;
       width: 100vw;
+    }
+  }
+
+  .projects-list {
+    position: absolute;
+    top: 70px;
+    height: calc(100vh - 140px);
+    padding: 10px;
+    width: 100%;
+    font-size: 12px;
+    overflow: scroll;
+    @include screen-size("small") {
+      padding-bottom: 40px;
     }
   }
 </style>
@@ -653,12 +672,14 @@
 
     <!-- PROJECT LIST -->
     {#if UI.state === STATE.PROJECTS || UI.state === STATE.SINGLE_PROJECT}
-      <ProjectsList {projects} />
+      <div class="projects-list">
+        <ProjectsList {projects} slug={UI.slug} />
+      </div>
     {/if}
 
     <!-- AUTHOR LIST -->
     {#if UI.state === STATE.META || UI.state === STATE.SINGLE_AUTHOR}
-      <AuthorList {authors} />
+      <AuthorList {authors} slug={UI.slug} />
     {/if}
 
     <!-- MENU BOTTOM -->

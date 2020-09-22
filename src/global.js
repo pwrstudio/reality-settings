@@ -22,6 +22,8 @@ export const QUERY = {
   PROJECT: '*[_type == "project"]{...,authors[]->{...}}',
   AUTHOR: '*[_type == "author"]',
   META: '*[_id == "introduction"]{...,authors[]->{...}}[0]',
+  CONNECTED_PROJECTS:
+    '*[_type == "project" && authors[]._ref == $id]{...,authors[]->{...}}',
 }
 
 export const getRandomInt = (min, max) => {

@@ -11,6 +11,7 @@
 
   // *** PROPS
   export let authors = []
+  export let slug = ""
 
   // *** DOM REFERENCES
   let logListEl = {}
@@ -22,43 +23,48 @@
   .author-list {
     position: absolute;
     top: 80px;
-    height: calc(100vh - 120px);
-    padding: 0;
+    height: calc(100vh - 150px);
+    padding: 10px;
     width: 100%;
-    font-size: 12px;
     overflow: scroll;
+
     @include screen-size("small") {
       padding-bottom: 40px;
     }
-  }
 
-  .post {
-    margin: 5px;
-    margin-bottom: 10px;
-    padding: 20px;
-    background: #a4a4a4;
-    border-radius: 20px;
-    display: block;
-    font-size: 12px;
-    cursor: pointer;
-    user-select: none;
+    .post {
+      margin-bottom: 10px;
+      padding: 20px;
+      background: #a4a4a4;
+      border-radius: 6px;
+      display: block;
+      cursor: pointer;
+      user-select: none;
+      text-align: center;
+      letter-spacing: -1px;
+      border: 2px solid #a4a4a4;
 
-    &:hover {
-      transition: background 0.3 ease-out;
-      text-decoration: none;
-      background: #949494;
-    }
+      &:hover {
+        transition: background 0.3 ease-out;
+        text-decoration: none;
+        background: #949494;
+        border: 2px solid #949494;
+      }
 
-    .title {
-      // max-width: 240px;
-      // font-size: 16px;
+      &.active {
+        border: 2px solid orangered;
+        &:hover {
+          border: 2px solid orangered;
+        }
+      }
+
+      color: #222222;
+      font-size: 16px;
       line-height: 1em;
-      // font-family: 'five', 'Akkurat-Mono', monospace;
       font-family: "Akkurat-Mono", monospace;
-    }
-
-    .authors {
-      margin-top: 0.5em;
+      // -webkit-text-stroke-width: 1px;
+      // -webkit-text-stroke-color: #222222;
+      // letter-spacing: -1px;
     }
   }
 </style>
@@ -68,8 +74,9 @@
     <a
       href={'/authors/' + author.slug.current}
       class="post"
+      class:active={slug === author.slug.current}
       in:fade={{ delay: 40 * index, duration: 200 }}>
-      <div class="title">{author.name}</div>
+      {author.name}
     </a>
   {/each}
 </div>
