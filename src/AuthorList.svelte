@@ -52,6 +52,7 @@
       -webkit-text-stroke-width: 3px;
       -webkit-text-stroke-color: $black;
       letter-spacing: -1px;
+      word-spacing: -5px;
       // -webkit-text-stroke-width: 1px;
       // -webkit-text-stroke-color: $black;
       // letter-spacing: -1px;

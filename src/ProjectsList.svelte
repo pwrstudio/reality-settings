@@ -55,6 +55,7 @@
       -webkit-text-stroke-width: 3px;
       -webkit-text-stroke-color: $black;
       letter-spacing: -1px;
+      word-spacing: -5px;
     }
 
     .authors {
@@ -62,7 +63,6 @@
       margin-bottom: 10px;
       .author {
         font-size: 12px;
-
         display: inline-block;
         background: darkgrey;
         padding: 10px;

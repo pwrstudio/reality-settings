@@ -6,59 +6,59 @@
   // # # # # # # # # # # # # #
 
   // IMPORTS
-  import has from "lodash/has";
-  import { urlFor, loadData, renderBlockText } from "../../sanity.js";
+  import has from "lodash/has"
+  import { urlFor, loadData, renderBlockText } from "../../sanity.js"
 
-  const PROJECT_ID = "hixs580y";
+  const PROJECT_ID = "hixs580y"
 
   // PROPS
-  export let block = {};
+  export let block = {}
 
   const audioUrl =
     "https://cdn.sanity.io/files/" +
     PROJECT_ID +
     "/production/" +
-    block.audioFile.asset._ref.replace("file-", "").replace("-mp3", ".mp3");
+    block.audioFile.asset._ref.replace("file-", "").replace("-mp3", ".mp3")
 
   // *** VARIABLES
-  let time = 0;
-  let duration = 0;
-  let paused = true;
-  const controlsTimeoutDuration = 2500;
+  let time = 0
+  let duration = 0
+  let paused = true
+  const controlsTimeoutDuration = 2500
 
   // *** DOM REFERENCES
-  let audioEl;
+  let audioEl
 
   function handleMousemove(e) {
-    if (e.which !== 1) return; // mouse not down
-    if (!duration) return; // audio not loaded yet
-    const { left, right } = this.getBoundingClientRect();
-    time = (duration * (e.clientX - left)) / (right - left);
+    if (e.which !== 1) return // mouse not down
+    if (!duration) return // audio not loaded yet
+    const { left, right } = this.getBoundingClientRect()
+    time = (duration * (e.clientX - left)) / (right - left)
   }
 
   function handleMousedown(e) {
     function handleMouseup() {
-      if (paused) audioEl.play();
-      else audioEl.pause();
-      cancel();
+      if (paused) audioEl.play()
+      else audioEl.pause()
+      cancel()
     }
 
     function cancel() {
-      e.target.removeEventListener("mouseup", handleMouseup);
+      e.target.removeEventListener("mouseup", handleMouseup)
     }
 
-    e.target.addEventListener("mouseup", handleMouseup);
+    e.target.addEventListener("mouseup", handleMouseup)
 
-    setTimeout(cancel, 200);
+    setTimeout(cancel, 200)
   }
 
-  const format = seconds => {
-    if (isNaN(seconds)) return "...";
-    const minutes = Math.floor(seconds / 60);
-    seconds = Math.floor(seconds % 60);
-    if (seconds < 10) seconds = "0" + seconds;
-    return `${minutes}:${seconds}`;
-  };
+  const format = (seconds) => {
+    if (isNaN(seconds)) return "..."
+    const minutes = Math.floor(seconds / 60)
+    seconds = Math.floor(seconds % 60)
+    if (seconds < 10) seconds = "0" + seconds
+    return `${minutes}:${seconds}`
+  }
 </script>
 
 <style lang="scss">
@@ -156,6 +156,5 @@
       <div class="current-time">{format(time)}</div>
       <div class="total-time right">{format(duration)}</div>
     </div>
-
   </div>
 </div>

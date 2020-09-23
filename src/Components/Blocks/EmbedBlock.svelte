@@ -6,12 +6,12 @@
   // # # # # # # # # # # # # #
 
   // IMPORTS
-  import has from "lodash/has";
-  import getVideoId from "get-video-id";
-  import { urlFor, loadData, renderBlockText } from "../../sanity.js";
+  import has from "lodash/has"
+  import getVideoId from "get-video-id"
+  import { renderBlockText } from "../../sanity.js"
 
   // PROPS
-  export let block = {};
+  export let block = {}
 </script>
 
 <style lang="scss">
@@ -74,7 +74,6 @@
 </style>
 
 <figure class="embed">
-
   <!-- // YOUTUBE -->
   {#if block.url.includes('youtube')}
     <div class="youtube-container">
@@ -128,5 +127,4 @@
   {#if has(block, 'attribution')}
     <figcaption class="attribution">{block.attribution}</figcaption>
   {/if}
-
 </figure>

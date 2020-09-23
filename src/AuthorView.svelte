@@ -91,6 +91,8 @@
       // max-width: 1000px;
       -webkit-text-stroke-width: 4px;
       -webkit-text-stroke-color: $black;
+      letter-spacing: -1px;
+      word-spacing: -10px;
     }
   }
 </style>

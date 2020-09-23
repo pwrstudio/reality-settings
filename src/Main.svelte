@@ -522,7 +522,7 @@
       top: 0px;
       height: 50px;
       .menu-item {
-        float: right;
+        float: left;
         height: 50px;
         line-height: 50px;
         width: 50%;
@@ -538,7 +538,8 @@
         // -webkit-text-stroke-width: 4px;
 
         &:hover {
-          // text-decoration: none;
+          background: rgba(40, 40, 40, 1);
+          text-decoration: none;
         }
       }
     }
