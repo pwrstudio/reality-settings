@@ -21,7 +21,7 @@
   $WORLD_WIDTH: 13;
   $WORLD_HEIGHT: 13;
   $CELL_DIMENSION: 50px;
-  $CELL_DIMENSION_PHONE: 3.2vw;
+  $CELL_DIMENSION_PHONE: 25px;
   $CELL_DIMENSION_SHORT: 20px;
 
   .world {
@@ -37,8 +37,8 @@
     // transform-origin: top left;
     position: absolute;
     top: 50%;
-    margin-top: -($WORLD_HEIGHT * $CELL_DIMENSION / 2);
     left: 50%;
+    margin-top: -($WORLD_HEIGHT * $CELL_DIMENSION / 2);
     margin-left: -($WORLD_WIDTH * $CELL_DIMENSION / 2);
     transform: scale(1) translate3d(0, 0, 0) rotate(45deg);
     z-index: 1;
@@ -53,7 +53,12 @@
     // }
 
     @include screen-size("small") {
+      transform: unset;
       pointer-events: none;
+      width: $WORLD_WIDTH * $CELL_DIMENSION_PHONE;
+      height: $WORLD_HEIGHT * $CELL_DIMENSION_PHONE;
+      margin-top: -($WORLD_HEIGHT * $CELL_DIMENSION_PHONE / 2);
+      margin-left: -($WORLD_WIDTH * $CELL_DIMENSION_PHONE / 2);
     }
 
     &.zoomed {
@@ -98,12 +103,14 @@
     //   line-height: $CELL_DIMENSION_SHORT;
     // }
 
-    // @include screen-size('small') {
-    //   height: $CELL_DIMENSION_PHONE;
-    //   width: $CELL_DIMENSION_PHONE;
-    //   border-radius: $CELL_DIMENSION_PHONE;
-    //   line-height: $CELL_DIMENSION_PHONE;
-    // }
+    @include screen-size("small") {
+      border: none;
+      background: orangered;
+      height: $CELL_DIMENSION_PHONE;
+      width: $CELL_DIMENSION_PHONE;
+      border-radius: $CELL_DIMENSION_PHONE;
+      line-height: $CELL_DIMENSION_PHONE;
+    }
 
     .text {
       display: none;
@@ -125,6 +132,10 @@
       // &:hover {
       // background: #d70000;
       // }
+
+      @include screen-size("small") {
+        background: #7e7e7e;
+      }
     }
 
     &.path {
@@ -133,29 +144,17 @@
       background: $black;
       transition: background 0.2s ease-out, border-radius 0.2s ease-out;
       border: 10px solid orangered;
-
-      // background: rgb(105, 72, 104);
-      // background: rgb(100, 100, 100);
-      // background: rgb(163, 15, 15);
-
-      // &:hover {
-      //   background: #d70000;
-      // }
+      @include screen-size("small") {
+        background: rgb(174, 255, 174);
+        border: unset;
+      }
     }
 
     &.destination {
       border-radius: 0;
-      // transform: rotateZ(45deg) scale(1);
       background: #ffff00;
       background: rgb(10, 10, 10);
       background: #00ff00;
-      // background: $black;
-
-      // background: rgb(255, 0, 0);
-
-      // &:hover {
-      //   background: #d70000;
-      // }
     }
   }
 

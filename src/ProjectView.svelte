@@ -47,6 +47,9 @@
   .project {
     img {
       max-width: 100%;
+      @include screen-size("small") {
+        max-height: 80vh;
+      }
     }
 
     .author {
@@ -64,7 +67,7 @@
       }
 
       @include screen-size("small") {
-        font-size: 22px;
+        font-size: $font-size-normal;
       }
     }
 

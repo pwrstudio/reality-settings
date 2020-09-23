@@ -449,6 +449,10 @@
     height: 100vh;
     overflow-y: scroll;
 
+    @include screen-size("small") {
+      height: 50vh;
+    }
+
     &.simulation {
       overflow-y: hidden;
     }
@@ -459,12 +463,21 @@
       left: 0;
       background: orangered;
       width: 60%;
+      @include screen-size("small") {
+        width: 100%;
+        left: 0;
+      }
     }
 
     &.right {
       left: 60%;
       background: $black;
       width: 40%;
+      @include screen-size("small") {
+        top: 50%;
+        width: 100%;
+        left: 0;
+      }
     }
   }
 
@@ -494,7 +507,6 @@
     }
 
     @include screen-size("small") {
-      width: 100%;
       display: none;
     }
   }
@@ -509,27 +521,23 @@
     text-align: center;
     user-select: none;
     z-index: 100;
-
-    &.top {
-      top: 0px;
+    top: 0px;
+    height: 50px;
+    .menu-item {
+      float: left;
       height: 50px;
-      .menu-item {
-        float: left;
-        height: 50px;
-        line-height: 50px;
-        width: 50%;
-        cursor: pointer;
-        display: block;
-        background: $black;
-        color: $white;
+      line-height: 50px;
+      width: 50%;
+      cursor: pointer;
+      display: block;
+      background: $black;
+      color: $white;
 
-        &:hover {
-          background: rgba(40, 40, 40, 1);
-          text-decoration: none;
-        }
+      &:hover {
+        background: rgba(40, 40, 40, 1);
+        text-decoration: none;
       }
     }
-
     @include screen-size("small") {
       top: 50%;
       width: 100vw;
@@ -549,12 +557,6 @@
     background: grey;
 
     @include hide-scroll;
-  }
-
-  .simulation {
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
   }
 </style>
 

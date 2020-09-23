@@ -55,29 +55,6 @@ $breakpoints: (
   -ms-overflow-style: none;
 }
 
-@mixin big-title {
-  font-family: "five", "Akkurat-Mono", monospace;
-  font-size: 72px;
-  font-weight: normal;
-  line-height: 0.9em;
-  margin-bottom: 40px;
-  max-width: 90%;
-  -webkit-text-stroke-width: 4px;
-  -webkit-text-stroke-color: $black;
-  letter-spacing: -1px;
-  word-spacing: -10px;
-}
-@mixin medium-title {
-  color: $black;
-  font-size: 48px;
-  line-height: 0.95em;
-  font-family: "five", "helvetica", Arial, "Akkurat-Mono", monospace;
-  -webkit-text-stroke-width: 3px;
-  -webkit-text-stroke-color: $black;
-  letter-spacing: -1px;
-  word-spacing: -5px;
-}
-
 /// Responsive manager.
 /// @access public
 /// @param {String} $breakpoint - Breakpoint
@@ -95,5 +72,44 @@ $breakpoints: (
     }
   } @else {
     @error 'No value found for `#{$breakpoint}`. ' + 'Please make sure it is defined in `$breakpoints` map.';
+  }
+}
+
+@mixin big-title {
+  font-family: "five", "Akkurat-Mono", monospace;
+  font-size: 72px;
+  font-weight: normal;
+  line-height: 0.9em;
+  margin-bottom: 40px;
+  max-width: 90%;
+  -webkit-text-stroke-width: 4px;
+  -webkit-text-stroke-color: $black;
+  letter-spacing: -1px;
+  word-spacing: -10px;
+
+  @include screen-size("small") {
+    font-size: 38px;
+    margin-bottom: 20px;
+    max-width: 95%;
+    -webkit-text-stroke-width: 2px;
+    letter-spacing: -1px;
+    word-spacing: -5px;
+  }
+}
+@mixin medium-title {
+  color: $black;
+  font-size: 48px;
+  line-height: 0.95em;
+  font-family: "five", "helvetica", Arial, "Akkurat-Mono", monospace;
+  -webkit-text-stroke-width: 3px;
+  -webkit-text-stroke-color: $black;
+  letter-spacing: -1px;
+  word-spacing: -6px;
+
+  @include screen-size("small") {
+    font-size: 24px;
+    -webkit-text-stroke-width: 1px;
+    letter-spacing: 0px;
+    word-spacing: -5px;
   }
 }
