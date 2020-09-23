@@ -24,26 +24,27 @@
     margin-top: 0px;
     margin-bottom: 3px;
     padding: 15px;
-    padding-bottom: 0;
+    padding-bottom: 3px;
     // border-radius: 20px;
     display: block;
     cursor: pointer;
     user-select: none;
-    background: #949494;
-    border: 3px solid #949494;
+    background: $grey;
+    // border: 3px solid #949494;
 
     &:hover {
       transition: background 0.3 ease-out;
       text-decoration: none;
       background: $white;
-      border: 3px solid $white;
+      // border: 3px solid $white;
     }
 
     &.active {
-      border: 3px solid orangered;
-      &:hover {
-        border: 3px solid orangered;
-      }
+      background: $off-white;
+      // border: 3px solid orangered;
+      // &:hover {
+      //   border: 3px solid orangered;
+      // }
     }
 
     .title {
@@ -85,6 +86,7 @@
       display: flex;
       width: 100%;
       max-width: 700px;
+      padding-bottom: 15px;
       justify-content: space-between;
       .image {
         float: right;

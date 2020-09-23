@@ -135,3 +135,85 @@
       display: inline;
     }
   }
+
+    const urlParamsToState = () => {
+    console.log("URL TO PARAMS !!!")
+    switch (section) {
+      case "seed":
+        setUIState(STATE.GAME, slug)
+        break
+      case "projects":
+        slug
+          ? setUIState(STATE.SINGLE_PROJECT, slug)
+          : setUIState(STATE.PROJECTS)
+        break
+      case "authors":
+        slug ? setUIState(STATE.SINGLE_AUTHOR, slug) : setUIState(STATE.META)
+        break
+      case "meta":
+        setUIState(STATE.META)
+        break
+      default:
+        setUIState(STATE.GAME)
+    }
+  }
+
+    // UI STATE
+  const UI = { state: false, slug: false, errorMessage: false }
+
+  const setUIState = (newState, newSlug = false, errorMessage = false) => {
+    switch (newState) {
+      case STATE.GAME:
+        UI.state = STATE.GAME
+        UI.slug = $globalSeed
+        resizeWorld()
+        if (inSession) {
+          startWorld()
+        } else {
+          transitionWorld(0)
+        }
+        history.pushState({}, "", "/seed/" + $globalSeed)
+        break
+      case STATE.PROJECTS:
+        UI.state = STATE.PROJECTS
+        UI.slug = false
+        startWorld()
+        history.pushState({}, "", "/projects")
+        break
+      case STATE.META:
+        UI.state = STATE.META
+        UI.slug = false
+        stopWorld()
+        history.pushState({}, "", "/meta")
+        break
+      case STATE.SINGLE_PROJECT:
+        UI.state = STATE.SINGLE_PROJECT
+        UI.slug = newSlug
+        stopWorld()
+        projectPost = false
+        setTimeout(() => {
+          projectPost = projects.find((p) => p.slug.current == UI.slug)
+        }, 100)
+        history.pushState({}, "", "/projects/" + UI.slug)
+        break
+      case STATE.SINGLE_AUTHOR:
+        UI.state = STATE.SINGLE_AUTHOR
+        UI.slug = newSlug
+        stopWorld()
+        authorPost = false
+        setTimeout(() => {
+          authorPost = authors.find((p) => p.slug.current == slug)
+        }, 100)
+        history.pushState({}, "", "/authors/" + UI.slug)
+        break
+      default:
+        UI.state = STATE.ERROR
+        UI.slug = false
+        UI.errorMessage = errorMessage
+        history.pushState({}, "", "/error/")
+    }
+  }
+
+  $: {
+    console.log("STATE: ", UI.state)
+  }

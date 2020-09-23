@@ -30,31 +30,15 @@
 <style lang="scss">
   @import "./variables.scss";
 
-  .back-link {
-    font-size: 12px;
-    display: inline-block;
-    background: orangered;
-    padding: 10px;
-    padding-left: 30px;
-    padding-right: 30px;
-    border-radius: 5px;
-    // margin-bottom: 20px;
-
-    &:hover {
-      background: white;
-      text-decoration: none;
-    }
-  }
-
   .meta {
-    margin-right: 20px;
-    margin-left: 20px;
     z-index: 100;
-    width: calc(100% - 40px);
+    width: 100%;
     overflow: scroll;
-    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 80px;
     height: 100vh;
-    padding-bottom: 40px;
     background: grey;
 
     @include hide-scroll;
@@ -93,35 +77,49 @@
       font-family: "five", "Akkurat-Mono", monospace;
       font-size: 72px;
       font-weight: normal;
-      line-height: 0.8em;
-      // max-width: 1000px;
+      line-height: 0.9em;
+      margin-bottom: 20px;
+      max-width: 90%;
+      margin-top: 20px;
+      -webkit-text-stroke-width: 4px;
+      -webkit-text-stroke-color: $black;
+
+      @include screen-size("small") {
+        hyphens: auto;
+        font-size: 46px;
+        max-width: 100%;
+        -webkit-text-stroke-width: 3px;
+      }
     }
   }
 </style>
 
 <div class="meta" in:fade use:links>
-  <!-- BACK LINK -->
-  <a href={'/seed/' + $globalSeed} class="back-link">&#x2039&#x2039&#x2039 BACK</a>
-
   <!-- CONTENT => MAIN CONTENT -->
   <div class="main-text">
-    {#each metaPost.mainContent.content as block}
-      {#if block._type === 'block'}
-        {@html renderBlockText(block)}
-      {/if}
-      {#if block._type === 'imageBlock'}
-        <ImageBlock {block} />
-      {/if}
-      {#if block._type === 'videoBlock'}
-        <VideoBlock {block} />
-      {/if}
-      {#if block._type === 'audioBlock'}
-        <AudioBlock {block} />
-      {/if}
-      {#if block._type === 'embedBlock'}
-        <EmbedBlock {block} />
-      {/if}
-    {/each}
+    <!-- CONTENT => TITLE -->
+    <h1>Reality Settings</h1>
+    <!-- CONTENT => MAIN CONTENT -->
+
+    <div class="main-text">
+      {#each metaPost.mainContent.content as block}
+        {#if block._type === 'block'}
+          {@html renderBlockText(block)}
+        {/if}
+        {#if block._type === 'imageBlock'}
+          <ImageBlock {block} />
+        {/if}
+        {#if block._type === 'videoBlock'}
+          <VideoBlock {block} />
+        {/if}
+        {#if block._type === 'audioBlock'}
+          <AudioBlock {block} />
+        {/if}
+        {#if block._type === 'embedBlock'}
+          <EmbedBlock {block} />
+        {/if}
+      {/each}
+    </div>
   </div>
 
   <!-- CONTENT => AUTHORS -->

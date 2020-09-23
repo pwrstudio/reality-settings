@@ -21,47 +21,37 @@
   @import "./variables.scss";
 
   .author-list {
-    position: absolute;
-    top: 80px;
-    height: calc(100vh - 150px);
-    padding: 10px;
-    width: 100%;
-    overflow: scroll;
-
-    @include screen-size("small") {
-      padding-bottom: 40px;
-    }
-
     .post {
-      margin-bottom: 10px;
+      margin-bottom: 3px;
       padding: 20px;
       background: #a4a4a4;
-      border-radius: 6px;
       display: block;
       cursor: pointer;
       user-select: none;
-      text-align: center;
+      // text-align: center;
       letter-spacing: -1px;
-      border: 2px solid #a4a4a4;
 
       &:hover {
         transition: background 0.3 ease-out;
         text-decoration: none;
-        background: #949494;
-        border: 2px solid #949494;
+        background: $white;
       }
 
       &.active {
-        border: 2px solid orangered;
-        &:hover {
-          border: 2px solid orangered;
-        }
+        background: $off-white;
       }
 
+      // color: $black;
+      // font-size: 16px;
+      // line-height: 1em;
+      // font-family: "Akkurat-Mono", monospace;
       color: $black;
-      font-size: 16px;
-      line-height: 1em;
-      font-family: "Akkurat-Mono", monospace;
+      font-size: 48px;
+      line-height: 0.95em;
+      font-family: "five", "helvetica", Arial, "Akkurat-Mono", monospace;
+      -webkit-text-stroke-width: 3px;
+      -webkit-text-stroke-color: $black;
+      letter-spacing: -1px;
       // -webkit-text-stroke-width: 1px;
       // -webkit-text-stroke-color: $black;
       // letter-spacing: -1px;

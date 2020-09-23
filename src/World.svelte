@@ -18,9 +18,9 @@
 <style lang="scss">
   @import "./variables.scss";
 
-  $WORLD_WIDTH: 31;
-  $WORLD_HEIGHT: 31;
-  $CELL_DIMENSION: 20px;
+  $WORLD_WIDTH: 13;
+  $WORLD_HEIGHT: 13;
+  $CELL_DIMENSION: 50px;
   $CELL_DIMENSION_PHONE: 3.2vw;
   $CELL_DIMENSION_SHORT: 20px;
 
@@ -28,7 +28,7 @@
     width: $WORLD_WIDTH * $CELL_DIMENSION;
     height: $WORLD_HEIGHT * $CELL_DIMENSION;
     background: $black;
-    background: orangered;
+    // background: orangered;
 
     // background: orangered;
     // background: grey;
@@ -41,6 +41,7 @@
     left: 50%;
     margin-left: -($WORLD_WIDTH * $CELL_DIMENSION / 2);
     transform: scale(1) translate3d(0, 0, 0) rotate(45deg);
+    z-index: 1;
     // transition: transform 0.3s ease-out;
     // will-change: transform;
     // will-change: transform;
@@ -70,6 +71,8 @@
     float: left;
     background: #a4a4a4;
     background: $black;
+    // background: orangered;
+    border: 20px solid #a4a4a4;
 
     // border: 1px solid $black;
 
@@ -113,8 +116,9 @@
     &.alive {
       border-radius: 0px;
       background: #7e7e7e;
+      background: orangered;
+
       // background: rgb(50, 114, 50);
-      // border: 2px solid orangered;
       // background: $black;
       // background: orangered;
 
@@ -124,9 +128,11 @@
     }
 
     &.path {
-      border-radius: 0px;
+      border-radius: 50px;
       background: rgb(174, 255, 174);
+      background: $black;
       transition: background 0.2s ease-out, border-radius 0.2s ease-out;
+      border: 10px solid orangered;
 
       // background: rgb(105, 72, 104);
       // background: rgb(100, 100, 100);
@@ -171,7 +177,7 @@
     if (zoomed) {
       zoomed = false
       worldEl.style.transformOrigin = 'center center'
-      worldEl.style.transform = 'scale(1)'
+      worldEl.style.transform = 'scale(1) rotate(45deg)'
     } else {
       zoomed = true
       worldEl.style.transformOrigin = e.x - worldEl.offsetLeft + 'px ' + (e.y - worldEl.offsetTop) + 'px'

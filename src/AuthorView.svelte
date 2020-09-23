@@ -24,33 +24,18 @@
   // PROPS
   export let authorPost = {}
 
-  let connectedProjects = loadData(QUERY.CONNECTED_PROJECTS, {
-    id: authorPost._id,
-  })
+  let connectedProjects = []
 
-  // connectedProjects.then((connectedProjects) => {
-  //   console.dir(connectedProjects)
-  // })
-  // console.dir(authorPost)
+  $: {
+    console.dir(authorPost)
+    connectedProjects = loadData(QUERY.CONNECTED_PROJECTS, {
+      id: authorPost._id,
+    })
+  }
 </script>
 
 <style lang="scss">
   @import "./variables.scss";
-
-  .back-link {
-    font-size: 12px;
-    display: inline-block;
-    background: orangered;
-    padding: 10px;
-    padding-left: 30px;
-    padding-right: 30px;
-    border-radius: 5px;
-
-    &:hover {
-      background: white;
-      text-decoration: none;
-    }
-  }
 
   .author {
     z-index: 100;

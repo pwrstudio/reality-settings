@@ -33,7 +33,6 @@
 
   // *** GLOBAL
   import {
-    STATE,
     MILLISECONDS_PER_GENERATION,
     EPOCH_LENGTH,
     WORLD,
@@ -55,18 +54,9 @@
   // *** PROPS
   export let params = false
 
-  let section = false
-  let slug = false
-
-  $: {
-    // Split URL parameters
-    console.log("PARAMS updated")
-    console.dir(params)
-    const args = get(params, "[*]", "").split("/")
-    let section = args[0] && args[0].length > 0 ? args[0] : "seed"
-    let slug = args[1] && args[1].length > 0 ? args[1] : false
-    urlParamsToState()
-  }
+  // *** DOM REFERENCES
+  let worldEl = {}
+  let paneEl = {}
 
   // *** VARIABLES
   let blocks = []
@@ -81,69 +71,20 @@
   let stopFlag = false
   let logBlocks = []
   let inSession = false
-
-  // *** DOM REFERENCES
-  let worldEl = {}
-  let paneEl = {}
-
-  // UI STATE
-  const UI = { state: false, slug: false, errorMessage: false }
-
-  const setUIState = (newState, newSlug = false, errorMessage = false) => {
-    switch (newState) {
-      case STATE.GAME:
-        UI.state = STATE.GAME
-        UI.slug = $globalSeed
-        resizeWorld()
-        if (inSession) {
-          startWorld()
-        } else {
-          transitionWorld(0)
-        }
-        history.pushState({}, "", "/seed/" + $globalSeed)
-        break
-      case STATE.PROJECTS:
-        UI.state = STATE.PROJECTS
-        UI.slug = false
-        startWorld()
-        history.pushState({}, "", "/projects")
-        break
-      case STATE.META:
-        UI.state = STATE.META
-        UI.slug = false
-        stopWorld()
-        history.pushState({}, "", "/meta")
-        break
-      case STATE.SINGLE_PROJECT:
-        UI.state = STATE.SINGLE_PROJECT
-        UI.slug = newSlug
-        stopWorld()
-        projectPost = false
-        setTimeout(() => {
-          projectPost = projects.find((p) => p.slug.current == UI.slug)
-        }, 100)
-        history.pushState({}, "", "/projects/" + UI.slug)
-        break
-      case STATE.SINGLE_AUTHOR:
-        UI.state = STATE.SINGLE_AUTHOR
-        UI.slug = newSlug
-        stopWorld()
-        authorPost = false
-        setTimeout(() => {
-          authorPost = authors.find((p) => p.slug.current == slug)
-        }, 100)
-        history.pushState({}, "", "/authors/" + UI.slug)
-        break
-      default:
-        UI.state = STATE.ERROR
-        UI.slug = false
-        UI.errorMessage = errorMessage
-        history.pushState({}, "", "/error/")
-    }
-  }
+  let section = false
+  let slug = false
 
   $: {
-    console.log("STATE: ", UI.state)
+    // Split URL parameters
+    console.log("* * * * * ")
+    console.log("PARAMS UPDATED")
+    console.log("– params", params)
+    const args = get(params, "[*]", "").split("/")
+    section = args[0] && args[0].length > 0 ? args[0] : "seed"
+    slug = args[1] && args[1].length > 0 ? args[1] : false
+    console.log("– section", section)
+    console.log("– slug", slug)
+    console.log("* * * * * ")
   }
 
   // Game of Life
@@ -247,13 +188,6 @@
       )
 
       easystar.calculate()
-
-      // setTimeout(() => {
-      //   startWorld()
-      // }, 2000)
-      // setTimeout(() => {
-      //   advanceWorld(gen + 1)
-      // }, 2000)
     } else {
       if (!stopFlag) {
         // requestAnimationFrame(() => {
@@ -289,21 +223,6 @@
     worldOut = life.board
   }
 
-  // Load data
-  let postsMap = {}
-  let projectPost = false
-  let authorPost = false
-  let metaPost = false
-  let projects = []
-  let authors = []
-  let posts = loadData(QUERY.ALL)
-
-  // $: {
-  //   if (metaPost && (section || slug)) {
-  //     urlParamsToState()
-  //   }
-  // }
-
   const resizeWorld = () => {
     // worldEl = document.getElementById("world")
     // if (worldEl && worldEl.style && paneEl) {
@@ -317,27 +236,14 @@
     // }
   }
 
-  const urlParamsToState = () => {
-    console.log("URL TO PARAMS !!!")
-    switch (section) {
-      case "seed":
-        setUIState(STATE.GAME, slug)
-        break
-      case "projects":
-        slug
-          ? setUIState(STATE.SINGLE_PROJECT, slug)
-          : setUIState(STATE.PROJECTS)
-        break
-      case "authors":
-        slug ? setUIState(STATE.SINGLE_AUTHOR, slug) : setUIState(STATE.META)
-        break
-      case "meta":
-        setUIState(STATE.META)
-        break
-      default:
-        setUIState(STATE.GAME)
-    }
-  }
+  // Load data
+  let postsMap = {}
+  let projectPost = false
+  let authorPost = false
+  let metaPost = false
+  let projects = []
+  let authors = []
+  let posts = loadData(QUERY.ALL)
 
   onMount(async () => {
     posts.then((posts) => {
@@ -453,15 +359,23 @@
       // ***
       // ***
       // ***
-      if (section === "seed" && slug) {
-        globalSeed.set(slug)
-      } else {
+      if (!section) {
+        section = "seed"
         globalSeed.set((random(0, 65535) >>> 0).toString(2))
       }
+
+      if (section === "seed" && !slug) {
+        globalSeed.set((random(0, 65535) >>> 0).toString(2))
+      }
+
+      if (section === "seed" && slug) {
+        globalSeed.set(slug)
+      }
+
       life.randomizeFromSeed($globalSeed, Object.keys(postsMap))
-      urlParamsToState()
+      // urlParamsToState()
       // RESIZE
-      resizeWorld()
+      transitionWorld(0)
       // ***
       // ***
       // ***
@@ -529,6 +443,7 @@
       background: lightgray;
       background: grey;
       background: orangered;
+      // background: rgb(63, 255, 63);
       // background: rgba(255, 0, 0, 1);
       // background: $black;
       width: 60%;
@@ -605,42 +520,16 @@
 
     &.top {
       top: 0px;
-      height: 70px;
+      height: 50px;
       .menu-item {
-        height: 70px;
-        line-height: 70px;
+        float: right;
+        height: 50px;
+        line-height: 50px;
+        width: 50%;
         cursor: pointer;
         display: block;
         background: $black;
         color: $white;
-        // font-family: "five", "Akkurat-Mono", monospace;
-        // font-size: 56px;
-        // font-weight: normal;
-        // color: orangered;
-        // -webkit-text-stroke-color: orangered;
-        // -webkit-text-stroke-width: 4px;
-
-        &:hover {
-          // text-decoration: none;
-        }
-      }
-    }
-
-    &.bottom {
-      line-height: 70px;
-      bottom: 0px;
-      height: 70px;
-      border-bottom: none;
-      .menu-item {
-        height: 70px;
-        line-height: 70px;
-        cursor: pointer;
-        display: block;
-        background: $black;
-        color: $white;
-
-        // border-radius: 6px;
-
         // font-family: "five", "Akkurat-Mono", monospace;
         // font-size: 56px;
         // font-weight: normal;
@@ -660,148 +549,112 @@
     }
   }
 
-  .projects-list {
-    position: absolute;
-    top: 0px;
-    height: 100vh;
-    // padding: 10px;
-    padding-top: 73px;
-    padding-bottom: 70px;
-    width: 100%;
-    font-size: 12px;
-    overflow: scroll;
+  .list {
+    // position: absolute;
+    // top: 0px;
+    // height: 100vh;
+    // // padding: 10px;
+    padding-top: 43px;
+    // width: 100%;
+    // font-size: 12px;
+    // overflow: scroll;
     @include screen-size("small") {
       padding-bottom: 40px;
     }
   }
 </style>
 
-<div class="landing">
-  <!-- GAME -->
-  <div class="pane left" bind:this={paneEl}>
-    {#if UI.state === STATE.GAME || UI.state === STATE.PROJECTS}
-      <World {worldOut} />
-    {/if}
+{#await posts then posts}
+  <div class="landing" use:links>
+    <!-- GAME -->
+    <div class="pane left" bind:this={paneEl}>
+      <!-- PROJECT -->
+      {#if section == 'projects' && slug}
+        <ProjectView
+          projectPost={projects.find((p) => get(p, 'slug.current', '') === slug)} />
+      {/if}
 
-    <!-- PROJECT -->
-    {#if UI.state === STATE.SINGLE_PROJECT && projectPost}
-      <ProjectView {projectPost} />
-    {/if}
+      <!-- AUTHOR -->
+      {#if section == 'authors' && slug}
+        <AuthorView
+          authorPost={authors.find((a) => get(a, 'slug.current', '') === slug)} />
+      {/if}
 
-    <!-- AUTHOR -->
-    {#if UI.state === STATE.SINGLE_AUTHOR && authorPost}
-      <AuthorView {authorPost} />
-    {/if}
+      <!-- META -->
+      {#if section == 'meta' && metaPost}
+        <MetaView {metaPost} />
+      {/if}
 
-    <!-- META -->
-    {#if UI.state === STATE.META && metaPost}
-      <MetaView {metaPost} />
-    {/if}
-  </div>
+      <!-- SIMULATION -->
+      {#if section != 'projects' && section != 'authors' && section != 'meta'}
+        <World {worldOut} />
+      {/if}
+    </div>
 
-  <!-- INFO PANE -->
-  {#await posts then posts}
-    {#if inSession}
-      <div class="pane right">
-        <!-- MENU TOP -->
-        <div class="menu top">
-          {#if UI.state === STATE.GAME || UI.state === STATE.META || UI.state === STATE.SINGLE_AUTHOR}
-            <div
-              class="menu-item"
-              on:click={() => {
-                setUIState(STATE.PROJECTS)
-              }}>
-              Projects
-            </div>
-          {/if}
-          {#if UI.state === STATE.PROJECTS || UI.state === STATE.SINGLE_PROJECT}
-            <div
-              class="menu-item"
-              on:click={() => {
-                setUIState(STATE.GAME)
-              }}>
-              World
-            </div>
-          {/if}
-        </div>
+    <!-- INFO PANE -->
+    <!-- {#if inSession} -->
+    <div class="pane right">
+      <!-- MENU TOP -->
+      <div class="menu top">
+        <a href="/" class="menu-item half">Projects</a>
+        <a href="/meta" class="menu-item half">Meta</a>
+      </div>
 
-        <!-- GAME LOG-->
-        <!-- {#if UI.state === STATE.GAME}
+      <!-- GAME LOG-->
+      <!-- {#if UI.state === STATE.GAME}
         <LogList blocks={currentBlocks} />
       {/if} -->
 
-        <!-- PROJECT LIST -->
-        {#if UI.state === STATE.GAME || UI.state === STATE.PROJECTS || UI.state === STATE.SINGLE_PROJECT}
-          <div class="projects-list">
-            <ProjectsList {projects} slug={UI.slug} />
-          </div>
-        {/if}
-
-        <!-- AUTHOR LIST -->
-        {#if UI.state === STATE.META || UI.state === STATE.SINGLE_AUTHOR}
-          <AuthorList {authors} slug={UI.slug} />
-        {/if}
-
-        <!-- MENU BOTTOM -->
-        <div class="menu bottom">
-          {#if UI.state === STATE.META}
-            <div
-              class="menu-item"
-              on:click={() => {
-                setUIState(STATE.GAME)
-              }}>
-              X
-            </div>
-          {:else}
-            <div
-              class="menu-item"
-              on:click={() => {
-                setUIState(STATE.META)
-              }}>
-              Meta
-            </div>
-          {/if}
+      <!-- AUTHOR LIST -->
+      {#if section == 'meta' || section == 'authors'}
+        <div class="list">
+          <AuthorList {authors} {slug} />
         </div>
-      </div>
-    {/if}
-  {/await}
-</div>
-
-{#if UI.state === STATE.GAME || UI.state === STATE.PROJECTS}
-  <div class="world-control">
-    <div class="control first">
-      {$globalSeed} => {padGen($epoch)}:{padGen($generation)}
-    </div>
-    {#if running}
-      <div
-        class="control first"
-        on:click={() => {
-          stopWorld()
-        }}>
-        Pause
-      </div>
-    {:else}
-      <div
-        class="control first"
-        on:click={() => {
-          startWorld()
-        }}>
-        Start
-      </div>
-    {/if}
-    <div
-      class="control first"
-      on:click={() => {
-        resetWorld()
-      }}>
-      Reset
-    </div>
-    <div
-      class="control first"
-      on:click={() => {
-        resetWorld()
-      }}>
-      New seed
+      {:else}
+        <!-- PROJECT LIST -->
+        <div class="list">
+          <ProjectsList {projects} {slug} />
+        </div>
+      {/if}
     </div>
   </div>
-{/if}
+
+  {#if !slug && section != 'meta'}
+    <div class="world-control" use:links>
+      <div class="control first">
+        {$globalSeed} => {padGen($epoch)}:{padGen($generation)}
+      </div>
+      {#if running}
+        <div
+          class="control first"
+          on:click={() => {
+            stopWorld()
+          }}>
+          Pause
+        </div>
+      {:else}
+        <div
+          class="control first"
+          on:click={() => {
+            startWorld()
+          }}>
+          Start
+        </div>
+      {/if}
+      <div
+        class="control first"
+        on:click={() => {
+          resetWorld()
+        }}>
+        Reset
+      </div>
+      <div
+        class="control first"
+        on:click={() => {
+          resetWorld()
+        }}>
+        New seed
+      </div>
+    </div>
+  {/if}
+{/await}

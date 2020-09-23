@@ -1,19 +1,10 @@
-export const STATE = {
-  ERROR: 0,
-  GAME: 1,
-  PROJECTS: 2,
-  META: 3,
-  SINGLE_PROJECT: 4,
-  SINGLE_AUTHOR: 5,
-}
-
 export const MILLISECONDS_PER_GENERATION = 50
-export const EPOCH_LENGTH = 8
+export const EPOCH_LENGTH = 4
 
 export const WORLD = {
-  HEIGHT: 31,
-  WIDTH: 31,
-  SIZE: 31 * 31,
+  HEIGHT: 13,
+  WIDTH: 13,
+  SIZE: 13 * 13,
 }
 
 export const QUERY = {
