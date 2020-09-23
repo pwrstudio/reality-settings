@@ -47,21 +47,14 @@
     }
 
     .title {
-      color: $black;
-      font-size: 48px;
-      line-height: 0.95em;
-      font-family: "five", "helvetica", Arial, "Akkurat-Mono", monospace;
-      -webkit-text-stroke-width: 3px;
-      -webkit-text-stroke-color: $black;
-      letter-spacing: -1px;
-      word-spacing: -5px;
+      @include medium-title;
     }
 
     .authors {
       margin-top: 10px;
       margin-bottom: 10px;
       .author {
-        font-size: 12px;
+        font-size: $font-size-small;
         display: inline-block;
         background: darkgrey;
         padding: 10px;

@@ -41,14 +41,7 @@
         background: $off-white;
       }
 
-      color: $black;
-      font-size: 48px;
-      line-height: 0.95em;
-      font-family: "five", "helvetica", Arial, "Akkurat-Mono", monospace;
-      -webkit-text-stroke-width: 3px;
-      -webkit-text-stroke-color: $black;
-      letter-spacing: -1px;
-      word-spacing: -5px;
+      @include medium-title;
     }
   }
 </style>

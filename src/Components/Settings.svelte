@@ -1,7 +1,7 @@
 <script>
   // # # # # # # # # # # # # #
   //
-  //  REALITY SETTINGS: SETTINGS
+  //  SETTINGS
   //
   // # # # # # # # # # # # # #
 
@@ -124,29 +124,14 @@
       font-size: 32px;
     }
 
-    // display: inline-block;
     float: left;
-    background: #c4c4c4;
-    background: grey;
     background: orangered;
     text-align: center;
-    color: #333333;
+    color: §black;
 
     .text {
       display: none;
     }
-
-    // .plus {
-    //   background: $black;
-    //   width: $CELL_DIMENSION / 2;
-    //   height: 1px;
-    // }
-
-    // .minus {
-    //   background: $black;
-    //   height: $CELL_DIMENSION / 2;
-    //   width: 1px;
-    // }
 
     .plus,
     .minus {

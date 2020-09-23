@@ -37,7 +37,7 @@
     height: calc(100vh - 120px);
     padding: 0;
     width: 100%;
-    font-size: 12px;
+    font-size: $font-size-small;
     overflow: scroll;
     @include screen-size("small") {
       padding-bottom: 40px;
@@ -51,7 +51,7 @@
     background: #a4a4a4;
     border-radius: 20px;
     display: block;
-    font-size: 12px;
+    font-size: $font-size-small;
     cursor: pointer;
     user-select: none;
 

@@ -435,7 +435,7 @@
   }
 
   .markov .info {
-    font-size: 12px;
+    font-size: $font-size-small;
     padding: 5px;
     color: $black;
     background: rgb(255, 255, 161);
@@ -475,7 +475,7 @@
     top: 0;
     width: 60%;
     left: 0;
-    font-size: 12px;
+    font-size: $font-size-small;
     text-align: center;
     display: flex;
     justify-content: center;
@@ -486,7 +486,7 @@
     .control {
       cursor: pointer;
       &.first {
-        margin-right: 20px;
+        margin-right: 15px;
       }
       &:hover {
         text-decoration: underline;

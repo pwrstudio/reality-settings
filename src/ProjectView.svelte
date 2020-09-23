@@ -29,7 +29,7 @@
   @import "./variables.scss";
 
   .category {
-    font-size: 12px;
+    font-size: $font-size-small;
     display: inline-block;
     background: orangered;
     padding: 10px;
@@ -54,7 +54,7 @@
       background: lightgrey;
       padding: 10px;
       border-radius: 5px;
-      font-size: 1em;
+      font-size: $font-size-normal;
       margin-right: 10px;
       margin-bottom: 10px;
 
