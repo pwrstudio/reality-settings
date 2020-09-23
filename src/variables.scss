@@ -55,6 +55,19 @@ $breakpoints: (
   -ms-overflow-style: none;
 }
 
+@mixin big-title {
+  font-family: "five", "Akkurat-Mono", monospace;
+  font-size: 72px;
+  font-weight: normal;
+  line-height: 0.9em;
+  margin-bottom: 40px;
+  max-width: 90%;
+  -webkit-text-stroke-width: 4px;
+  -webkit-text-stroke-color: $black;
+  letter-spacing: -1px;
+  word-spacing: -10px;
+}
+
 /// Responsive manager.
 /// @access public
 /// @param {String} $breakpoint - Breakpoint

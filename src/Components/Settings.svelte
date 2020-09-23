@@ -8,7 +8,6 @@
   // IMPORTS
   import { links, navigate } from "svelte-routing"
   import random from "lodash/random"
-  import has from "lodash/has"
 
   let seed = random(0, 65535)
   let seedArray = []
@@ -32,12 +31,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 16px;
+    font-size: $font_size_normal;
   }
 
   .settings-inner {
-    // background: red;
-
     .header {
       font-family: "five", "Akkurat-Mono", monospace;
       font-size: 42px;
@@ -131,7 +128,6 @@
     line-height: $CELL_DIMENSION;
     cursor: pointer;
     color: $black;
-    // font-size: 16px;
     font-size: 22px;
     -webkit-tap-highlight-color: rgba(211, 211, 211, 0.3);
     display: flex;

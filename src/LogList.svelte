@@ -62,10 +62,7 @@
     }
 
     .title {
-      // max-width: 240px;
-      // font-size: 16px;
       line-height: 1em;
-      // font-family: 'five', 'Akkurat-Mono', monospace;
       font-family: "Akkurat-Mono", monospace;
     }
 
@@ -82,7 +79,6 @@
   {#each blocks as block (block.uid)}
     <div
       class="post"
-      in:fade={{ duration: 200 }}
       on:click={(e) => {
         navigate('/projects/im-not-in-love-towards-expressive-anamophisms-in-music')
       }}>

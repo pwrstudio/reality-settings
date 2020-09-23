@@ -56,7 +56,8 @@
 
   // *** DOM REFERENCES
   let worldEl = {}
-  let paneEl = {}
+  let paneLeftEl = false
+  let paneRightEl = false
 
   // *** VARIABLES
   let blocks = []
@@ -70,21 +71,36 @@
   let running = false
   let stopFlag = false
   let logBlocks = []
-  let inSession = false
   let section = false
   let slug = false
 
   $: {
     // Split URL parameters
-    console.log("* * * * * ")
-    console.log("PARAMS UPDATED")
-    console.log("– params", params)
+    // console.log("* * * * * ")
+    // console.log("PARAMS UPDATED")
+    // console.log("– params", params)
     const args = get(params, "[*]", "").split("/")
     section = args[0] && args[0].length > 0 ? args[0] : "seed"
     slug = args[1] && args[1].length > 0 ? args[1] : false
-    console.log("– section", section)
-    console.log("– slug", slug)
-    console.log("* * * * * ")
+    // console.log("– section", section)
+    // console.log("– slug", slug)
+    // console.log("* * * * * ")
+  }
+
+  $: {
+    // console.log("slug change")
+    // console.dir(paneLeftEl)
+    if ((slug || section == "meta") && paneLeftEl) {
+      // console.log("YYYYYYYY")
+      paneLeftEl.scrollTo({ top: 0 })
+    }
+  }
+
+  $: {
+    // console.log("section change")
+    if (section && paneRightEl) {
+      paneRightEl.scrollTo({ top: 0, behavior: "smooth" })
+    }
   }
 
   // Game of Life
@@ -238,8 +254,6 @@
 
   // Load data
   let postsMap = {}
-  let projectPost = false
-  let authorPost = false
   let metaPost = false
   let projects = []
   let authors = []
@@ -251,6 +265,7 @@
       metaPost = posts.find((p) => p._type === "introduction")
       authors = posts.filter((p) => p._type === "author")
       projects = posts.filter((p) => p._type === "project")
+      projects = Array.isArray(projects) ? shuffle(projects) : []
 
       projects.forEach((post) => {
         // Add to map
@@ -359,17 +374,15 @@
       // ***
       // ***
       // ***
-      if (!section) {
+      if (!section || section === "seed") {
         section = "seed"
-        globalSeed.set((random(0, 65535) >>> 0).toString(2))
+        if (slug) {
+          globalSeed.set(slug)
+        }
       }
 
-      if (section === "seed" && !slug) {
+      if (!$globalSeed) {
         globalSeed.set((random(0, 65535) >>> 0).toString(2))
-      }
-
-      if (section === "seed" && slug) {
-        globalSeed.set(slug)
       }
 
       life.randomizeFromSeed($globalSeed, Object.keys(postsMap))
@@ -409,10 +422,6 @@
     @include hide-scroll;
   }
 
-  h1 {
-    padding: 20px;
-  }
-
   img {
     max-width: 100%;
   }
@@ -437,48 +446,27 @@
     position: fixed;
     top: 0;
 
-    &.left {
-      position: relative;
-      left: 0;
-      background: lightgray;
-      background: grey;
-      background: orangered;
-      // background: rgb(63, 255, 63);
-      // background: rgba(255, 0, 0, 1);
-      // background: $black;
-      width: 60%;
-      overflow: hidden;
+    height: 100vh;
+    overflow-y: scroll;
 
-      @include screen-size("small") {
-        width: 100vw;
-        height: 50vh;
-      }
+    @include hide-scroll;
+
+    &.left {
+      left: 0;
+      background: orangered;
+      width: 60%;
     }
 
     &.right {
-      opacity: 1;
       left: 60%;
-      background: lightgray;
       background: $black;
-      // background:
       width: 40%;
-      overflow-y: scroll;
-      height: 100vh;
-
-      @include hide-scroll;
-
-      @include screen-size("small") {
-        width: calc(100vw - 20px);
-        height: calc(50vh - 90px);
-        left: 0;
-        top: 50%;
-      }
     }
   }
 
   .world-control {
-    height: 20px;
-    line-height: 20px;
+    height: 50px;
+    line-height: 50px;
     position: fixed;
     top: 0;
     width: 60%;
@@ -513,7 +501,7 @@
     overflow: hidden;
     right: 0;
     color: $black;
-    font-size: 16px;
+    font-size: $font_size_normal;
     text-align: center;
     user-select: none;
     z-index: 100;
@@ -530,12 +518,6 @@
         display: block;
         background: $black;
         color: $white;
-        // font-family: "five", "Akkurat-Mono", monospace;
-        // font-size: 56px;
-        // font-weight: normal;
-        // color: orangered;
-        // -webkit-text-stroke-color: orangered;
-        // -webkit-text-stroke-width: 4px;
 
         &:hover {
           background: rgba(40, 40, 40, 1);
@@ -551,39 +533,46 @@
   }
 
   .list {
-    // position: absolute;
-    // top: 0px;
-    // height: 100vh;
-    // // padding: 10px;
-    padding-top: 43px;
-    // width: 100%;
-    // font-size: 12px;
-    // overflow: scroll;
-    @include screen-size("small") {
-      padding-bottom: 40px;
-    }
+    padding-top: 53px;
+  }
+
+  .single {
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 80px;
+    min-height: 100vh;
+    background: grey;
+
+    @include hide-scroll;
   }
 </style>
 
 {#await posts then posts}
   <div class="landing" use:links>
     <!-- GAME -->
-    <div class="pane left" bind:this={paneEl}>
+    <div class="pane left" bind:this={paneLeftEl}>
       <!-- PROJECT -->
       {#if section == 'projects' && slug}
-        <ProjectView
-          projectPost={projects.find((p) => get(p, 'slug.current', '') === slug)} />
+        <div class="single">
+          <ProjectView
+            projectPost={projects.find((p) => get(p, 'slug.current', '') === slug)} />
+        </div>
       {/if}
 
       <!-- AUTHOR -->
       {#if section == 'authors' && slug}
-        <AuthorView
-          authorPost={authors.find((a) => get(a, 'slug.current', '') === slug)} />
+        <div class="single">
+          <AuthorView
+            authorPost={authors.find((a) => get(a, 'slug.current', '') === slug)} />
+        </div>
       {/if}
 
       <!-- META -->
       {#if section == 'meta' && metaPost}
-        <MetaView {metaPost} />
+        <div class="single">
+          <MetaView {metaPost} />
+        </div>
       {/if}
 
       <!-- SIMULATION -->
@@ -593,8 +582,7 @@
     </div>
 
     <!-- INFO PANE -->
-    <!-- {#if inSession} -->
-    <div class="pane right">
+    <div class="pane right" bind:this={paneRightEl}>
       <!-- MENU TOP -->
       <div class="menu top">
         <a href="/" class="menu-item half">Projects</a>

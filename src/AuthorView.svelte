@@ -8,6 +8,7 @@
   import { onMount } from "svelte"
   import { links } from "svelte-routing"
   import { fade } from "svelte/transition"
+  import { quartOut } from "svelte/easing"
   import get from "lodash/get"
 
   // *** COMPONENTS
@@ -38,66 +39,28 @@
   @import "./variables.scss";
 
   .author {
-    z-index: 100;
-    width: 100%;
-    overflow: scroll;
-    padding: 10px;
-    height: 100vh;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-bottom: 80px;
-    background: grey;
-
-    @include hide-scroll;
-
-    @include screen-size("small") {
-      margin-right: 0px;
-      margin-left: 0px;
-      width: calc(100vw - 20px);
-      height: 100vh;
-      left: 0;
-      top: 0;
-    }
-
-    /* padding-top: 20px; */
-
     img {
       max-width: 100%;
     }
 
     .main-text {
-      font-size: 16px;
+      font-size: $font_size_normal;
       max-width: 700px;
       margin-bottom: 40px;
-
-      /* font-family: "times new roman", times, serif; */
     }
 
     .author {
-      font-size: 16px;
+      font-size: $font_size_normal;
       margin-bottom: 40px;
-
-      /* font-family: "times new roman", times, serif; */
     }
 
     h1 {
-      /* padding: 20px 0px; */
-      font-family: "five", "Akkurat-Mono", monospace;
-      font-size: 72px;
-      font-weight: normal;
-      line-height: 0.9em;
-      margin-bottom: 40px;
-      max-width: 90%;
-      // max-width: 1000px;
-      -webkit-text-stroke-width: 4px;
-      -webkit-text-stroke-color: $black;
-      letter-spacing: -1px;
-      word-spacing: -10px;
+      @include big-title;
     }
   }
 </style>
 
-<div class="author" in:fade>
+<div class="author">
   <!-- TITLE -->
   <h1>{authorPost.name}</h1>
   <!-- BIOGRAPHY -->

@@ -7,9 +7,10 @@
 
   // IMPORTS
   import { fade } from "svelte/transition"
+  import { quartOut } from "svelte/easing"
   import { links } from "svelte-routing"
 
-  import { urlFor, loadData, renderBlockText } from "./sanity.js"
+  import { urlFor, loadData } from "./sanity.js"
 
   // *** PROPS
   export let projects = []
@@ -25,12 +26,10 @@
     margin-bottom: 3px;
     padding: 15px;
     padding-bottom: 3px;
-    // border-radius: 20px;
     display: block;
     cursor: pointer;
     user-select: none;
     background: $grey;
-    // border: 3px solid #949494;
 
     &:hover {
       transition: background 0.3 ease-out;
@@ -95,9 +94,8 @@
         }
       }
       .title {
-        // max-width: 240px;
         margin-right: 40px;
-        font-size: 16px;
+        font-size: $font_size_normal;
         line-height: 1em;
         font-family: "Akkurat-Mono", monospace;
         -webkit-text-stroke-width: 0px;
@@ -107,33 +105,32 @@
   }
 </style>
 
-<div in:fade={{ duration: 200 }}>
-  {#each projects as post, index (post._id)}
-    <a
-      href={'/projects/' + post.slug.current}
-      class="post"
-      class:small
-      class:active={slug === post.slug.current}>
-      <div>
-        <div class="title">{post.title}</div>
-        {#if post.authors && Array.isArray(post.authors)}
-          <div class="authors">
-            {#each post.authors as author}
-              <div class="author">{author.name}</div>
-            {/each}
-          </div>
-        {/if}
-      </div>
-      {#if post.mainImage && small}
-        <div class="image">
-          <img
-            src={urlFor(post.mainImage)
-              .width(400)
-              .quality(90)
-              .auto('format')
-              .url()} />
+{#each projects as post, index (post._id)}
+  <a
+    href={'/projects/' + post.slug.current}
+    class="post"
+    class:small
+    class:active={slug === post.slug.current}
+    in:fade={{ delay: 30 * index, duration: 300, easing: quartOut }}>
+    <div>
+      <div class="title">{post.title}</div>
+      {#if post.authors && Array.isArray(post.authors)}
+        <div class="authors">
+          {#each post.authors as author}
+            <div class="author">{author.name}</div>
+          {/each}
         </div>
       {/if}
-    </a>
-  {/each}
-</div>
+    </div>
+    {#if post.mainImage && small}
+      <div class="image">
+        <img
+          src={urlFor(post.mainImage)
+            .width(400)
+            .quality(90)
+            .auto('format')
+            .url()} />
+      </div>
+    {/if}
+  </a>
+{/each}

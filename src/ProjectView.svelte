@@ -5,8 +5,6 @@
   //
   // # # # # # # # # # # # # #
 
-  import { onMount } from "svelte"
-  import { links } from "svelte-routing"
   import { fade } from "svelte/transition"
   import get from "lodash/get"
 
@@ -41,32 +39,12 @@
     // margin-bottom: 20px;
 
     &:hover {
-      background: white;
+      background: $white;
       text-decoration: none;
     }
   }
 
   .project {
-    width: 100%;
-    overflow: scroll;
-    padding-top: 10px;
-    padding-bottom: 80px;
-    padding-left: 20px;
-    padding-right: 20px;
-    height: 100vh;
-    background: grey;
-
-    @include hide-scroll;
-
-    @include screen-size("small") {
-      margin-right: 0px;
-      margin-left: 0px;
-      width: calc(100vw - 20px);
-      height: 100vh;
-      left: 0;
-      top: 0;
-    }
-
     img {
       max-width: 100%;
     }
@@ -81,7 +59,7 @@
       margin-bottom: 10px;
 
       &:hover {
-        background: white;
+        background: $white;
         text-decoration: none;
       }
 
@@ -91,37 +69,20 @@
     }
 
     .main-text {
-      font-size: 16px;
+      font-size: $font_size_normal;
       max-width: 700px;
       width: 100%;
       margin-top: 30px;
     }
 
     h1 {
-      /* padding: 20px 0px; */
-      font-family: "five", "Akkurat-Mono", monospace;
-      font-size: 72px;
-      font-weight: normal;
-      line-height: 0.9em;
-      margin-bottom: 20px;
-      max-width: 90%;
+      @include big-title;
       margin-top: 20px;
-      -webkit-text-stroke-width: 4px;
-      -webkit-text-stroke-color: $black;
-      letter-spacing: -1px;
-      word-spacing: -10px;
-
-      @include screen-size("small") {
-        hyphens: auto;
-        font-size: 46px;
-        max-width: 100%;
-        -webkit-text-stroke-width: 3px;
-      }
     }
   }
 </style>
 
-<div class="project" in:fade use:links>
+<div class="project">
   <!-- CATEGORIES -->
   <div class="category">Embodied</div>
 

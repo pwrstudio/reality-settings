@@ -12,8 +12,6 @@
 
   // PROPS
   export let block = {}
-
-  console.dir(block)
 </script>
 
 <style lang="scss">
