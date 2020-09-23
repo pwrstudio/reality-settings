@@ -10,7 +10,6 @@
 
   // ROUTES
   import Main from "./Main.svelte"
-  import Settings from "./Components/Settings.svelte"
 </script>
 
 <style lang="scss" global>

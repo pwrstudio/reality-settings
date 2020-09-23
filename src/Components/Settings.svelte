@@ -6,7 +6,6 @@
   // # # # # # # # # # # # # #
 
   // IMPORTS
-  import { links, navigate } from "svelte-routing"
   import random from "lodash/random"
 
   let seed = random(0, 65535)
@@ -26,32 +25,20 @@
   $CELL_DIMENSION_PHONE: 80px;
 
   .settings {
+    position: fixed;
+    top: 0;
+    left: 0;
     height: 100vh;
     width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: $font_size_normal;
+    background: orangered;
   }
 
   .settings-inner {
-    .header {
-      font-family: "five", "Akkurat-Mono", monospace;
-      font-size: 42px;
-      margin-bottom: 30px;
-      text-align: center;
-      -webkit-text-stroke-width: 2px;
-      -webkit-text-stroke-color: $black;
-      letter-spacing: -2px;
-
-      @include screen-size("small") {
-        letter-spacing: -1px;
-        font-size: 48px;
-        margin-bottom: 40px;
-        -webkit-text-stroke-width: 3px;
-        -webkit-text-stroke-color: $black;
-      }
-    }
+    // height: 90vh;
+    // width: 90vw;
 
     .parameter {
       margin-bottom: 20px;
@@ -73,9 +60,10 @@
       cursor: pointer;
       outline: 0;
       border: 0;
-      background: orangered;
+      background: $black;
+      border: 1px solid $black;
       text-decoration: none;
-      color: $black;
+      color: $white;
       display: block;
       text-align: center;
       transition: background 0.5s $transtion2;
@@ -85,13 +73,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-
-      .inner {
-        //   width: 4 * $CELL_DIMENSION - 10px;
-        //   height: $CELL_DIMENSION * 0.55;
-        //   border-radius: 30px;
-        // background: orangered;
-      }
+      font-size: $font-size-normal;
 
       transition: border-radius 0.5s ease-out;
 
@@ -147,7 +129,6 @@
     background: #c4c4c4;
     background: grey;
     background: orangered;
-
     text-align: center;
     color: #333333;
 
@@ -155,17 +136,17 @@
       display: none;
     }
 
-    .plus {
-      background: $black;
-      width: $CELL_DIMENSION / 2;
-      height: 1px;
-    }
+    // .plus {
+    //   background: $black;
+    //   width: $CELL_DIMENSION / 2;
+    //   height: 1px;
+    // }
 
-    .minus {
-      background: $black;
-      height: $CELL_DIMENSION / 2;
-      width: 1px;
-    }
+    // .minus {
+    //   background: $black;
+    //   height: $CELL_DIMENSION / 2;
+    //   width: 1px;
+    // }
 
     .plus,
     .minus {
@@ -204,25 +185,10 @@
       }
     }
   }
-
-  .read-only {
-    user-select: none;
-    pointer-events: none;
-  }
-
-  .small {
-    // font-size: 12px;
-  }
 </style>
 
-<div class="settings" use:links>
+<div class="settings">
   <div class="settings-inner">
-    <!-- <div class="header">Reality Settings</div> -->
-
-    <!-- <div class="parameter bottom">
-      <div class="preview">Seed: {seedArray.join('')}</div>
-    </div> -->
-
     <div class="sigil">
       {#each seedArray as cell, index}
         <div
@@ -232,20 +198,12 @@
             seedArray[index] = seedArray[index] == '1' ? '0' : '1'
             console.dir(seedArray)
           }}>
-          <!-- <div class="plus" />
-          <div class="minus" /> -->
+          <div class="plus">+</div>
+          <div class="minus">-</div>
         </div>
       {/each}
     </div>
 
-    <!-- <div class="parameter">
-      <div
-        class="run"
-        on:click={() => {
-          navigate('/seed/' + seedArray.join(''))
-        }}>
-        <div class="inner">Seed: {seedArray.join('')}</div>
-      </div>
-    </div> -->
+    <a href={'/seed/' + seedArray.join('')} class="run">{seedArray.join('')}</a>
   </div>
 </div>

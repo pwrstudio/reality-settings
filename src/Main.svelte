@@ -50,6 +50,7 @@
   import ProjectsList from "./ProjectsList.svelte"
   import AuthorList from "./AuthorList.svelte"
   import World from "./World.svelte"
+  import Settings from "./Components/Settings.svelte"
 
   // *** PROPS
   export let params = false
@@ -73,6 +74,7 @@
   let logBlocks = []
   let section = false
   let slug = false
+  let loaded = false
 
   $: {
     // Split URL parameters
@@ -123,11 +125,10 @@
         transitionWorld(index + WORLD.WIDTH)
       })
     } else {
-      inSession = true
-      setTimeout(() => {
-        startWorld()
-        // advanceWorld($generation + 1)
-      }, 500)
+      // setTimeout(() => {
+      loaded = true
+      startWorld()
+      // }, 500)
     }
   }
 
@@ -596,33 +597,35 @@
     </div>
 
     <!-- INFO PANE -->
-    <div class="pane right" bind:this={paneRightEl}>
-      <!-- MENU TOP -->
-      <div class="menu top">
-        <a href="/" class="menu-item half">Projects</a>
-        <a href="/meta" class="menu-item half">Meta</a>
-      </div>
+    {#if loaded}
+      <div class="pane right" bind:this={paneRightEl}>
+        <!-- MENU TOP -->
+        <div class="menu top">
+          <a href="/" class="menu-item half">Projects</a>
+          <a href="/meta" class="menu-item half">Meta</a>
+        </div>
 
-      <!-- GAME LOG-->
-      <!-- {#if UI.state === STATE.GAME}
+        <!-- GAME LOG-->
+        <!-- {#if UI.state === STATE.GAME}
         <LogList blocks={currentBlocks} />
-      {/if} -->
+        {/if} -->
 
-      <!-- AUTHOR LIST -->
-      {#if section == 'meta' || section == 'authors'}
-        <div class="list">
-          <AuthorList {authors} {slug} />
-        </div>
-      {:else}
-        <!-- PROJECT LIST -->
-        <div class="list">
-          <ProjectsList {projects} {slug} />
-        </div>
-      {/if}
-    </div>
+        <!-- AUTHOR LIST -->
+        {#if section == 'meta' || section == 'authors'}
+          <div class="list">
+            <AuthorList {authors} {slug} />
+          </div>
+        {:else}
+          <!-- PROJECT LIST -->
+          <div class="list">
+            <ProjectsList {projects} {slug} />
+          </div>
+        {/if}
+      </div>
+    {/if}
   </div>
 
-  {#if !slug && section != 'meta'}
+  {#if loaded && (!section || section == 'seed')}
     <div class="world-control" use:links>
       <div class="control first">
         {$globalSeed} => {padGen($epoch)}:{padGen($generation)}
@@ -651,13 +654,11 @@
         }}>
         Reset
       </div>
-      <div
-        class="control first"
-        on:click={() => {
-          resetWorld()
-        }}>
-        New seed
-      </div>
+      <a href="/settings" class="control first"> New seed </a>
     </div>
+  {/if}
+
+  {#if section == 'settings'}
+    <Settings />
   {/if}
 {/await}
