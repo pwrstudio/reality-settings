@@ -445,9 +445,12 @@
     height: 100vh;
     position: fixed;
     top: 0;
-
     height: 100vh;
     overflow-y: scroll;
+
+    &.simulation {
+      overflow-y: hidden;
+    }
 
     @include hide-scroll;
 
@@ -546,12 +549,21 @@
 
     @include hide-scroll;
   }
+
+  .simulation {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+  }
 </style>
 
 {#await posts then posts}
   <div class="landing" use:links>
     <!-- GAME -->
-    <div class="pane left" bind:this={paneLeftEl}>
+    <div
+      class="pane left"
+      class:simulation={!slug && section != 'meta'}
+      bind:this={paneLeftEl}>
       <!-- PROJECT -->
       {#if section == 'projects' && slug}
         <div class="single">
@@ -577,7 +589,9 @@
 
       <!-- SIMULATION -->
       {#if section != 'projects' && section != 'authors' && section != 'meta'}
-        <World {worldOut} />
+        <div class="simulation">
+          <World {worldOut} />
+        </div>
       {/if}
     </div>
 
