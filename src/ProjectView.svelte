@@ -87,7 +87,11 @@
 
 <div class="project">
   <!-- CATEGORIES -->
-  <div class="category">Embodied</div>
+  {#if projectPost.categories && Array.isArray(projectPost.categories)}
+    {#each projectPost.categories as category (category._key)}
+      <a href={'/categories/' + category} class="category">{category}</a>
+    {/each}
+  {/if}
 
   <!-- CONTENT => TITLE -->
   <h1>{projectPost.title}</h1>

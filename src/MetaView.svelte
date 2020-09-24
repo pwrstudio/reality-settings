@@ -8,7 +8,7 @@
   import { fade } from "svelte/transition"
   import get from "lodash/get"
 
-  import { urlFor, renderBlockText, singleToPlainText } from "./sanity.js"
+  import { renderBlockText } from "./sanity.js"
 
   // BLOCKS
   import ImageBlock from "./Components/Blocks/ImageBlock.svelte"

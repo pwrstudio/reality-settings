@@ -12,6 +12,7 @@
   import get from "lodash/get"
   import shuffle from "lodash/shuffle"
   import sample from "lodash/sample"
+  import uniq from "lodash/uniq"
   import flatMap from "lodash/flatMap"
   import Markov from "markov-strings"
   import random from "lodash/random"
@@ -45,12 +46,14 @@
   // *** COMPONENTS
   import ProjectView from "./ProjectView.svelte"
   import AuthorView from "./AuthorView.svelte"
+  import CategoryView from "./CategoryView.svelte"
   import MetaView from "./MetaView.svelte"
   import LogList from "./LogList.svelte"
   import ProjectsList from "./ProjectsList.svelte"
   import AuthorList from "./AuthorList.svelte"
   import World from "./World.svelte"
   import Settings from "./Components/Settings.svelte"
+  import { HTMLFormControlsCollection } from "lodash/_freeGlobal"
 
   // *** PROPS
   export let params = false
@@ -65,6 +68,7 @@
   let testBlocks = []
   let currentBlocks = []
   let keywords = []
+  let allCategories = []
   let allTextOnly = ""
   let markovMaterial = []
   let allSentences = []
@@ -262,118 +266,24 @@
 
   onMount(async () => {
     posts.then((posts) => {
-      // console.dir(posts)
       metaPost = posts.find((p) => p._type === "introduction")
+      // AUTHORS
       authors = posts.filter((p) => p._type === "author")
+      authors = Array.isArray(authors) ? authors.sort() : []
+      // PROJECTS
       projects = posts.filter((p) => p._type === "project")
       projects = Array.isArray(projects) ? shuffle(projects) : []
-
       projects.forEach((post) => {
-        // Add to map
-        postsMap[post._id] = post
-
-        if (toPlainText(post.mainContent.content).length > 10) {
-          allTextOnly =
-            allTextOnly +
-            toPlainText(post.mainContent.content)
-              .replace(/\r?\n|\r/g, " ")
-              .trim()
-        }
-
-        // console.log(toPlainText(post.mainContent.content));
-        // console.log(post.title);
-        // console.log(allTextOnly);
-
-        let sentences = allTextOnly.match(/[^\.!\?]+[\.!\?]+/g)
-
-        if (sentences) {
-          sentences = sentences.map((s) => {
-            return {
-              text: s.trim(),
-              title: post.title,
-              slug: post.slug.current,
-            }
-          })
-          // console.dir(sentences);
-
-          allSentences = [...allSentences, ...sentences]
-        }
-
-        // Get all blocks
-        // post.mainContent.content.forEach((block) => {
-        //   // console.log(singleToPlainText(block).length)
-        //   if (block._type !== "block" || singleToPlainText(block).length > 0) {
-        //     blocks.push({
-        //       id: post._id,
-        //       uid: uuidv4(),
-        //       content: block,
-        //     })
-        //   }
-        // if (block._type == "block") {
-        //   console.dir(block);
-        // }
-        // })
-
-        // KEYWORDS
-        let children = flatMap(
-          post.mainContent.content
-            .filter((c) => c._type == "block")
-            .map((b) => b.children)
-        )
-
-        // console.dir(children)
-
-        children.forEach((c) => {
-          if (c.marks.length > 0 && c.marks.includes("keyword")) {
-            // console.dir(c)
-            keywords.push(c.text)
-          }
-        })
-
-        // let b = a.map(x => x);
-
-        // console.dir(b);
-
-        // keywords = [...keywords, ...a.filter(x => x._type === "keyword")];
+        console.dir(post)
+        console.dir(post.categories)
+        allCategories = [...allCategories, ...get(post, "categories", [])]
       })
 
-      markovMaterial = allTextOnly
-        .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
-        .split("|")
+      allCategories = uniq(allCategories)
+      console.dir(allCategories)
 
-      // Build the Markov generator
-      const markov = new Markov(markovMaterial, { stateSize: 2 })
-      markov.buildCorpus()
-
-      const options = {
-        maxTries: 200,
-        filter: (result) => {
-          // result.string.split(" ").length >= 5 &&
-          return result.score > 10 // At least 5 words // End sentences with a dot.
-        },
-      }
-
-      let result = []
-      for (let i = 0; i < 10; i++) {
-        let newMarkov = { ...markov.generate(options), uid: uuidv4() }
-        result.push(newMarkov)
-      }
-      // console.dir(result)
-      logBlocks = result
-
-      let newBlock = logBlocks.pop()
-      newBlock.meta = {
-        epoch: padGen($epoch),
-        generation: $generation,
-      }
-      currentBlocks.push(newBlock)
-      currentBlocks = currentBlocks
-
+      // ***
       // START GAME
-      // ***
-      // ***
-      // ***
-      // ***
       // ***
       if (!section || section === "seed") {
         section = "seed"
@@ -387,14 +297,8 @@
       }
 
       life.randomizeFromSeed($globalSeed, Object.keys(postsMap))
-      // urlParamsToState()
       // RESIZE
       transitionWorld(0)
-      // ***
-      // ***
-      // ***
-      // ***
-      // ***
     })
     window.onresize = resizeWorld
   })
@@ -583,6 +487,13 @@
         </div>
       {/if}
 
+      <!-- CATEGORY -->
+      {#if section == 'categories' && slug}
+        <div class="single">
+          <CategoryView {slug} />
+        </div>
+      {/if}
+
       <!-- META -->
       {#if section == 'meta' && metaPost}
         <div class="single">
@@ -591,7 +502,7 @@
       {/if}
 
       <!-- SIMULATION -->
-      {#if section != 'projects' && section != 'authors' && section != 'meta'}
+      {#if section != 'projects' && section != 'authors' && section != 'meta' && section != 'categories'}
         <div class="simulation">
           <World {worldOut} />
         </div>
@@ -629,9 +540,7 @@
 
   {#if loaded && (!section || section == 'seed')}
     <div class="world-control" use:links>
-      <div class="control first">
-        {$globalSeed} => {padGen($epoch)}:{padGen($generation)}
-      </div>
+      <div class="control first">{$globalSeed} => {padGen($generation)}</div>
       {#if running}
         <div
           class="control first"

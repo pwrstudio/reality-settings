@@ -93,7 +93,24 @@
         font-family: "Akkurat-Mono", monospace;
         -webkit-text-stroke-width: 0px;
         letter-spacing: 0px;
+        word-spacing: 0;
       }
+    }
+  }
+
+  .category {
+    font-size: $font-size-small;
+    display: inline-block;
+    background: orangered;
+    padding: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+    border-radius: 5px;
+    // margin-bottom: 20px;
+
+    &:hover {
+      background: $white;
+      text-decoration: none;
     }
   }
 </style>
@@ -104,8 +121,14 @@
     class="post"
     class:small
     class:active={slug === post.slug.current}
-    in:fade={{ delay: 30 * index, duration: 300, easing: quartOut }}>
+    in:fade={{ delay: 80 * index, duration: 300, easing: quartOut }}>
     <div>
+      <!-- CATEGORIES -->
+      {#if small & post.categories && Array.isArray(post.categories)}
+        {#each post.categories as category (category._key)}
+          <a href={'/categories/' + category} class="category">{category}</a>
+        {/each}
+      {/if}
       <div class="title">{post.title}</div>
       {#if post.authors && Array.isArray(post.authors)}
         <div class="authors">
