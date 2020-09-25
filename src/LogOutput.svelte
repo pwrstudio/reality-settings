@@ -35,7 +35,7 @@
 </style>
 
 <a
-  href={'/projects/' + sample(logOut.refs).slug}
+  href="/log"
   class="log-output"
   in:fly={{ duration: 300, y: 200 }}
   out:fade={{ duration: 500 }}>

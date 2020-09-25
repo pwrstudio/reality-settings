@@ -84,7 +84,7 @@ const serializers = {
         { target: "_blank", rel: "noreferrer", href: props.mark.href },
         props.children
       ),
-    keyword: (props) => h("mark", { className: "highlight" }, props.children),
+    keyword: (props) => h("span", { className: "highlight" }, props.children),
     hiddenKeywords: (props) =>
       h("span", { className: "hidden" }, props.children),
     footnote: (props) => {
@@ -268,7 +268,7 @@ const landingSerializers = {
         { target: "_blank", rel: "noreferrer", href: props.mark.href },
         props.children
       ),
-    keyword: (props) => h("mark", { className: "highlight" }, props.children),
+    keyword: (props) => h("span", { className: "highlight" }, props.children),
     footnote: (props) => {
       return h(
         "a",

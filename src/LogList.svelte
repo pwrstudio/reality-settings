@@ -5,85 +5,70 @@
   //
   // # # # # # # # # # # # # #
 
-  // IMPORTS
+  import { onMount } from "svelte"
+  import { links } from "svelte-routing"
   import { fade } from "svelte/transition"
-  import { navigate } from "svelte-routing"
+  import { quartOut } from "svelte/easing"
+  import get from "lodash/get"
 
-  // *** PROPS
-  export let blocks = []
+  // PROPS
+  export let logBlocks = []
 
-  // *** DOM REFERENCES
-  let logListEl = false
-
-  $: {
-    if (blocks && logListEl) {
-      setTimeout(() => {
-        logListEl.scrollTo({
-          top: logListEl.scrollHeight,
-          left: 0,
-          behavior: "smooth",
-        })
-      }, 100)
-    }
-  }
+  console.dir(logBlocks)
 </script>
 
 <style lang="scss">
   @import "./variables.scss";
 
   .log-list {
-    position: absolute;
-    top: 80px;
-    height: calc(100vh - 120px);
-    padding: 0;
-    width: 100%;
-    font-size: $font-size-small;
-    overflow: scroll;
-    @include screen-size("small") {
-      padding-bottom: 40px;
-    }
-  }
+    padding-top: 50px;
+    .log-item {
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      width: 100%;
+      border-bottom: 1px solid grey;
+      line-height: 1.2em;
 
-  .post {
-    margin: 10px;
-    margin-bottom: 10px;
-    padding: 20px;
-    background: #a4a4a4;
-    border-radius: 20px;
-    display: block;
-    font-size: $font-size-small;
-    cursor: pointer;
-    user-select: none;
+      .links,
+      .epoch {
+        color: grey;
+        // font-size: $font_size_small;
+      }
 
-    &:hover {
-      transition: background 0.3s ease-out;
-      text-decoration: none;
-      background: #949494;
-    }
+      .link {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 90%;
+        &:hover {
+          text-decoration: none;
+          color: $black;
+        }
+      }
 
-    .title {
-      line-height: 1em;
-      font-family: "Akkurat-Mono", monospace;
-    }
-
-    .meta {
-      margin-bottom: 10px;
-      span {
-        border-bottom: 1px solid black;
+      .text {
+        margin-bottom: 10px;
+        margin-top: 10px;
+        // font-size: 32px;
+        max-width: 90%;
+        line-height: 1.2em;
+        word-spacing: -4px;
       }
     }
   }
 </style>
 
-<div class="log-list" bind:this={logListEl}>
-  {#each blocks as block (block.uid)}
-    <div
-      class="post"
-      on:click={(e) => {
-        navigate('/projects/im-not-in-love-towards-expressive-anamophisms-in-music')
-      }}>
-      <div class="meta"><span>{block.meta.epoch}</span></div>
-      <div class="title">{block.string}</div>
+<div class="log-list">
+  {#each logBlocks as block (block.uid)}
+    <div class="log-item" in:fade>
+      <div class="epoch">{block.time}</div>
+      <div class="text">{block.string}</div>
+      <div class="links">
+        {#each block.refs as ref}
+          <a href={'/projects/' + ref.slug} class="link">=> {ref.title}</a>
+        {/each}
+      </div>
     </div>
   {/each}
 </div>

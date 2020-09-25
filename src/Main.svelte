@@ -157,7 +157,7 @@
       //   currentBlocks = currentBlocks
       // }
       logOut = generateBlock()
-      logBlocks = [...logBlocks, logOut]
+      logBlocks = [logOut, ...logBlocks]
       console.dir(logOut)
       setTimeout(() => {
         logOut = false
@@ -329,7 +329,7 @@
           return (
             result.string.split(" ").length <= 30 &&
             // result.score > 10 &&
-            // result.refs.length > 2 &&
+            result.refs.length > 1 &&
             (result.string.endsWith(".") ||
               result.string.endsWith("?") ||
               result.string.endsWith("!"))
@@ -520,8 +520,14 @@
     padding-left: 20px;
     padding-right: 20px;
     padding-bottom: 80px;
-    min-height: 100vh;
+    height: 100vh;
     background: grey;
+
+    &.white {
+      background: $white;
+    }
+
+    overflow-y: auto;
 
     @include hide-scroll;
   }
@@ -564,8 +570,15 @@
         </div>
       {/if}
 
+      <!-- LOG LIST -->
+      {#if section == 'log'}
+        <div class="single white">
+          <LogList {logBlocks} />
+        </div>
+      {/if}
+
       <!-- SIMULATION -->
-      {#if section != 'projects' && section != 'authors' && section != 'meta' && section != 'categories'}
+      {#if section != 'projects' && section != 'authors' && section != 'meta' && section != 'categories' && section != 'log'}
         <div class="simulation">
           <World {worldOut} />
         </div>
@@ -601,7 +614,7 @@
     {/if}
   </div>
 
-  {#if loaded && (!section || section == 'seed')}
+  {#if loaded && (!section || section == 'seed' || section == 'log')}
     <div class="world-control" use:links>
       <div class="control first">{$globalSeed} => {padGen($generation)}</div>
       <!-- {#if running}
@@ -628,11 +641,11 @@
         }}>
         Reset
       </div>
-      <a href="/settings" class="control first"> New seed </a>
+      <a href="/settings" class="control first">New seed</a>
     </div>
 
     <!-- LOG OUTPUT -->
-    {#if logOut && logOut.string}
+    {#if logOut && logOut.string && section != 'log'}
       <span use:links>
         <LogOutput {logOut} />
       </span>
