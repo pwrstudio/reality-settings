@@ -8,6 +8,7 @@
   import { onMount } from "svelte"
   import { links } from "svelte-routing"
   import { fade } from "svelte/transition"
+  import uniq from "lodash/uniq"
   import { quartOut } from "svelte/easing"
   import get from "lodash/get"
 
@@ -65,7 +66,7 @@
       <div class="epoch">{block.time}</div>
       <div class="text">{block.string}</div>
       <div class="links">
-        {#each block.refs as ref}
+        {#each uniq(block.refs) as ref}
           <a href={'/projects/' + ref.slug} class="link">=> {ref.title}</a>
         {/each}
       </div>

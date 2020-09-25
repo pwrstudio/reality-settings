@@ -18,6 +18,7 @@
   import { v4 as uuidv4 } from "uuid"
   import EasyStar from "easystarjs"
   import { fade } from "svelte/transition"
+  import MediaQuery from "svelte-media-query"
 
   // *** SANITY
   import {
@@ -329,7 +330,7 @@
           return (
             result.string.split(" ").length <= 30 &&
             // result.score > 10 &&
-            result.refs.length > 1 &&
+            uniq(result.refs).length > 1 &&
             (result.string.endsWith(".") ||
               result.string.endsWith("?") ||
               result.string.endsWith("!"))
@@ -394,21 +395,6 @@
     max-width: 100%;
   }
 
-  .markov {
-    width: 1400px;
-    max-width: 95%;
-    overflow: hidden;
-    padding: 10px;
-  }
-
-  .markov .info {
-    font-size: $font-size-small;
-    padding: 5px;
-    color: $black;
-    background: rgb(255, 255, 161);
-    display: inline-block;
-  }
-
   .pane {
     height: 100vh;
     position: fixed;
@@ -417,7 +403,8 @@
     overflow-y: scroll;
 
     @include screen-size("small") {
-      height: 50vh;
+      height: calc(100vh - 60px);
+      top: 60px;
     }
 
     &.simulation {
@@ -441,9 +428,10 @@
       background: $black;
       width: 40%;
       @include screen-size("small") {
-        top: 50%;
+        top: 0;
         width: 100%;
         left: 0;
+        height: 100vh;
       }
     }
   }
@@ -490,6 +478,7 @@
     z-index: 100;
     top: 0px;
     height: 50px;
+
     .menu-item {
       float: left;
       height: 50px;
@@ -504,9 +493,18 @@
         background: rgba(40, 40, 40, 1);
         text-decoration: none;
       }
+
+      @include screen-size("small") {
+        height: 60px;
+        line-height: 60px;
+      }
     }
+
     @include screen-size("small") {
-      top: 50%;
+      height: 60px;
+    }
+
+    @include screen-size("small") {
       width: 100vw;
     }
   }
@@ -578,7 +576,7 @@
       {/if}
 
       <!-- SIMULATION -->
-      {#if section != 'projects' && section != 'authors' && section != 'meta' && section != 'categories' && section != 'log'}
+      {#if !slug && section != 'authors' && section != 'meta' && section != 'categories' && section != 'log'}
         <div class="simulation">
           <World {worldOut} />
         </div>
@@ -587,34 +585,49 @@
 
     <!-- INFO PANE -->
     {#if loaded}
-      <div class="pane right" bind:this={paneRightEl}>
-        <!-- MENU TOP -->
-        <div class="menu top">
-          <a href="/" class="menu-item half">Projects</a>
-          <a href="/meta" class="menu-item half">Meta</a>
-        </div>
+      <!-- MENU TOP -->
+      <div class="menu top">
+        <a href="/projects" class="menu-item half">Projects</a>
+        <a href="/meta" class="menu-item half">Meta</a>
+      </div>
 
-        <!-- GAME LOG-->
-        <!-- {#if UI.state === STATE.GAME}
+      <!-- GAME LOG-->
+      <!-- {#if UI.state === STATE.GAME}
         <LogList blocks={currentBlocks} />
         {/if} -->
 
-        <!-- AUTHOR LIST -->
-        {#if section == 'meta' || section == 'authors'}
-          <div class="list">
-            <AuthorList {authors} {slug} />
-          </div>
+      <!-- AUTHOR LIST -->
+      <MediaQuery query="(min-width: 800px)" let:matches>
+        {#if matches}
+          {#if section == 'meta' || section == 'authors'}
+            <div class="pane right">
+              <div class="list">
+                <AuthorList {authors} {slug} />
+              </div>
+            </div>
+          {:else}
+            <!-- PROJECT LIST -->
+            <div class="pane right">
+              <div class="list">
+                <ProjectsList {projects} {slug} />
+              </div>
+            </div>
+          {/if}
         {:else}
           <!-- PROJECT LIST -->
-          <div class="list">
-            <ProjectsList {projects} {slug} />
-          </div>
+          {#if section == 'projects' && !slug}
+            <div class="pane right">
+              <div class="list">
+                <ProjectsList {projects} {slug} />
+              </div>
+            </div>
+          {/if}
         {/if}
-      </div>
+      </MediaQuery>
     {/if}
   </div>
 
-  {#if loaded && (!section || section == 'seed' || section == 'log')}
+  {#if loaded && (!section || section == 'seed' || section == 'log' || (section == 'projects' && !slug))}
     <div class="world-control" use:links>
       <div class="control first">{$globalSeed} => {padGen($generation)}</div>
       <!-- {#if running}
