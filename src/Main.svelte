@@ -11,7 +11,6 @@
   import { Life } from "dat-life"
   import get from "lodash/get"
   import shuffle from "lodash/shuffle"
-  import sample from "lodash/sample"
   import uniq from "lodash/uniq"
   import flatMap from "lodash/flatMap"
   import Markov from "markov-strings"
@@ -44,6 +43,7 @@
   } from "./global.js"
 
   // *** COMPONENTS
+  import LogOutput from "./LogOutput.svelte"
   import ProjectView from "./ProjectView.svelte"
   import AuthorView from "./AuthorView.svelte"
   import CategoryView from "./CategoryView.svelte"
@@ -53,7 +53,6 @@
   import AuthorList from "./AuthorList.svelte"
   import World from "./World.svelte"
   import Settings from "./Components/Settings.svelte"
-  import { HTMLFormControlsCollection } from "lodash/_freeGlobal"
 
   // *** PROPS
   export let params = false
@@ -65,8 +64,6 @@
 
   // *** VARIABLES
   let blocks = []
-  let testBlocks = []
-  let currentBlocks = []
   let keywords = []
   let allCategories = []
   let allTextOnly = ""
@@ -79,6 +76,7 @@
   let section = false
   let slug = false
   let loaded = false
+  let logOut = {}
 
   $: {
     // Split URL parameters
@@ -137,30 +135,37 @@
   }
 
   const drawPath = (path) => {
-    // const startIndex = path[0].x + WORLD.WIDTH * path[0].y
-    // worldOut[startIndex] = 3
-
     if (path.length > 0) {
       const currentPoint = path.shift()
-      // console.dir(currentPoint)
       const pointIndex = currentPoint.x + WORLD.WIDTH * currentPoint.y
-      // console.log(pointIndex)
       worldOut[pointIndex] = 2
-      // setTimeout(() => {
       requestAnimationFrame(() => {
         drawPath(path)
       })
-      // }, 50)
     } else {
-      if (logBlocks.length > 0) {
-        let newBlock = logBlocks.pop()
-        newBlock.meta = {
-          epoch: padGen($epoch),
-          generation: $generation,
-        }
-        currentBlocks.push(newBlock)
-        currentBlocks = currentBlocks
-      }
+      // Make block
+
+      //   currentBlocks.push(newBlock)
+
+      // if (logBlocks.length > 0) {
+      //   let newBlock = logBlocks.pop()
+      //   newBlock.meta = {
+      //     epoch: padGen($epoch),
+      //     generation: $generation,
+      //   }
+
+      //   currentBlocks = currentBlocks
+      // }
+      logOut = generateBlock()
+      logBlocks = [...logBlocks, logOut]
+      console.dir(logOut)
+      setTimeout(() => {
+        logOut = false
+      }, 6000)
+      // setTimeout(() => {
+      //   logOut = false
+      // }, 3000)
+
       setTimeout(() => {
         startWorld()
       }, 1500)
@@ -201,8 +206,10 @@
               path[path.length - 1].x + WORLD.WIDTH * path[path.length - 1].y
             worldOut[endIndex] = 3
             path.pop()
+            logOut = false
             drawPath(path)
           } else {
+            console.log("no path")
             startWorld()
           }
         }
@@ -257,6 +264,8 @@
     // }
   }
 
+  let generateBlock = () => {}
+
   // Load data
   let postsMap = {}
   let metaPost = false
@@ -273,14 +282,68 @@
       // PROJECTS
       projects = posts.filter((p) => p._type === "project")
       projects = Array.isArray(projects) ? shuffle(projects) : []
+
       projects.forEach((post) => {
-        console.dir(post)
-        console.dir(post.categories)
         allCategories = [...allCategories, ...get(post, "categories", [])]
+
+        if (toPlainText(post.mainContent.content).length > 10) {
+          allTextOnly =
+            allTextOnly +
+            toPlainText(post.mainContent.content)
+              .replace(/\r?\n|\r/g, " ")
+              .trim()
+        }
+
+        let sentences = allTextOnly.match(/[^\.!\?]+[\.!\?]+/g)
+        if (sentences) {
+          sentences = sentences.map((s) => {
+            return {
+              string: s.trim(),
+              title: post.title,
+              slug: post.slug.current,
+            }
+          })
+          allSentences = [...allSentences, ...sentences]
+        }
       })
 
       allCategories = uniq(allCategories)
-      console.dir(allCategories)
+      // console.dir(allCategories)
+      console.dir(allSentences)
+      // console.dir(allTextOnly)
+
+      // markovMaterial = allTextOnly
+      //   .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
+      //   .split("|")
+
+      // console.dir(markovMaterial)
+
+      // Build the Markov generator
+      const markov = new Markov(allSentences, { stateSize: 2 })
+
+      markov.buildCorpus()
+
+      const options = {
+        maxTries: 200,
+        filter: (result) => {
+          return (
+            result.string.split(" ").length <= 30 &&
+            // result.score > 10 &&
+            // result.refs.length > 2 &&
+            (result.string.endsWith(".") ||
+              result.string.endsWith("?") ||
+              result.string.endsWith("!"))
+          )
+        },
+      }
+
+      generateBlock = () => {
+        return {
+          ...markov.generate(options),
+          uid: uuidv4(),
+          time: padGen($epoch),
+        }
+      }
 
       // ***
       // START GAME
@@ -541,7 +604,7 @@
   {#if loaded && (!section || section == 'seed')}
     <div class="world-control" use:links>
       <div class="control first">{$globalSeed} => {padGen($generation)}</div>
-      {#if running}
+      <!-- {#if running}
         <div
           class="control first"
           on:click={() => {
@@ -557,7 +620,7 @@
           }}>
           Start
         </div>
-      {/if}
+      {/if} -->
       <div
         class="control first"
         on:click={() => {
@@ -567,6 +630,13 @@
       </div>
       <a href="/settings" class="control first"> New seed </a>
     </div>
+
+    <!-- LOG OUTPUT -->
+    {#if logOut && logOut.string}
+      <span use:links>
+        <LogOutput {logOut} />
+      </span>
+    {/if}
   {/if}
 
   {#if section == 'settings'}
