@@ -323,7 +323,7 @@
           return {
             string: s.trim(),
             title: "Meta",
-            slug: "/" + metaPost.slug.current,
+            slug: "/meta",
           }
         })
         allSentences = [...allSentences, ...sentences]
