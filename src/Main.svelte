@@ -301,17 +301,36 @@
             return {
               string: s.trim(),
               title: post.title,
-              slug: post.slug.current,
+              slug: "/projects/" + post.slug.current,
             }
           })
           allSentences = [...allSentences, ...sentences]
         }
       })
 
+      // INCLUDE META TEXT
+      if (toPlainText(metaPost.mainContent.content).length > 10) {
+        allTextOnly =
+          allTextOnly +
+          toPlainText(metaPost.mainContent.content)
+            .replace(/\r?\n|\r/g, " ")
+            .trim()
+      }
+
+      let sentences = allTextOnly.match(/[^\.!\?]+[\.!\?]+/g)
+      if (sentences) {
+        sentences = sentences.map((s) => {
+          return {
+            string: s.trim(),
+            title: "Meta",
+            slug: "/" + metaPost.slug.current,
+          }
+        })
+        allSentences = [...allSentences, ...sentences]
+      }
+
       allCategories = uniq(allCategories)
-      // console.dir(allCategories)
       console.dir(allSentences)
-      // console.dir(allTextOnly)
 
       // markovMaterial = allTextOnly
       //   .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
@@ -590,11 +609,6 @@
         <a href="/projects" class="menu-item half">Projects</a>
         <a href="/meta" class="menu-item half">Meta</a>
       </div>
-
-      <!-- GAME LOG-->
-      <!-- {#if UI.state === STATE.GAME}
-        <LogList blocks={currentBlocks} />
-        {/if} -->
 
       <!-- AUTHOR LIST -->
       <MediaQuery query="(min-width: 800px)" let:matches>

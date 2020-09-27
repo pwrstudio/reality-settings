@@ -67,7 +67,7 @@
       <div class="text">{block.string}</div>
       <div class="links">
         {#each uniq(block.refs) as ref}
-          <a href={'/projects/' + ref.slug} class="link">=> {ref.title}</a>
+          <a href={ref.slug} class="link">=> {ref.title}</a>
         {/each}
       </div>
     </div>
