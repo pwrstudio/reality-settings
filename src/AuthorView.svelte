@@ -13,6 +13,7 @@
 
   // *** COMPONENTS
   import ProjectsList from "./ProjectsList.svelte"
+  import MetaData from "./MetaData.svelte"
 
   import { loadData, urlFor, renderBlockText } from "./sanity.js"
 
@@ -59,6 +60,8 @@
     }
   }
 </style>
+
+<MetaData post={authorPost} />
 
 <div class="author">
   <!-- TITLE -->

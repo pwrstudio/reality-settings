@@ -54,6 +54,7 @@
   import AuthorList from "./AuthorList.svelte"
   import World from "./World.svelte"
   import Settings from "./Components/Settings.svelte"
+  import MetaData from "./MetaData.svelte"
 
   // *** PROPS
   export let params = false
@@ -551,6 +552,9 @@
 </style>
 
 {#await posts then posts}
+  {#if !slug}
+    <MetaData />
+  {/if}
   <div class="landing" use:links>
     <!-- GAME -->
     <div

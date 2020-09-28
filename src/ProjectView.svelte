@@ -10,6 +10,9 @@
 
   import { urlFor, renderBlockText, singleToPlainText } from "./sanity.js"
 
+  // *** COMPONENTS
+  import MetaData from "./MetaData.svelte"
+
   // BLOCKS
   import ImageBlock from "./Components/Blocks/ImageBlock.svelte"
   import VideoBlock from "./Components/Blocks/VideoBlock.svelte"
@@ -84,6 +87,8 @@
     }
   }
 </style>
+
+<MetaData post={projectPost} />
 
 <div class="project">
   <!-- CATEGORIES -->
