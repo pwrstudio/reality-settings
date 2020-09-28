@@ -80,6 +80,8 @@
   let loaded = false
   let logOut = {}
 
+  let currentProject = {}
+
   $: {
     // Split URL parameters
     // console.log("* * * * * ")
@@ -274,6 +276,12 @@
   let projects = []
   let authors = []
   let posts = loadData(QUERY.ALL)
+
+  $: {
+    if (projects) {
+      currentProject = projects.find((p) => get(p, "slug.current", "") === slug)
+    }
+  }
 
   onMount(async () => {
     posts.then((posts) => {
@@ -552,9 +560,10 @@
 </style>
 
 {#await posts then posts}
-  {#if !slug}
+  <!-- {#if !slug}
     <MetaData />
-  {/if}
+  {/if} -->
+
   <div class="landing" use:links>
     <!-- GAME -->
     <div
@@ -565,7 +574,7 @@
       {#if section == 'projects' && slug}
         <div class="single">
           <ProjectView
-            projectPost={projects.find((p) => get(p, 'slug.current', '') === slug)} />
+            projectPost={currentProject} />
         </div>
       {/if}
 
@@ -599,7 +608,7 @@
       {/if}
 
       <!-- SIMULATION -->
-      {#if !slug && section != 'authors' && section != 'meta' && section != 'categories' && section != 'log'}
+      {#if section == 'seed' || (!slug && section != 'authors' && section != 'meta' && section != 'categories' && section != 'log')}
         <div class="simulation">
           <World {worldOut} />
         </div>

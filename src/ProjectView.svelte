@@ -24,7 +24,6 @@
 
   // PROPS
   export let projectPost = {}
-
   console.dir(projectPost)
 </script>
 
